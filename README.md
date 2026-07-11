@@ -33,6 +33,7 @@ Do **not** implement in Phase 1:
 | [architecture/entitlements.md](architecture/entitlements.md) | Modules vs features vs limits; default plan & trial rules |
 | [api/central-v1.md](api/central-v1.md) | Central REST API reference |
 | [admin-ui.md](admin-ui.md) | Admin console screen map |
+| [testing/playwright.md](testing/playwright.md) | Central Playwright E2E guide (suite lives in Frontend) |
 | [CHANGELOG.md](CHANGELOG.md) | Phase delivery notes |
 
 ## Related repositories

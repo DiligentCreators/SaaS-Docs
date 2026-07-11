@@ -1,0 +1,17 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.idea/
+.vscode/
+
+# Generated testing media (never commit)
+**/testing/images/**
+!**/testing/images/.gitkeep
+**/testing/videos/
+**/testing/traces/
+*.webm
+**/trace.zip
+/playwright-report/
+/test-results/
