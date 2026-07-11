@@ -2,7 +2,7 @@
 
 ## Happy path (admin creates tenant)
 
-1. Admin submits tenant create (company, slug, email, localization, optional `owner_id`).
+1. Admin submits tenant create (company/workspace name, slug, email, phone, logo/address/notes, localization, optional `owner_id`).
 2. API resolves default plan (`system_settings.default_plan_id` → `plans.is_default`).
 3. Tenant row inserted with `status=active`.
 4. Domain created from slug (Stancl).
@@ -16,4 +16,4 @@
 
 - Trial days always from plan configuration.
 - Existing subscriptions are never rewritten when the default plan changes.
-- No payment provider calls in Phase 1.
+- No Stripe/payment provider calls happen during tenant creation — `tenants.stripe_id` is only populated later, if and when the tenant is billed through Cashier (see [billing/stripe-cashier.md](../billing/stripe-cashier.md)).
