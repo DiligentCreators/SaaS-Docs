@@ -40,7 +40,7 @@ Enforced by `App\Rules\PasswordRule` on registration, reset, and change-password
 - Login throttling (`auth-login`, 5/minute)
 - Forgot/reset throttling (`6,1`)
 - Soft-deleted and suspended users receive a generic credentials error
-- Email verification is enforced for protected Central and tenant application endpoints.
+- Email verification is enforced for protected Central and tenant application endpoints; the SPA `VerifyEmailGate` **Sign out** action clears the session and navigates to the context login route
 - CSRF: SPA uses Bearer tokens; stateful Sanctum cookie auth remains available when configured
 - Registration gated by `registration_enabled`
 

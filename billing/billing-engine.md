@@ -57,7 +57,11 @@ For each tenant where next_billing_at <= now:
 - `POST /webhooks/gateways/{code}` → driver `parseWebhook` → `BillingEngine::handleGatewayEvent`
 - `POST /stripe/webhook` → Cashier handlers + same Billing Engine dispatch
 
-Tenant resolution uses `GatewayEvent.tenantId` (set inside the driver), never provider columns inside the engine.
+Tenant resolution (provider-agnostic; no Stripe/Cashier columns in the engine):
+
+1. `GatewayEvent.tenantId` (set by the driver when the customer map resolves)
+2. `providerSubscriptionId` → `workspace_module_subscriptions`
+3. `meta.payment_id` → `payments` (covers `payment_failed` when no customer → tenant map exists)
 
 ## Default gateway
 

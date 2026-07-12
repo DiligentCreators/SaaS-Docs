@@ -4,7 +4,7 @@ Canonical product and architecture documentation for the Diligent Creators SaaS 
 
 ## Architecture freeze
 
-The platform foundation is **locked**. See [architecture/platform-freeze.md](architecture/platform-freeze.md).
+The platform foundation is **locked** as of **[v1.1.0-platform](releases/v1.1.0-platform.md)** (Production Ready). See [architecture/platform-freeze.md](architecture/platform-freeze.md).
 
 New business capability ships as **modules** following the [Module Development Standard](modules/module-development.md). **Leads** and **Tasks** are the canonical reference implementations; later modules must mirror them.
 
@@ -79,7 +79,8 @@ Removed:
 | [authorization/tenant-rbac.md](authorization/tenant-rbac.md) | Tenant users, roles, permissions (RBAC) |
 | [billing/stripe-cashier.md](billing/stripe-cashier.md) | Cashier / Stripe driver notes |
 | [workflows/tenant-provisioning.md](workflows/tenant-provisioning.md) | Workspace create → default modules |
-| [testing/playwright.md](testing/playwright.md) | Central Playwright E2E suites |
+| [testing/playwright.md](testing/playwright.md) | Playwright E2E suites (Central + Tenant) |
+| [releases/v1.1.0-platform.md](releases/v1.1.0-platform.md) | Official Platform Foundation release |
 | [CHANGELOG.md](CHANGELOG.md) | Delivery notes |
 
 ## Related repositories

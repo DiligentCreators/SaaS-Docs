@@ -33,7 +33,7 @@ sequenceDiagram
 - `subscription_created` / `subscription_updated` / `subscription_cancelled`
 - `unsupported` (logged as ignored)
 
-Drivers should populate `tenantId` when resolvable so `BillingEngine` stays provider-agnostic.
+Drivers should populate `tenantId` when resolvable so `BillingEngine` stays provider-agnostic. If not, include `meta.payment_id` (and/or `providerSubscriptionId`) so the engine can still resolve the workspace for `payment_failed` without a customer map.
 
 ## Stripe events handled for billing activation
 

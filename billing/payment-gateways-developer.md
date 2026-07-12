@@ -48,7 +48,7 @@ Permissions: `payment-gateways.list|read|update` (or `billing.manage`).
 - Generic: `POST /webhooks/gateways/{code}` → `GatewayWebhookController`
 - Stripe + Cashier mirror: `POST /stripe/webhook` → `StripeWebhookController`
 
-Both normalize via `PaymentGatewayInterface::parseWebhook()` and call `BillingEngine::handleGatewayEvent()`. Drivers should set `GatewayEvent::$tenantId` when they can resolve the workspace, so the engine never queries provider-specific columns.
+Both normalize via `PaymentGatewayInterface::parseWebhook()` and call `BillingEngine::handleGatewayEvent()`. Drivers should set `GatewayEvent::$tenantId` when they can resolve the workspace, so the engine never queries provider-specific columns. When `tenantId` is missing, `BillingEngine::resolveTenant` also tries `providerSubscriptionId` and `meta.payment_id` (needed for `payment_failed` without a customer map).
 
 CSRF exceptions: `stripe/*`, `webhooks/gateways/*`.
 

@@ -1,5 +1,39 @@
 # Changelog
 
+## v1.1.0-platform — Production Ready (2026-07-13)
+
+Platform foundation declared **Production Ready** and **frozen**. No new business modules in this release — hardening only.
+
+Official release document: [releases/v1.1.0-platform.md](releases/v1.1.0-platform.md)  
+Git tag: `v1.1.0-platform`
+
+**Verification**
+
+- Pest: **230/230** pass
+- Playwright: **69/69** pass (`--workers=1`, all projects: setup, auth, tenant, chromium)
+- Manual Cursor browser happy path: Central + Tenant
+
+**Authentication & SPA**
+
+- Auth matrix expanded: Pest + Playwright coverage for lockout messages (includes minutes remaining), remember-me, email verification, registration validation, tenant login, and wrong-workspace rejection
+- `VerifyEmailGate` **Sign out** navigates to the context login page after logout
+
+**Billing & gateways**
+
+- `BillingEngine::resolveTenant` falls back to `payment_id` in event metadata when customer/subscription maps are absent
+- Gateway webhook failure/cancel Pest coverage
+
+**Validation & settings**
+
+- Central user and module validation Pest; Lead validation; module deactivate gate after uninstall
+- System settings runtime asserts: Sanctum expiration, locale, Cashier currency, date/time formats
+
+**E2E stability**
+
+- Focused auth/tenant/central specs; page-object delete/clone assertions; local Playwright `workers: 1`
+
+---
+
 ## Product roadmap documented (2026-07-12)
 
 - Added [product-roadmap.md](product-roadmap.md): CRM → Sales → Billing → Purchasing → Inventory → Finance → HR → future expansion

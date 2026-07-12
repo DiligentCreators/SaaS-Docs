@@ -16,7 +16,7 @@ Registration creates your workspace, owner account, default roles, and default m
 1. Open `/login`.
 2. Enter your workspace, email, and password. The workspace is preselected when you open the application on its workspace domain.
 3. Optionally enable **Remember me**.
-4. Verify your email when prompted; unverified accounts cannot open protected workspace pages.
+4. Verify your email when prompted; unverified accounts cannot open protected workspace pages. On the verify-email gate, **Sign out** ends the session and returns you to `/login` (or `/central/login` for Central).
 5. After success you land on `/dashboard`.
 
 Your browser does not save a workspace selection in local storage. Open the correct workspace host or enter the workspace again when using the shared login URL.
