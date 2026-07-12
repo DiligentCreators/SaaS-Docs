@@ -42,13 +42,13 @@ Paginated list endpoints populate `meta` (`current_page`, `last_page`, `per_page
 | DELETE | `/tenants/{tenant}/force` | `tenants.force.delete` | Force-deletes users, domains, module subscriptions, then the tenant |
 | POST | `/tenants/{tenant}/archive` | `tenants.archive` | Sets `archived_at`; independent of soft delete |
 | POST | `/tenants/{tenant}/unarchive` | `tenants.archive` | Clears `archived_at` |
-| GET | `/tenants/{tenant}/entitlements` | `tenants.read` | `{ core, modules, features }` |
+| GET | `/tenants/{tenant}/entitlements` | `tenants.read` | `{ core, modules }` — licensing only |
 | POST | `/tenants/{tenant}/modules` | `module-subscriptions.create` | Install module — body: `module_id`, optional `billing_cycle` |
 | GET | `/tenants/{tenant}/invoices` | `invoices.list` | Paginated workspace invoices |
 | GET | `/tenants/{tenant}/payments` | `payments.list` | Paginated workspace payments |
 | POST | `/tenants/{tenant}/impersonate` | `impersonation.start` | Body: `reason` (required, 5–1000 chars) |
 
-Tenant create/update body: `company_name`, `workspace_name?`, `slug?`, `email`, `phone?`, `logo_path?`, `address?`, `notes?`, `domain?`, `owner_id?`, `status?`, `timezone?`, `currency?`, `country?`, `locale?`.
+Tenant create/update body: `company_name`, `workspace_name?`, `slug?`, `email`, `phone?`, `logo?` (image upload), `notes?`, `domain?`, `status?`, `timezone?`, `currency?`, `country?`, `locale?`. Multipart form-data is supported for logo uploads. Response includes `logo_path` and `logo_url`.
 
 ### Users
 
@@ -90,11 +90,10 @@ Create/update body adds: `phone?`, `avatar_path?`, `password` (create), `role[]`
 | Resource | Paths | Notes |
 |----------|-------|-------|
 | Modules | CRUD + restore/force | Full catalog admin. Fields include `uuid`, pricing, `status`, `is_default_included`, `is_billable`, Stripe price IDs |
-| Features | CRUD + restore/force (`?module_id=`) | Belong to a module; never sold separately |
 
 Default-included modules (Leads, Tasks) cannot be deleted while marked `is_default_included`. Modules with workspace subscriptions cannot be deleted until those subscriptions are removed.
 
-Module create/update accepts optional Stripe price IDs (manual mapping only — the API never creates Stripe products/prices).
+Module create/update accepts optional Stripe price IDs (manual mapping only — the API never creates Stripe products/prices). Features catalog has been removed — modules are licensing products; Spatie permissions handle authorization.
 
 ## Marketplace
 
@@ -129,6 +128,25 @@ Tenant-scoped lists: `GET /tenants/{tenant}/invoices`, `GET /tenants/{tenant}/pa
 
 Invoices are created by the Billing Engine (consolidated run or purchase settlement) — no public write endpoints.
 
+## Payment gateways
+
+| Method | Path | Permission | Notes |
+|--------|------|-------------|-------|
+| GET | `/payment-gateways` | `payment-gateways.list` | List providers |
+| GET | `/payment-gateways/{id}` | `payment-gateways.read` | Redacted config (secrets never returned) |
+| POST | `/payment-gateways/{id}/enable` | `payment-gateways.update` | |
+| POST | `/payment-gateways/{id}/disable` | `payment-gateways.update` | Rejects if default |
+| POST | `/payment-gateways/{id}/default` | `payment-gateways.update` | Syncs `default_payment_gateway` setting |
+| PUT | `/payment-gateways/{id}/config` | `payment-gateways.update` | Merge encrypted credentials |
+| PUT | `/payment-gateways/{id}/mode` | `payment-gateways.update` | `sandbox` \| `live` |
+| POST | `/payment-gateways/{id}/test-connection` | `payment-gateways.update` | Driver probe |
+| GET | `/payment-gateways/{id}/webhook-status` | `payment-gateways.read` | |
+| GET | `/payment-gateways/{id}/logs` | `payment-gateways.read` | Operational logs |
+| GET | `/payment-gateways/{id}/webhook-logs` | `payment-gateways.read` | |
+| GET | `/payment-gateways/{id}/capabilities` | `payment-gateways.read` | Capabilities + currencies |
+
+Also accepts `billing.manage` as an alternate permission.
+
 ## Impersonation
 
 | Method | Path | Permission | Notes |
@@ -138,22 +156,41 @@ Invoices are created by the Billing Engine (consolidated run or purchase settlem
 
 Returns session metadata only — tenant-app login token exchange is out of scope for Central v1.
 
-## Stripe webhook
+## Stripe / gateway webhooks
 
 | Method | Path | Notes |
 |--------|------|-------|
-| POST | `/stripe/webhook` | **Not** under `/api/central/v1`. Path is `config('cashier.path')` + `/webhook` (default `/stripe/webhook`). |
+| POST | `/stripe/webhook` | Cashier-compatible path (`config('cashier.path')` + `/webhook`) |
+| POST | `/webhooks/gateways/{code}` | Gateway-agnostic ingress for all drivers |
 
-Handled by `StripeWebhookController` → Cashier mirror + `BillingEngine::handleGatewayEvent()`.
+**Not** under `/api/central/v1`. Both normalize via `PaymentGatewayInterface::parseWebhook()` into `BillingEngine`. Stripe Cashier route additionally syncs Cashier mirror tables.
 
 ## System
 
 | Method | Path | Notes |
 |--------|------|-------|
-| GET | `/system-settings` | All settings |
-| PUT | `/system-settings` | `{ "settings": { "key": value \| { value, type, group } } }` |
+| GET | `/public/settings` | Unauthenticated bootstrap (branding, formats, registration/maintenance flags). No secrets. |
+| POST | `/public/register-workspace` | Self-service workspace create when `registration_enabled`; otherwise `403` with dedicated message |
+| GET | `/system-settings` | All admin settings (`mail_password` masked) |
+| PUT | `/system-settings` | `{ "settings": { "key": value } }` — per-key validation |
+| POST | `/system-settings/test-mail` | `{ "email": "…" }` — sends test mail using runtime SMTP config |
+| POST | `/system-settings/branding/{logo\|favicon}` | Multipart `file` upload → stores on `public` disk |
 
-Settings groups: `general`, `localization`, `mail`, `branding`, `security`, `maintenance`, `billing`, `feature_flags`. Billing keys include `invoice_prefix`, `proration_mode`, `default_payment_gateway`, `trial_enabled`, `stripe_enabled`, `stripe_webhook_configured`.
+Settings groups: `general`, `localization`, `mail`, `branding`, `security`, `maintenance`, `billing`.
+
+### Consumed keys
+
+| Group | Keys | Runtime use |
+|-------|------|-------------|
+| general | `app_name`, `company_name`, `timezone`, `locale`, `currency`, `registration_enabled` | App title/config, tenant defaults, self-service registration |
+| localization | `date_format`, `time_format` | Central SPA formatters |
+| mail | `mail_driver`, `mail_host`, `mail_port`, `mail_username`, `mail_password` (encrypted), `mail_encryption`, `mail_from_name`, `mail_from_address` | Laravel mail config + From identity |
+| branding | `button_color`, `support_email`, `logo_path`, `favicon_path` | SPA CSS/`document.title`/sidebar; support footer on tenant-facing emails |
+| security | `session_lifetime_minutes`, `password_min_length`, `password_require_special` | Session lifetime; centralized `PasswordRule` / `Password::defaults()` |
+| maintenance | `maintenance_mode`, `maintenance_message`, `maintenance_eta` | **Tenant Application only** (`tenant.available` middleware). Central stays up. |
+| billing | `invoice_prefix`, `proration_mode`, `default_payment_gateway`, `trial_enabled`, `stripe_enabled`, `stripe_webhook_configured` | Billing engine / invoices |
+
+Removed: `primary_color`, `feature_registration`, `feature_invites`, `queue_connection_display`, `filesystem_disk`.
 
 ## Dashboard payload
 
@@ -176,7 +213,6 @@ Seeded by `Database\Seeders\Central\PermissionsSeeder`, guard `central-api`.
 | `dashboard` | `view` |
 | `billing` | `manage` |
 | `modules` | `list`, `create`, `read`, `update`, `delete`, `restore`, `force.delete` |
-| `features` | `list`, `create`, `read`, `update`, `delete`, `restore`, `force.delete` |
 | `module-subscriptions` | `list`, `create`, `read`, `update`, `delete`, `deactivate` |
 | `invoices` | `list`, `read`, `update` |
 | `payments` | `list`, `read`, `update` |
@@ -185,6 +221,7 @@ Seeded by `Database\Seeders\Central\PermissionsSeeder`, guard `central-api`.
 
 ## Removed
 
+- `/features` (+ restore/force)
 - `/plans`, `/plans/{plan}/modules|features|limits`
 - `/limit-definitions`
 - `/tenant-subscriptions` (+ cancel/resume/suspend)
@@ -197,4 +234,4 @@ Seeded by `Database\Seeders\Central\PermissionsSeeder`, guard `central-api`.
 | `billing:run-consolidated` | Daily scheduled; invoices all due workspaces |
 
 Postman: `SaaS-Backend/.docs/postman/Central.postman_collection.json` (refresh after API changes).
-
+

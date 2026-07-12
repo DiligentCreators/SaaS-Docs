@@ -1,5 +1,307 @@
 # Changelog
 
+## Product roadmap documented (2026-07-12)
+
+- Added [product-roadmap.md](product-roadmap.md): CRM → Sales → Billing → Purchasing → Inventory → Finance → HR → future expansion
+- Linked from README and platform-freeze docs
+- Phase 1 CRM: Leads + Tasks complete; Contacts / Companies / Calendar / Activities next
+
+---
+
+## Tasks module (2026-07-12)
+
+**Architecture**
+
+- Second product module; mirrors Leads (flat Laravel, `module:tasks` + Spatie RBAC)
+- Functional differences only: status/priority/complete vs stages/follow-ups
+
+**Backend**
+
+- Tables: `tasks`, `task_notes`, `task_activities`
+- `TaskService`, events/subscriber (audit + assignment mail), tenant API routes
+- Permissions: `tasks.view|create|update|delete|assign|complete`
+- Pest: `tests/Feature/Tenant/Task/TaskTest.php`
+
+**Frontend**
+
+- Tasks list / form dialog / detail drawer; nav gated by module + permission
+- Playwright: `npm run test:e2e:tasks` (`--project=tenant`)
+
+**Docs**
+
+- [modules/tasks.md](modules/tasks.md) (+ user / developer / production)
+- [api/tenant-v1-tasks.md](api/tenant-v1-tasks.md)
+
+---
+
+## Leads reference module (2026-07-12)
+
+**Architecture**
+
+- First product module on the frozen foundation; blueprint for Tasks and later modules
+- Flat Laravel layout (no Modules package); `module:leads` + Spatie RBAC
+- Pipeline-ready domain: stages, status workflow, assignment, notes, follow-ups, timeline
+
+**Backend**
+
+- Tables: `lead_stages`, `leads`, `lead_notes`, `lead_follow_ups`, `lead_activities`
+- `LeadService`, events/subscriber (audit + mail notifications), tenant API routes
+- Permissions: `leads.view|create|update|delete|assign`
+- Auth payload includes `modules[]` for SPA entitlement gating
+- Pest: `tests/Feature/Tenant/Lead/LeadTest.php`
+
+**Frontend**
+
+- Leads list / form dialog / detail drawer; nav gated by module + permission
+- Playwright: `npm run test:e2e:leads` (`--project=tenant`)
+
+**Docs**
+
+- [modules/leads.md](modules/leads.md) (+ user / developer / production)
+- [api/tenant-v1-leads.md](api/tenant-v1-leads.md)
+
+---
+
+## Platform Freeze & Module Development Standard (2026-07-12)
+
+**Architecture**
+
+- Platform foundation locked — no redesign of Auth, Tenancy, RBAC, Billing, Marketplace, Settings, or Gateway architecture except critical security / data-integrity / production bugs
+- Official [Module Development Standard](modules/module-development.md): flat Laravel layout, catalog + `module:` + Spatie permissions, audit + activity logging, Pest + Playwright, docs DoD
+- Cursor rules added in Backend and Frontend (`.cursor/rules/platform-freeze.mdc`, `module-development.mdc`)
+- **Leads** designated as the reference business module; future modules must mirror it
+
+**Docs**
+
+- [architecture/platform-freeze.md](architecture/platform-freeze.md)
+- [modules/module-development.md](modules/module-development.md) (+ developer / production)
+
+---
+
+## Production Hardening (2026-07-12)
+
+**Authentication**
+
+- Shared tenant `/login` with Workspace field (slug/domain); `/central/login` isolated for platform admins
+- Server-owned workspace resolution: host → bearer token → `workspace` input; fail-closed without context
+- Email verification enforced for Central and Tenant (`verified` middleware + SPA verify pages)
+- Sanctum token TTL wired to `session_lifetime_minutes`; Remember Me extends TTL; login lockout after failed attempts
+- Removed client tenant persistence (`tenantStorage` / `VITE_DEFAULT_TENANT_DOMAIN`)
+
+**Provisioning & tenancy**
+
+- Central workspace create always requires an Owner; settings defaults and default role permissions seeded
+- Suspended/archived workspaces denied at the API edge
+
+**Security, payments, impersonation, audit**
+
+- Tenant setting cache keys namespaced; isolation Pest coverage
+- Stripe webhook signature verification + idempotency; payment matching by metadata; PaymentAttempt logging
+- Impersonation issues real tenant tokens with timeout, banner, and revoke-on-end
+- Broader PlatformAuditService coverage (auth, workspace, users, roles, settings, modules)
+
+**Client / docs**
+
+- Currency, date/time, locale, and timezone formatters consume bootstrap settings; SPA idle logout
+- Authentication / tenancy docs updated for hybrid resolution and custom-domain readiness
+
+---
+
+## Manual QA — Production Readiness Fixes (2026-07-12)
+
+**Backend**
+
+- `DomainRule` now accepts platform hostnames including `tenant.localhost` and `tenant.myapp.com` (previously required three labels and rejected local domains)
+- Central `RoleService` lists only `central-api` roles (orphaned `tenant-api` rows no longer leak into Central Users/Roles UI)
+- Central role create always sets `guard_name=central-api` and scopes uniqueness to that guard
+- `InitializeTenancy` re-resolves and switches tenant per request when the domain/header changes
+- New `tenant.user` middleware rejects Sanctum tokens used against a different workspace (`EnsureTenantUserBelongsToCurrentTenant`)
+- Pest: `DomainRuleTest`, `RoleListIsolationTest`, `TenantTokenIsolationTest`
+
+**Frontend**
+
+- Tenant form shows domain validation errors and uses `tenant.localhost` placeholder
+- Timezone options always include `UTC` so the default value displays correctly
+
+---
+
+## Tenant Users, Roles & Permissions (RBAC)
+
+**Backend**
+
+- Per-workspace roles via `roles.tenant_id` (no Spatie teams); permissions remain shared `tenant-api` vocabulary
+- Expanded `config/tenant-permissions.php` (users, roles, settings, leads, tasks)
+- Tenant User + Role APIs: CRUD, suspend, password change, clone, permissions matrix
+- Owner (`superadmin`) bootstrap with full permissions; protected default roles
+- Legacy backfill: `php artisan tenants:isolate-roles` (+ lazy ensure on Users/Roles APIs)
+- Pest: user/role CRUD, permission assignment, authorization, workspace isolation, legacy backfill
+
+**Frontend**
+
+- Tenant `/users`, `/roles`, `/roles/matrix` reusing Central pages with workspace-aware copy and routes
+- Administration nav: Users / Roles (permission-gated)
+- Playwright: `npm run test:e2e:tenant-rbac`
+
+**Docs**
+
+- `authorization/tenant-rbac*.md` — architecture, user guide, production security
+
+---
+
+## Tenant Branding & Configuration
+
+**Backend**
+
+- `TenantSettingService` resolves workspace settings with hierarchy: tenant override → tenant profile → Central → system default
+- Tenant Settings API: list/update, branding upload, test mail, public bootstrap
+- SMTP passwords encrypted; runtime mail uses tenant SMTP when `mail_host` is set, otherwise Central
+- Branding assets stored under `tenants/{uuid}/branding/…`
+- Permissions: `settings.list`, `settings.update`
+- Pest coverage for resolver + API
+
+**Frontend**
+
+- Tenant Settings page (`/settings`) — General, Branding, Mail with searchable selects, color picker, uploads
+- Settings store bootstraps resolved tenant branding when a workspace domain is known
+- Playwright: `npm run test:e2e:tenant-settings`
+
+**Docs**
+
+- `settings/tenant-settings*.md` — hierarchy, SMTP, storage, security
+
+---
+
+## Tenant Application UI Foundation
+
+**Frontend**
+
+- Tenant protected routes now use the shared `AppLayout` shell (Sidebar, Topbar, Breadcrumbs, Command Palette, User Menu)
+- Context-aware navigation: `centralNavigationGroups` vs `tenantNavigationGroups`
+- Tenant sidebar: Dashboard, Leads, Tasks, Settings, Profile
+- Tenant dashboard redesigned as layout-matched placeholders (welcome, workspace info, modules, activity, quick actions)
+- Leads / Tasks / Tenant Settings reserved via `PlaceholderPage`
+- Shared Profile page works on both `/profile` and `/central/profile`
+
+**Docs**
+
+- Shared layout developer + tenant user guides
+- Architecture note for shared design system / layout reuse
+
+---
+
+## Tenant Authentication Foundation
+
+**Backend**
+
+- Self-service registration creates workspace owner, default roles/permissions, and returns a tenant Sanctum token
+- Password reset emails point at SPA routes via `FRONTEND_URL`
+- Tenant dashboard placeholder returns workspace + installed modules
+- Email verification architecture prepared (`MustVerifyEmail` + signed verify/resend routes)
+- Impersonation helper reserved for future tenant token handoff
+
+**Frontend**
+
+- Tenant auth at `/login`, `/register`, `/forgot-password`, `/reset-password/{token}`
+- Central auth moved under `/central/*` with isolated token storage
+- Tenant dashboard placeholder for auth/impersonation verification
+
+**Docs / tests**
+
+- Authentication developer, user, and production guides
+- Pest coverage for tenant auth; Playwright auth suites updated for `/central` + tenant flows
+
+---
+
+## Features layer removed — module licensing + Spatie authorization
+
+Licensing and authorization are fully decoupled.
+
+**Architecture**
+
+- Removed Features catalog (model, API, UI, entitlements `features[]`, `features.*` permissions, `features` table)
+- Modules remain pure licensing products via `workspace_module_subscriptions`
+- User access stays on Spatie Roles & Permissions
+- Tenant gating: `module:{slug}` (licensing) then `can:{permission}` (authorization)
+- Entitlements payload is now `{ core, modules }` only
+- Default modules unchanged: Leads + Tasks (free, included, non-removable)
+
+**Backend**
+
+- `EnsureModule` middleware replaces `EnsureModuleFeature`
+- Catalog seeder no longer creates Feature rows
+- Migration drops `features` table
+
+**Frontend**
+
+- Features admin page, nav, API client, and Playwright suite removed
+- Marketplace / tenant details no longer show feature badges
+
+---
+
+## Payment Gateway Management
+
+Gateway-agnostic payment provider management for Central Billing.
+
+**Architecture**
+
+- Billing Engine talks only to `PaymentGatewayInterface` via `GatewayManager`
+- Stripe/Cashier isolated inside `StripeGateway`; arch tests enforce isolation
+- Admin APIs for enable/disable/default/config/mode/test/webhooks/logs/capabilities
+- Encrypted gateway credentials; secrets never returned to the frontend
+- Generic webhook ingress `POST /webhooks/gateways/{code}` + Cashier Stripe route
+
+**Schema**
+
+- Expanded `payment_gateways` (mode, encrypted config, webhook/test metadata)
+- Added `payment_attempts`, `gateway_logs`, `webhook_logs`
+- `payment_methods` remains the workspace preferred-method store
+
+**Frontend**
+
+- Top-level **Billing** nav: Dashboard, Invoices, Payments, Transactions, Refunds, Payment Methods, Payment Gateways, Coupons, Taxes, Billing Logs
+- Full Payment Gateways management UI (configure Stripe fields, sandbox/live, test connection, logs)
+
+**Docs**
+
+- `billing/payment-gateways.md` (+ developer/user/production/webhooks guides)
+- Updated `billing-engine.md` and `stripe-cashier.md`
+
+---
+
+## Central Application Settings refactor
+
+Rebuilt system settings so every key is validated and consumed at runtime.
+
+**Backend**
+
+- Expanded mail/security/branding/localization settings; removed unused placeholders (`primary_color`, feature-flag duplicates, display-only queue/disk keys)
+- Runtime config overlay (app name, timezone, locale, session lifetime, mail From/SMTP, Cashier currency)
+- Encrypted `mail_password`, branding file uploads, test-mail endpoint
+- Public bootstrap + self-service workspace registration gated by `registration_enabled`
+- Tenant-only maintenance middleware (`tenant.available`); Central stays fully operational
+- Centralized `PasswordRule` / `Password::defaults()` from security settings
+- Support email + company name injected into tenant-facing auth emails
+
+**Frontend**
+
+- Settings UI rebuilt with SearchableSelect for timezone/locale/currency/formats
+- App title, sidebar, button color CSS vars, favicon/logo from public settings
+- App-wide date/time helpers; registration-closed and branded maintenance pages
+
+**Tests / docs**
+
+- Expanded Pest settings suite; Playwright settings coverage for registration-closed + maintenance copy
+- Added Settings user / developer / production guides under `settings/`
+- Updated API, admin UI, database, and testing docs
+
+---
+
+## Tenant form cleanup
+
+Removed `owner_id` and `address` from the `tenants` schema and admin UI. Timezone, currency, country, and locale are searchable selects. Logo is an image upload (`logo` file field → `logo_path` / `logo_url`).
+
+---
+
 ## Central QA stabilization (Playwright)
 
 Stabilized the Central Application with a full Playwright pass before further Tenant Application work.
@@ -78,4 +380,4 @@ Replaced plan-based licensing with workspace module subscriptions.
 ## Prior: Central SaaS Platform completion
 
 See git history for the earlier plan-based Central Platform delivery notes (tenants, users, roles, Cashier scaffolding, dashboard). That licensing model has been superseded.
-
+
