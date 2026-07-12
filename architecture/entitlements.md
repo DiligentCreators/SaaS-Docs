@@ -1,46 +1,79 @@
-# Entitlements model (Phase 1)
-
-## Concepts
-
-| Concept | Meaning | Example |
-|---------|---------|---------|
-| Module | Sellable product package | Leads, Tasks, Storage |
-| Feature | Boolean capability inside a module | `leads.create` |
-| Limit definition | Named quota metric | `leads.max` |
-| Plan module | Modules included in a plan | Professional → Leads+Tasks |
-| Plan feature | Feature-level override for a plan | Professional → Leads minus `leads.export` |
-| Plan limit | Quota value for a plan | `leads.max = 500` or `NULL` (unlimited) |
-
-Features are **not** limits. Limits are never hardcoded in PHP application config for product quotas.
-
-## Feature resolution: modules vs. plan_feature overrides
-
-A plan's effective feature set is no longer purely "all features of included modules". Two pivots exist:
-
-1. **`plan_module`** — including a module in a plan grants that module's full set of active features by default.
-2. **`plan_feature`** — an explicit per-feature override on the plan, managed independently via `GET/PUT /plans/{plan}/features` (admin UI: Plan editor → **Features** tab, separate from the **Modules** tab).
-
-`plan_feature` lets a plan diverge from "whole module in, whole module out" — e.g. grant a single gated feature without including its module, or include a module but withhold one premium feature within it. Both pivots are synced independently; there is no automatic reconciliation between "modules selected" and "features selected" — an admin managing a plan is expected to configure both tabs deliberately.
-
-## Default plan resolution
-
-1. `system_settings.default_plan_id` if set and plan exists / active
-2. Else `plans.is_default = true` (exactly one enforced in app)
-3. Else fail closed with a clear admin error
-
-## Trial rules
-
-- Trial length comes from the **resolved plan's `trial_days`**
-- Never from `.env` or `config/`
-- `system_settings.trial_enabled = false` ⇒ assign plan with `status=active` and no trial window
-- Changing default plan or `trial_days` affects **future** tenants only
-
-## Stripe price mapping (billing, not entitlements)
-
-Plans carry manual `stripe_product_id`, `stripe_monthly_price_id`, `stripe_yearly_price_id` columns (see [architecture/database.md](database.md)). These map a plan to Stripe billing objects that already exist in the Stripe dashboard — the platform does not create or manage Stripe products/prices. Entitlement resolution (modules/features/limits) is independent of whether a plan has Stripe IDs configured; a plan without Stripe IDs still resolves normally, it just can't be billed through Cashier. See [billing/stripe-cashier.md](../billing/stripe-cashier.md).
-
-## Runtime resolution (future product use)
-
-`Tenant → current TenantSubscription → Plan → plan_modules / plan_feature overrides / plan_limits`
-
-Phase 1 exposes this data via central APIs and the admin UI only; no CRM enforcement paths. `tenant_usage_counters` exists to record consumption per limit but is not yet checked against `plan_limits.value` at write time.
+# Entitlements model
+
+## Philosophy
+
+The platform does **not** sell plans. Licensing is based entirely on **workspace module subscriptions**.
+
+| Layer | Meaning | Example |
+|-------|---------|---------|
+| Core Platform | Always-on platform capabilities (not modules, not billed) | Auth, users, roles, dashboard, billing, marketplace shell |
+| Module | Independently installable business capability | Leads, Tasks |
+| Feature | Boolean capability inside a module (never sold alone) | `leads.create`, `tasks.view` |
+| Workspace module subscription | License row linking a workspace to a module | Acme → Leads (`source=included`) |
+
+There are **no** plan tiers, plan modules, plan features, or module usage limits (e.g. “100 leads”).
+
+## Core Platform vs modules
+
+Core Platform capabilities live in `config/core-platform.php` and are always available.
+
+Business modules live in the `modules` catalog. Today only **Leads** and **Tasks** exist. They are:
+
+- `is_default_included = true`
+- `is_billable = false`
+- Auto-installed on every new workspace (`source=included`)
+- Not cancellable by workspace owners (platform admin may **deactivate**)
+
+Schema remains flexible so they can become paid for *new* customers later without redesign (`is_billable`, pricing columns, `source`).
+
+## Resolution
+
+```
+active_modules(workspace) =
+  workspace_module_subscriptions
+    WHERE status IN (trial, active)
+    AND (ends_at IS NULL OR ends_at > now)
+
+has_feature(workspace, slug) =
+  feature belongs to an active module AND feature.is_active
+
+core = config('core-platform.capabilities')
+```
+
+Cached as `workspace:{id}:entitlements` (1 hour). Invalidated on install/cancel/deactivate/status change.
+
+API: `GET /api/central/v1/tenants/{tenant}/entitlements`
+
+Returns `{ core, modules, features }` for the tenant application to register routes/nav/permissions.
+
+## Marketplace install rules
+
+Published catalog: `GET /marketplace/modules` (admin browse) or install via `POST /tenants/{tenant}/modules`.
+
+| Rule | Behavior |
+|------|----------|
+| Module must be `published` and `is_active` | Validation error otherwise |
+| Duplicate active/pending/trial install | Rejected |
+| Required dependencies (`module_dependencies`, `is_optional=false`) | Must already be installed; marketplace detail returns `missing_required_modules` |
+| Non-billable module | `status=active` immediately, `source=included` if `is_default_included` else `purchased` |
+| Billable module (`is_billable` + price > 0) | `status=pending` until Billing Engine settles payment |
+
+Install body: `{ "module_id": int, "billing_cycle?": "monthly" \| "yearly" }`.
+
+## Cancel / deactivate rules
+
+| Action | Who | Included modules | Purchased modules |
+|--------|-----|------------------|-------------------|
+| **Cancel** (`POST /module-subscriptions/{id}/cancel`) | Requires `module-subscriptions.update` | **Blocked** — use deactivate | Sets `cancelled`, `ends_at=now` |
+| **Deactivate** (`POST /module-subscriptions/{id}/deactivate`) | Requires `module-subscriptions.deactivate` | Allowed (platform admin) | Sets `suspended` |
+
+Cancel removes entitlements immediately. Deactivate is the platform-admin override for included core modules.
+
+## Dependencies
+
+`module_dependencies` supports hard/optional deps for marketplace modules. Leads and Tasks have none today. `MarketplaceService::detailForTenant` exposes `required_modules`, `optional_modules`, `missing_required_modules`, `already_installed`.
+
+## Billing
+
+Each workspace has a consolidated billing profile (`billing_anchor_day`, `billing_cycle`, `proration_mode`, `next_billing_at`). One invoice per cycle for all **billable active** modules via `billing:run-consolidated`. Mid-cycle installs use proration modes: `prorated` | `free_until_next` | `none`. See [billing/billing-engine.md](../billing/billing-engine.md).
+
