@@ -44,13 +44,17 @@ Setup project (`auth.setup.ts`) authenticates once for chromium suites. Auth and
 
 ## Screenshots
 
-Success and failure screenshots are generated under:
+Playwright writes generated screenshots under:
 
 ```text
 SaaS-Frontend/docs/testing/images/
+SaaS-Frontend/test-results/
+SaaS-Frontend/playwright-report/
 ```
 
-These image files are **documentation artifacts only** and must not be committed to Backend, Frontend, or Docs repositories.
+Those paths are **gitignored** in Frontend and Backend — never commit e2e-generated images, videos, or traces there.
+
+Curated documentation screenshots may be committed **only** in this Docs repo (`testing/images/…`) when intentionally documenting a workflow. Do not dump raw Playwright run output into Docs.
 
 ## Quick start
 
