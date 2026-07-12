@@ -20,7 +20,7 @@ In scope:
 - Platform users, roles, permissions matrix, invites
 - **Tenant authentication** — register, login, forgot/reset password, logout
 - **Shared AppLayout shell** for Central and Tenant (sidebar, topbar, breadcrumbs, command palette)
-- **Tenant Application** — dashboard, workspace Settings (branding/mail), shared Profile, **Leads** and **Tasks** product modules
+- **Tenant Application** — widget dashboard, in-app notifications (polled), workspace Settings (branding/mail), shared Profile, **Leads** (Kanban/table) and **Tasks** (board/list) CRM modules
 - **Tenant branding & configuration** — hierarchy Tenant → Central → system; isolated asset storage; SMTP fallback
 - **Tenant RBAC** — workspace-isolated users, roles, permissions; module + permission gating
 - **Central auth under `/central/*`** with isolated SPA sessions from tenant auth
@@ -61,6 +61,8 @@ Removed:
 | [modules/tasks.md](modules/tasks.md) | Tasks module guides |
 | [api/tenant-v1-leads.md](api/tenant-v1-leads.md) | Tenant Leads REST API |
 | [api/tenant-v1-tasks.md](api/tenant-v1-tasks.md) | Tenant Tasks REST API |
+| [api/tenant-v1-notifications.md](api/tenant-v1-notifications.md) | Tenant in-app notifications API |
+| [api/tenant-v1-dashboard.md](api/tenant-v1-dashboard.md) | Tenant dashboard + widget registry |
 | [architecture/database.md](architecture/database.md) | ERD / table dictionary |
 | [architecture/entitlements.md](architecture/entitlements.md) | Module licensing vs Spatie authorization |
 | [architecture/shared-ui.md](architecture/shared-ui.md) | Shared design system & layout reuse |

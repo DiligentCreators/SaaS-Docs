@@ -16,18 +16,20 @@ The CRM is the foundation of the platform and is the first functional area deliv
 
 ### Completed
 
-| Module | Status |
-|--------|--------|
-| [Leads](modules/leads.md) | ✅ Completed |
-| [Tasks](modules/tasks.md) | ✅ Completed |
+| Module / capability | Status |
+|---------------------|--------|
+| [Leads](modules/leads.md) | ✅ Completed (Sprint 2 UX: Kanban, KPIs, export, convert stub, independent status/priority) |
+| [Tasks](modules/tasks.md) | ✅ Completed (Sprint 2 UX: board, KPIs, waiting status, due-date permission, comments/history) |
+| In-app notifications + due digests | ✅ Completed (mail + database; polling; Reverb deferred) |
+| Tenant dashboard widgets | ✅ Completed (module/permission/assignee scoped; no calendar until Calendar module) |
 
 ### Planned
 
 | Module | Status |
 |--------|--------|
-| Contacts | Planned |
+| Contacts | Planned (unlocks full lead convert) |
 | Companies | Planned |
-| Calendar | Planned |
+| Calendar | Planned (calendar dashboard widget) |
 | Activities | Planned |
 
 **Goal:** Provide a complete customer relationship management experience with lead tracking, task management, customer records, scheduling, and activity history.

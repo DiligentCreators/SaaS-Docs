@@ -49,7 +49,7 @@ Helpers in `src/config/navigation.ts`:
 | `components/ui/*` | Yes | Primitives (button, card, dialog, table, …) |
 | `components/common/*` | Yes | PageHeader, EmptyState, LoadingState, ErrorState |
 | `components/dashboard/*` | Mostly Central widgets | WelcomeHero / QuickActions / TenantsOverviewTable stay Central-specific |
-| Page content | Per app | Tenant dashboard uses shared WidgetContainer + EmptyState with workspace placeholders |
+| Page content | Per app | Tenant dashboard renders widget registry from `GET /dashboard`; CRM modules use shared Kanban + design-system pages |
 
 Do **not** duplicate Sidebar/Topbar for Tenant. Parameterize via navigation config + route helpers.
 
@@ -75,10 +75,10 @@ Do **not** duplicate Sidebar/Topbar for Tenant. Parameterize via navigation conf
 
 | Route | Page |
 |-------|------|
-| `/dashboard` | Tenant dashboard (welcome, workspace info, modules, activity/quick-action placeholders) |
-| `/leads` | Placeholder |
-| `/tasks` | Placeholder |
-| `/settings` | Placeholder (workspace-scoped; not Central system settings) |
+| `/dashboard` | Tenant dashboard (widget registry: pipeline, tasks, activity, notifications, quick actions) |
+| `/leads` | Leads Kanban/table + detail drawer |
+| `/tasks` | Tasks board/list + detail drawer |
+| `/settings` | Workspace Settings (General / Branding / Mail) |
 | `/profile` | Shared `ProfilePage` (API context from pathname) |
 
 Central remains under `/central/*` with the same shell and its own navigation groups.
@@ -86,20 +86,21 @@ Central remains under `/central/*` with the same shell and its own navigation gr
 ## Adding a Tenant module to the sidebar
 
 1. Add the path to `tenantRoutes` in `src/config/routes.ts`.
-2. Add a `NavigationItem` under `tenantNavigationGroups` (only for modules the workspace should see).
+2. Add a `NavigationItem` under `tenantNavigationGroups` with `permission` **and** `module` slug.
 3. Register the route under `TenantProtectedRoute` → `AppLayout` in `App.tsx`.
-4. Prefer `PlaceholderPage` until business UI exists.
+4. Ship list/form/detail UI mirroring Leads (not a long-lived `PlaceholderPage`).
 
-Future: filter nav items from installed module subscriptions instead of a static list.
+Nav visibility is filtered by installed module subscriptions and Spatie permissions.
 
 ## Auth / API notes
 
 - Profile update/password change omit forced `apiContext` so the axios interceptor uses `getAuthContext()` from the URL.
 - Tenant API base: `/api/tenant/v1` + `X-Tenant-Domain`.
 - Central API base: `/api/central/v1`.
+- Notifications: poll unread count (~25s); Reverb/Echo deferred.
 
-## Explicit non-goals (this foundation)
+## Explicit non-goals (shell)
 
-- Leads / Tasks business screens
-- Tenant system-settings parity with Central
-- Divergent dashboard redesigns per app
+- Divergent Central vs Tenant shell redesigns
+- Calendar dashboard widget before Calendar module
+- Per-module notification stacks outside Laravel notifications + `/notifications*` APIs

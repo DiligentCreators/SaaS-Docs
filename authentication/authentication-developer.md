@@ -23,7 +23,7 @@ flowchart LR
   subgraph SPA
     TAuth["/login /register /reset-password"]
     CAuth["/central/login /central/reset-password"]
-    TDash["/dashboard placeholder"]
+    TDash["/dashboard widgets"]
     CAdmin["/central/dashboard …"]
   end
 
@@ -104,6 +104,6 @@ The SPA does not persist a workspace identifier in `localStorage`. It derives wo
 - Forgot/reset password: `throttle:6,1`
 - Register workspace: `throttle:10,1`
 
-## Tenant dashboard placeholder
+## Tenant dashboard
 
-`GET /api/tenant/v1/dashboard` (auth + subscription) returns welcome copy, workspace info, and installed modules. No business CRUD yet.
+`GET /api/tenant/v1/dashboard` (auth + verified + subscription + `dashboard.view`) returns welcome copy, workspace info, installed modules, a **widget registry** (module + permission + assignee scoped), and overall `scope`. See [tenant-v1-dashboard.md](../api/tenant-v1-dashboard.md).

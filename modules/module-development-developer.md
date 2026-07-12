@@ -46,6 +46,25 @@ Route::middleware(['auth:tenant-api', 'tenant.user', 'verified', 'module:{slug}'
 
 Dispatch domain events from the service layer. Listeners handle audit side-effects and notifications. Do **not** build per-module notification stacks outside Laravel notifications.
 
+## Dashboard widgets
+
+When a module contributes dashboard cards:
+
+1. Extend `App\Services\Tenant\DashboardWidgetService` (same registry pattern as Leads/Tasks).
+2. Gate each widget on `EntitlementService::hasModule` + the user’s Spatie permission.
+3. Apply assignee scoping with `ScopesToAssignee` when the module uses `{slug}.assign`.
+4. Return `{ id, module, permission, scope, data }` objects only — the SPA renders by `id`.
+5. Do not invent a parallel dashboard API or a Calendar widget before the Calendar module.
+
+See [tenant-v1-dashboard.md](../api/tenant-v1-dashboard.md).
+
+## In-app notifications
+
+- Prefer Laravel notifications with `via(): ['mail', 'database']` for CRM-style alerts.
+- Persist via the standard `notifications` table; expose tenant APIs under `/notifications*` ([tenant-v1-notifications.md](../api/tenant-v1-notifications.md)).
+- Frontend may poll unread count (~25s) until Reverb/Echo is adopted platform-wide.
+- Schedule due/overdue fan-out through `crm:send-due-notifications` rather than ad-hoc cron per module.
+
 ## Settings
 
 If the module needs settings, register keys in `SystemSettingDefinitions` / `TenantSettingDefinitions` and resolve Central → Tenant → system. Do not invent a parallel settings store.

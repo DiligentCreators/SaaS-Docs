@@ -31,7 +31,8 @@ Re-run permission sync carefully when expanding `config/tenant-permissions.php` 
 2. Seed/update catalog if needed (`CatalogSeeder`)
 3. Confirm `tenant-permissions` vocabulary deployed before relying on new abilities
 4. Clear entitlements cache if subscriptions changed out-of-band
-5. Smoke: login → module nav visible → list API 200 with `module:` + `can:`
+5. If the module contributes dashboard widgets or notifications, confirm scheduler (`crm:send-due-notifications`) and SPA polling/widget ids
+6. Smoke: login → module nav visible → list API 200 with `module:` + `can:`
 
 ## Rollback
 

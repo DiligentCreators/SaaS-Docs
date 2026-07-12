@@ -19,6 +19,12 @@ Every business capability on this platform is a **module**. Modules are licensed
 3. **Mirror Leads** — Tasks, Invoices, Inventory, Purchases, HR, Payroll, Accounting, Assets, Projects must follow the same structure.
 4. **No shortcuts** — every module ships backend, frontend, tests, docs, and CHANGELOG.
 
+## Cross-cutting patterns (Sprint 2+)
+
+- **Dashboard widgets** — register via `DashboardWidgetService` on `GET /dashboard`; gate by module entitlement, permission, and assignee scope. Do not add a Calendar widget until the Calendar module exists.
+- **Notifications** — Laravel `mail` + `database` channels; expose list/unread/mark-read APIs; SPA may poll until Reverb/Echo ships. Due/overdue work uses `crm:send-due-notifications`.
+- **Assignee scoping** — reuse `ScopesToAssignee` so users without `{slug}.assign` only see their own records.
+
 ## Definition of Done
 
 A module is complete only when:

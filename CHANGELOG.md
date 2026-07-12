@@ -1,5 +1,35 @@
 # Changelog
 
+## Sprint 2 — CRM UX (2026-07-13)
+
+Leads/Tasks UX + notifications + tenant dashboard widgets. Platform freeze unchanged.
+
+**Leads**
+
+- `lead_value` (renamed from `estimated_value`); independent status `active|waiting|on_hold|closed|archived`; priority; assignment history
+- Kanban (default) + table; DnD opens drawer, save commits stage; KPIs / board / stats APIs
+- Follow-up update/reschedule; export CSV/XLSX (filtered); convert stub (`converted_at`, activity, status closed — Contacts deferred)
+- Permissions: `view|create|update|delete|assign|export|convert` (no import); assignee scoping without `leads.assign`
+
+**Tasks**
+
+- `waiting` status; UI labels `open` as To Do; board (default) + list; KPIs / board / stats APIs
+- Comments + History tabs; `tasks.change_due_date` required to change `due_at` after create
+- Assignee scoping via `tasks.assign`
+
+**Notifications & dashboard**
+
+- Database + mail channels; APIs list / unread-count / mark read / mark all; SPA polls every 25s (Reverb/Echo deferred)
+- Hourly `crm:send-due-notifications` for due/overdue follow-ups and tasks
+- `GET /dashboard` widget registry gated by module + permission + assignee scope; no calendar widget until Calendar module
+
+**Docs**
+
+- Updated Leads/Tasks guides, database, module-development patterns, tenant UI
+- API: [tenant-v1-leads.md](api/tenant-v1-leads.md), [tenant-v1-tasks.md](api/tenant-v1-tasks.md), [tenant-v1-notifications.md](api/tenant-v1-notifications.md), [tenant-v1-dashboard.md](api/tenant-v1-dashboard.md)
+
+---
+
 ## v1.1.0-platform — Production Ready (2026-07-13)
 
 Platform foundation declared **Production Ready** and **frozen**. No new business modules in this release — hardening only.

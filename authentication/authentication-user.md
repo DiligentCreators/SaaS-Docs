@@ -7,7 +7,7 @@
 1. Open `/register`.
 2. If registration is closed, you will see: **We are not currently accepting new registrations.**
 3. Otherwise enter company name, your name, work email, password, and optional workspace domain.
-4. After success you are signed in and taken to the workspace dashboard placeholder.
+4. After success you are signed in and taken to the workspace dashboard.
 
 Registration creates your workspace, owner account, default roles, and default modules (Leads, Tasks).
 

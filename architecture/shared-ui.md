@@ -18,7 +18,7 @@ Business functionality will differentiate the apps later; the shell must not req
 
 Central-specific dashboard widgets (tenant analytics, platform health, marketplace shortcuts) stay in `components/dashboard` and are **not** reused on the Tenant dashboard.
 
-Tenant dashboard reuses shell + `WidgetContainer` / `EmptyState` patterns with workspace-oriented placeholders.
+Tenant dashboard reuses shell + `WidgetContainer` patterns and renders widgets from `GET /api/tenant/v1/dashboard` (module + permission + assignee scoped).
 
 ## Layout reuse strategy
 
@@ -38,7 +38,7 @@ flowchart TB
 
   subgraph pages [Page content]
     CentralPages["Central pages + widgets"]
-    TenantPages["Tenant dashboard + placeholders"]
+    TenantPages["Tenant dashboard widgets + modules"]
   end
 
   Routes --> Sidebar
@@ -52,17 +52,17 @@ flowchart TB
 2. **Navigation is data**, not duplicated components — swap groups by `AuthContext`.
 3. **Route helpers** resolve dashboard / profile / settings / login per context.
 4. **Business pages own their content**; they must not fork the shell.
-5. **Placeholders** reserve sidebar destinations (Leads, Tasks, Tenant Settings) without implementing product logic.
+5. **Modules** ship real pages (mirror Leads); placeholders are only transitional.
 
 ## Evolution
 
 | Phase | Central | Tenant |
 |-------|---------|--------|
-| Now | Platform metrics dashboard | Workspace placeholder dashboard |
-| Later | Platform-focused metrics stay | Module-driven widgets (Leads, Tasks, Invoices, …) |
+| Now | Platform metrics dashboard | Widget registry dashboard (Leads/Tasks scoped) |
+| Later | Platform-focused metrics stay | More module-driven widgets (Invoices, Calendar, …) |
 | Shell | Remains shared | Remains shared |
 
-Installed module subscriptions will eventually drive Tenant sidebar visibility. Until then, only universally available modules (Leads, Tasks) plus Profile/Settings are listed.
+Installed module subscriptions and Spatie permissions drive Tenant sidebar visibility.
 
 ## Related docs
 

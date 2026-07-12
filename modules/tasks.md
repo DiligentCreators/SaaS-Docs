@@ -1,6 +1,6 @@
 # Tasks Module
 
-Second product module on the frozen platform. Mirrors the [Leads](leads.md) reference architecture—only functional differences (status/priority/complete vs stages/follow-ups).
+Second product module on the frozen platform. Mirrors the [Leads](leads.md) reference architecture—functional differences only (status/priority/complete vs stages/follow-ups).
 
 ## Guides
 
@@ -11,17 +11,28 @@ Second product module on the frozen platform. Mirrors the [Leads](leads.md) refe
 | Production / ops | [tasks-production.md](tasks-production.md) |
 | Module Development Standard | [module-development.md](module-development.md) |
 | Reference blueprint | [leads.md](leads.md) |
+| Tenant API | [../api/tenant-v1-tasks.md](../api/tenant-v1-tasks.md) |
 
-## Capabilities (v1)
+## Capabilities (Sprint 2 CRM UX)
 
 - Title, description, status, priority, due date
-- Assignment (`created_by` / `assigned_to`)
-- Complete / reopen workflow (`completed_at`)
-- Notes
-- Activity timeline
-- Search, filters (status / priority), pagination
+- Status includes **`waiting`**; UI label for `open` is **To Do**
+- Assignment (`created_by` / `assigned_to`) with assignee scoping via `tasks.assign`
+- **`tasks.change_due_date`** — required to change `due_at` after create (initial due date allowed on create)
+- Complete / reopen (`tasks.complete`)
+- Comments (notes) + History (timeline) tabs
+- **Board (default)** + List view; drag-and-drop opens the drawer; save commits status
+- KPIs via `GET /tasks/stats`; board via `GET /tasks/board`
 - Module licensing (`module:tasks`) + Spatie permissions
-- Audit + activity logging
-- Assignment notification
+- Audit + activity logging; assignment and due/overdue notifications (mail + database)
 
-**Not in v1:** subtasks, recurring tasks, dependencies, calendar views, import/export.
+## Permissions
+
+`tasks.view` · `create` · `update` · `delete` · `assign` · `complete` · `change_due_date`
+
+## Explicitly deferred
+
+- Subtasks, recurring tasks, dependencies
+- Calendar views (Calendar module)
+- Import / export
+- Real-time board sync (Reverb / Echo)

@@ -24,10 +24,14 @@ payment_gateways ──► gateway_logs, webhook_logs, payment_attempts
 system_settings (key/value — Central Application settings; see Settings section)
 
 lead_stages / leads / lead_notes / lead_follow_ups / lead_activities
+lead_assignment_histories
   (tenant-scoped CRM — Leads module)
 
 tasks / task_notes / task_activities
   (tenant-scoped work items — Tasks module)
+
+notifications
+  (Laravel database notifications — polymorphic notifiable)
 ```
 
 `tenants` is the Cashier **billable** model. Cashier's `subscriptions`/`subscription_items` are the Stripe mirror. **`workspace_module_subscriptions` is the business source of truth** for licensing. **`invoices` / `payments` are the financial ledger SoT.**
@@ -38,25 +42,35 @@ Plans, plan pivots, limit definitions, feature catalogs, and `tenant_subscriptio
 
 ### `lead_stages`
 
-Per-workspace pipeline: `tenant_id`, `uuid`, `name`, `slug`, `color`, `sort_order`, `is_won`, `is_lost`, `is_default`, soft deletes.
+Per-workspace pipeline: `tenant_id`, `uuid`, `name`, `slug`, `color`, `sort_order`, `is_won`, `is_lost`, `is_default`, soft deletes. Seeded New → Contacted → Qualified → Proposal → Negotiation → Won / Lost.
 
 ### `leads`
 
-`tenant_id`, `uuid`, `name`, contact fields, `stage_id`, `status` (`open`|`won`|`lost`), `assigned_to`, `estimated_value`, soft deletes. Spatie activity log name `leads`.
+`tenant_id`, `uuid`, `name`, contact fields, `stage_id`, `status` (`active`|`waiting`|`on_hold`|`closed`|`archived`), `priority` (`low`|`medium`|`high`|`urgent`), `assigned_to`, `lead_value` (renamed from `estimated_value`), `last_contacted_at`, `next_follow_up_at`, `converted_at`, `conversion_meta` (JSON), soft deletes. Status is **independent** of stage. Spatie activity log name `leads`.
 
 ### `lead_notes` / `lead_follow_ups` / `lead_activities`
 
 Notes (author + body), follow-ups (due/complete/status), and CRM timeline (`type`, `description`, `properties` JSON).
 
+### `lead_assignment_histories`
+
+`tenant_id`, `lead_id`, `old_user_id`, `new_user_id`, `changed_by`, `reason`, timestamps. Records assignee changes.
+
 ## Tasks module tables
 
 ### `tasks`
 
-`tenant_id`, `uuid`, `title`, `description`, `status` (`open`|`in_progress`|`completed`|`cancelled`), `priority` (`low`|`medium`|`high`|`urgent`), `due_at`, `assigned_to`, `created_by`, `completed_at`, soft deletes. Spatie activity log name `tasks`.
+`tenant_id`, `uuid`, `title`, `description`, `status` (`open`|`in_progress`|`waiting`|`completed`|`cancelled`), `priority` (`low`|`medium`|`high`|`urgent`), `due_at`, `assigned_to`, `created_by`, `completed_at`, soft deletes. Spatie activity log name `tasks`. UI labels `open` as **To Do**.
 
 ### `task_notes` / `task_activities`
 
-Notes (author + body) and task timeline (`type`, `description`, `properties` JSON).
+Notes / comments (author + body) and task timeline (`type`, `description`, `properties` JSON).
+
+## Notifications
+
+### `notifications`
+
+Laravel standard table: UUID `id`, `type`, morphs `notifiable`, `data` (text/JSON), `read_at`, timestamps. Used for in-app CRM notifications (mail is a separate channel on the same notification classes).
 
 ## Table dictionary (licensing & catalog)
 
