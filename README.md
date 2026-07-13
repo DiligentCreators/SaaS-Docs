@@ -82,6 +82,7 @@ Removed:
 | [billing/stripe-cashier.md](billing/stripe-cashier.md) | Cashier / Stripe driver notes |
 | [workflows/tenant-provisioning.md](workflows/tenant-provisioning.md) | Workspace create → default modules |
 | [testing/playwright.md](testing/playwright.md) | Playwright E2E suites (Central + Tenant) |
+| [development/local-demo-data.md](development/local-demo-data.md) | Local demo CRM seeding (users, leads, tasks) |
 | [releases/v1.1.0-platform.md](releases/v1.1.0-platform.md) | Official Platform Foundation release |
 | [CHANGELOG.md](CHANGELOG.md) | Delivery notes |
 
