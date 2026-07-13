@@ -1,5 +1,49 @@
 # Changelog
 
+## RC1 — Production Readiness (2026-07-14)
+
+Release Candidate hardening for paying-customer launch. No new business modules. Official notes: [releases/rc1-production-readiness.md](releases/rc1-production-readiness.md). Recommended tag: `v1.2.0-rc.1`.
+
+**Critical / High**
+
+- Revoke Sanctum tokens on user suspend; reject suspended sessions via `not.suspended`
+- Webhook unique idempotency + safe payload summaries; Cashier + gateway ingress share claim store
+- Registration defaults off; tenant password-reset URLs include `workspace`
+- Impersonation limited to workspace owner role
+- SPA query-cache cleared on session switches; email-verify URL allowlist; verified gate treats missing timestamp as unverified
+- Board APIs cap per-column payload size; drawer query-param history for leads/tasks
+
+**Ops / a11y**
+
+- Health check probes Redis when used; skip-to-content; billing ErrorState; remember-me default off
+
+---
+
+## Production Hardening Pass (2026-07-13)
+
+Security, ops, and SPA hardening for launch readiness. Platform freeze unchanged (no Features/Plans/Limits reintroduced).
+
+**Critical / High security**
+
+- Block assignment of protected `superadmin` (workspace owner) roles via tenant user APIs
+- Central role permission sync filtered to `central-api` guard only
+- Gateway webhooks verify signatures before persisting payloads; store safe summaries only
+- Branding uploads reject SVG (stored XSS)
+- Narrowed `User` / `CentralUser` `$fillable` privileged fields
+- CORS origins pinned via `FRONTEND_URL` / `CORS_ALLOWED_ORIGINS` (no `*`)
+- Payment API redacts raw `gateway_response` / `webhook_payload`
+- Webhook + API rate limiting; schedule `withoutOverlapping`
+- SPA: safe post-login redirects, route `RequireAccess` gates, ErrorBoundary, query cache clear on logout
+
+**Ops**
+
+- Notifications implement `ShouldQueue`
+- Health `/up` verifies database connectivity
+- Production runbook: [architecture/platform-production-runbook.md](architecture/platform-production-runbook.md)
+- `.env.example` production guidance
+
+---
+
 ## Sprint 2 — CRM UX (2026-07-13)
 
 Leads/Tasks UX + notifications + tenant dashboard widgets. Platform freeze unchanged.
