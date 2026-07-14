@@ -84,7 +84,7 @@ RC1 closes Critical and High severity production blockers discovered during the 
 - [ ] `APP_ENV=production`, `APP_DEBUG=false`, `APP_KEY` backed up
 - [ ] TLS terminated; `SESSION_SECURE_COOKIE=true`
 - [ ] `CACHE_STORE=redis` + Redis reachable
-- [ ] Queue worker running; scheduler every minute
+- [ ] Emails queue worker running (`queue:work --queue=emails`); scheduler every minute
 - [ ] `STRIPE_WEBHOOK_SECRET` set; gateway sandbox/live mode correct
 - [ ] CORS / `FRONTEND_URL` exact SPA origins
 - [ ] `registration_enabled` intentional

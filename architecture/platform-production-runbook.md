@@ -16,7 +16,7 @@ RC notes: [releases/rc1-production-readiness.md](../releases/rc1-production-read
 | `FRONTEND_URL` / `CORS_ALLOWED_ORIGINS` | Pin SPA origins (no `*`) |
 | `STRIPE_WEBHOOK_SECRET` / `CREEM_WEBHOOK_SECRET` | Non-empty for each **active** gateway |
 | Cache | Prefer `CACHE_STORE=redis`. Isolation uses **explicit tenant-scoped keys** (`CacheTenancyBootstrapper` is intentionally off — do not rely on Redis tags alone) |
-| Queue worker | Always running (`queue:work` or Laravel Cloud background process) |
+| Queue worker | Always running (`queue:work --queue=emails` or Laravel Cloud background process) |
 | Scheduler | Cron/`schedule:run` every minute |
 | HTTPS | TLS at edge; app trusts proxies (`TrustProxies`); production forces `https` URL scheme; `SESSION_SECURE_COOKIE=true` |
 | Registration | `registration_enabled` intentional (defaults **false**) |
@@ -51,9 +51,13 @@ Point `FRONTEND_URL` / `CORS_ALLOWED_ORIGINS` on the API at the SPA origin(s).
 ## Required background processes
 
 1. **HTTP / PHP-FPM** (or Laravel Cloud web process)
-2. **Queue worker** — notifications, mail, and future jobs implement `ShouldQueue`
+2. **Queue workers** — all `ShouldQueue` notifications use the dedicated `emails` queue (`QueuesOnEmails`)
    ```bash
-   php artisan queue:work --sleep=1 --tries=3 --max-time=3600
+   # Required — auth + CRM mail/database notifications
+   php artisan queue:work --queue=emails --sleep=1 --tries=3 --max-time=3600
+
+   # Optional — idle until non-mail jobs exist
+   php artisan queue:work --queue=default --sleep=1 --tries=3 --max-time=3600
    ```
 3. **Scheduler** (every minute)
    ```bash
