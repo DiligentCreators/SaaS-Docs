@@ -17,6 +17,7 @@ System Default (fallback)
 | Workspace admins | [tenant-settings-user.md](tenant-settings-user.md) |
 | Engineers | [tenant-settings-developer.md](tenant-settings-developer.md) |
 | Production / ops | [tenant-settings-production.md](tenant-settings-production.md) |
+| Object storage (Wasabi / S3) | [object-storage.md](../architecture/object-storage.md) |
 
 Also see Central [settings.md](settings.md) for platform-wide defaults.
 
@@ -42,11 +43,14 @@ Tenants **cannot** change platform registration, maintenance mode, password poli
 
 ## Asset storage
 
+Uploads use Laravel Storage (`FileUploadService`). Locally they live under `storage/app/public/`; in production they live on the S3-compatible bucket. Relative keys are identical in both environments:
+
 ```text
-storage/app/public/
-  branding/logos/…          # Central
-  branding/favicons/…       # Central
-  tenants/{workspace_uuid}/
-    branding/logos/…
-    branding/favicons/…
+branding/logos/…          # Central
+branding/favicons/…       # Central
+tenants/{workspace_uuid}/
+  branding/logos/…
+  branding/favicons/…
 ```
+
+See [architecture/object-storage.md](../architecture/object-storage.md).

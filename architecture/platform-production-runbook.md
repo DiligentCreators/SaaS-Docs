@@ -21,6 +21,7 @@ RC notes: [releases/rc1-production-readiness.md](../releases/rc1-production-read
 | HTTPS | TLS at edge; app trusts proxies (`TrustProxies`); production forces `https` URL scheme; `SESSION_SECURE_COOKIE=true` |
 | Registration | `registration_enabled` intentional (defaults **false**) |
 | Health | `GET /up` returns 200 (DB; Redis when cache/queue use Redis) |
+| Object storage | `FILESYSTEM_DISK=s3` + `AWS_*` configured; migrate local assets with `php artisan storage:migrate-to-s3` ([object-storage.md](object-storage.md)) |
 
 ## Frontend SPA deploy
 
@@ -121,7 +122,7 @@ Cancelling a purchased module subscription calls the payment gateway (`cancelSub
 |-------|--------------|---------|
 | MySQL (central + tenant DBs) | Point-in-time or daily dump | Restore dump; verify tenancy domains |
 | Redis | Ephemeral OK | Clear + warm; workers will refill |
-| Object storage (branding) | Daily | Sync from backup bucket |
+| Object storage (branding) | Daily | Sync from backup bucket; see [object-storage.md](object-storage.md) |
 | `APP_KEY` | Offline secure store | Required to decrypt encrypted attributes |
 
 ## Related docs

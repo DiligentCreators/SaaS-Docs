@@ -176,7 +176,7 @@ Returns session metadata only — tenant-app login token exchange is out of scop
 | GET | `/system-settings` | All admin settings (`mail_password` masked) |
 | PUT | `/system-settings` | `{ "settings": { "key": value } }` — per-key validation |
 | POST | `/system-settings/test-mail` | `{ "email": "…" }` — sends test mail using runtime SMTP config |
-| POST | `/system-settings/branding/{logo\|favicon}` | Multipart `file` upload → stores on `public` disk |
+| POST | `/system-settings/branding/{logo\|favicon}` | Multipart `file` upload → stores via `FileUploadService` on the configured uploads disk |
 
 Settings groups: `general`, `localization`, `mail`, `branding`, `security`, `maintenance`, `billing`.
 

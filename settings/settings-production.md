@@ -4,7 +4,7 @@
 
 1. Run migrations (includes `2026_07_12_160000_refactor_central_system_settings`).
 2. Seed or re-seed settings: `SystemSettingsSeeder` (or full Central seeder).
-3. Ensure `php artisan storage:link` so logo/favicon URLs resolve from the `public` disk.
+3. Configure object storage: local `FILESYSTEM_DISK=public` + `php artisan storage:link`, or production `FILESYSTEM_DISK=s3` (see [object-storage.md](../architecture/object-storage.md)).
 4. Configure **Mail** in Central UI (or via API) with production SMTP; send a test email.
 5. Set Application Name, Company Name, timezone, locale, currency, date/time formats.
 6. Upload logo + favicon; set button color and support email.
@@ -17,7 +17,7 @@
 | Concern | Practice |
 |---------|----------|
 | SMTP password | Encrypted at rest; never returned in clear text from admin API |
-| Branding uploads | Image validation; stored under `branding/logos` / `branding/favicons` on `public` disk |
+| Branding uploads | Image validation (no SVG); stored via `FileUploadService` under `branding/logos` / `branding/favicons` on the configured uploads disk |
 | Session lifetime | Applied to `config('session.lifetime')` at boot / after update |
 | Maintenance | Only Tenant routes use `tenant.available` — never attach to Central |
 

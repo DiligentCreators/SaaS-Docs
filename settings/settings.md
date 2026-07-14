@@ -11,6 +11,7 @@ Payment gateway credentials live under **Billing → Payment Gateways** — not 
 | Operators (admin UI) | [settings-user.md](settings-user.md) |
 | Engineers | [settings-developer.md](settings-developer.md) |
 | Production / ops | [settings-production.md](settings-production.md) |
+| Object storage (Wasabi / S3) | [object-storage.md](../architecture/object-storage.md) |
 | Tenant workspace settings | [tenant-settings.md](tenant-settings.md) |
 
 ## Groups

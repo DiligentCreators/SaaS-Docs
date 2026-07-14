@@ -64,6 +64,7 @@ Removed:
 | [api/tenant-v1-notifications.md](api/tenant-v1-notifications.md) | Tenant in-app notifications API |
 | [api/tenant-v1-dashboard.md](api/tenant-v1-dashboard.md) | Tenant dashboard + widget registry |
 | [architecture/database.md](architecture/database.md) | ERD / table dictionary |
+| [architecture/object-storage.md](architecture/object-storage.md) | Wasabi / S3 uploads, migration command, local vs production disks |
 | [architecture/entitlements.md](architecture/entitlements.md) | Module licensing vs Spatie authorization |
 | [architecture/shared-ui.md](architecture/shared-ui.md) | Shared design system & layout reuse |
 | [ui/shared-layout.md](ui/shared-layout.md) | Shared layout guides index |

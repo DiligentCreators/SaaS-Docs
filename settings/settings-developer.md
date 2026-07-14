@@ -6,6 +6,7 @@
 |-------|------|
 | `App\Support\SystemSettingDefinitions` | Catalog of keys, groups, types; obsolete key list; sensitive keys |
 | `App\Services\Central\SystemSettingService` | Cache, typed get/set, runtime config, public bootstrap, branding uploads, password defaults |
+| `App\Services\Storage\FileUploadService` | Disk-agnostic store/replace/delete/url for branding and future uploads |
 | `SystemSettingController` | Admin list/update, test-mail, branding upload |
 | `PublicSettingsController` | `GET /public/settings`, gated workspace registration |
 | `EnsureTenantApplicationAvailable` | Tenant API `503` when `maintenance_mode` |
@@ -32,11 +33,13 @@ $settings->configurePasswordDefaults();
 | GET | `/api/central/v1/system-settings` | Masked secrets |
 | PUT | `/api/central/v1/system-settings` | `{ "settings": { "key": value } }` |
 | POST | `/api/central/v1/system-settings/test-mail` | `{ "email": "…" }` |
-| POST | `/api/central/v1/system-settings/branding/{logo\|favicon}` | Multipart `file` |
+| POST | `/api/central/v1/system-settings/branding/{logo\|favicon}` | Multipart `file` → `FileUploadService` |
 
 Permissions: `system-settings.list`, `system-settings.update`.
 
 Empty / `********` `mail_password` on update leaves the existing encrypted value unchanged.
+
+Branding assets use the configured uploads disk (`FILESYSTEM_DISK=public` locally / `s3` in production). See [object-storage.md](../architecture/object-storage.md).
 
 ## Public API
 

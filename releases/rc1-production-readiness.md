@@ -88,7 +88,7 @@ RC1 closes Critical and High severity production blockers discovered during the 
 - [ ] `STRIPE_WEBHOOK_SECRET` set; gateway sandbox/live mode correct
 - [ ] CORS / `FRONTEND_URL` exact SPA origins
 - [ ] `registration_enabled` intentional
-- [ ] Storage disk writable; logos/branding backups
+- [ ] `FILESYSTEM_DISK=s3` + `AWS_*` configured; `storage:migrate-to-s3` if migrating local branding; bucket backups ([object-storage.md](../architecture/object-storage.md))
 - [ ] Log rotation configured; Nightwatch/Telescope policy decided
 - [ ] Database + Redis backups scheduled
 - [ ] `GET /up` returns 200

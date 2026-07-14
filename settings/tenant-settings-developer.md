@@ -6,6 +6,7 @@
 |-------|------|
 | `App\Support\TenantSettingDefinitions` | Catalog of overridable keys + sensitive keys |
 | `App\Services\Tenant\TenantSettingService` | Hierarchy resolver, cache, branding uploads, runtime mail/config, public bootstrap |
+| `App\Services\Storage\FileUploadService` | Disk-agnostic store/replace/delete/url (shared with Central) |
 | `TenantSettingController` | Authenticated list/update, test-mail, branding upload |
 | `PublicSettingsController` (tenant) | `GET /api/tenant/v1/public/settings` — resolved payload, no secrets |
 | `InitializeTenancy` | After tenancy init, calls `TenantSettingService::applyRuntimeConfig()` |
@@ -34,9 +35,11 @@ Passwords are encrypted with `Crypt` and masked as `********` in the admin API.
 | GET | `/api/tenant/v1/settings` | Resolved values + `source` / `is_overridden` |
 | PUT | `/api/tenant/v1/settings` | `{ "settings": { "key": value } }` |
 | POST | `/api/tenant/v1/settings/test-mail` | `{ "email": "…" }` |
-| POST | `/api/tenant/v1/settings/branding/{logo\|favicon}` | Multipart `file` |
+| POST | `/api/tenant/v1/settings/branding/{logo\|favicon}` | Multipart `file` → `FileUploadService` under `tenants/{uuid}/branding/…` |
 
 Permissions (`config/tenant-permissions.php`): `settings.list`, `settings.update`.
+
+Object storage: [object-storage.md](../architecture/object-storage.md).
 
 Requires tenancy (`X-Tenant-Domain` / domain) + `auth:tenant-api`.
 

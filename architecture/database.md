@@ -223,7 +223,7 @@ Key/value store for Central Application settings (`key` unique, `value`, `type`,
 
 Groups: `general`, `localization`, `mail`, `branding`, `security`, `maintenance`, `billing`.
 
-Sensitive values (`mail_password`) are encrypted at rest and masked in the admin API. Logo/favicon paths point at the `public` disk (`branding/logos`, `branding/favicons`).
+Sensitive values (`mail_password`) are encrypted at rest and masked in the admin API. Logo/favicon paths store relative object keys (`branding/logos`, `branding/favicons`) on the configured uploads disk (`public` locally / `s3` in production).
 
 `maintenance_mode` gates the **Tenant Application** only — never Laravel `artisan down` for Central.
 
@@ -249,7 +249,7 @@ Per-workspace overrides of Central defaults (`tenant_id` + `key` unique, `value`
 
 Resolution hierarchy (via `TenantSettingService`): tenant override → tenant profile columns → Central `system_settings` → system default.
 
-Groups: `general`, `branding`, `mail`. Sensitive `mail_password` encrypted. Branding files under `tenants/{uuid}/branding/…` on the `public` disk.
+Groups: `general`, `branding`, `mail`. Sensitive `mail_password` encrypted. Branding files under `tenants/{uuid}/branding/…` on the configured uploads disk.
 
 Docs: [settings/tenant-settings.md](../settings/tenant-settings.md).
 

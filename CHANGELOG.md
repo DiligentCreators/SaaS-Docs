@@ -1,5 +1,17 @@
 # Changelog
 
+## Object storage migration (Wasabi / S3) (2026-07-15)
+
+All user uploads go through Laravel Storage via `FileUploadService`. Production uses `FILESYSTEM_DISK=s3` (Wasabi or any S3-compatible provider); local uses `FILESYSTEM_DISK=public`.
+
+- `league/flysystem-aws-s3-v3` + full `AWS_*` env (`ENDPOINT` / `URL` for Wasabi)
+- Central/tenant branding and admin tenant logos use `FileUploadService` (unique filenames, relative keys, disk-agnostic URLs)
+- Tenancy filesystem bootstrapper no longer remaps the shared `public`/uploads disk (prefix isolation via `tenants/{uuid}/…`)
+- Artisan `storage:migrate-to-s3` copies existing local objects idempotently
+- Docs: `architecture/object-storage.md`; settings production guides updated
+
+---
+
 ## Go-live hardening (2026-07-15)
 
 Production readiness audit for Central + Tenant with Leads & Tasks. Billing and security fixes only — no architecture redesign.

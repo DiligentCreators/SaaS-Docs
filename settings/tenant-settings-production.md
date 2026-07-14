@@ -3,7 +3,7 @@
 ## Deploy checklist
 
 1. Run migrations (adds `type` / `group` on `tenant_settings`).
-2. Ensure `php artisan storage:link` so tenant branding under `tenants/{id}/branding/…` is publicly reachable.
+2. Configure object storage: local `FILESYSTEM_DISK=public` + `php artisan storage:link`, or production `FILESYSTEM_DISK=s3` so tenant branding under `tenants/{id}/branding/…` is reachable (see [object-storage.md](../architecture/object-storage.md)).
 3. Seed/sync tenant permissions so roles include `settings.list` and `settings.update` (`TenantAuthBootstrapService` / PermissionsSeeder).
 4. Confirm `APP_KEY` is stable — SMTP passwords are encrypted with Laravel Crypt.
 
