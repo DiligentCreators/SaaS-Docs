@@ -6,7 +6,7 @@
 use App\Billing\Contracts\PaymentGatewayInterface;
 use App\Billing\GatewayManager;
 
-$driver = app(GatewayManager::class)->driver('stripe'); // or default
+$driver = app(GatewayManager::class)->driver('stripe'); // or 'creem' / default
 $driver->createCheckout($request);
 $driver->parseWebhook($payload, $signature);
 $driver->testConnection();
@@ -14,7 +14,9 @@ $driver->capabilities();
 $driver->supportedCurrencies();
 ```
 
-Never import `Stripe\*`, `Laravel\Cashier\*`, or `StripeGateway` from `BillingEngine`, services outside `App\Billing\Drivers`, or controllers other than Stripe-specific webhook adapters.
+Never import `Stripe\*`, `Laravel\Cashier\*`, `StripeGateway`, or `CreemGateway` from `BillingEngine`, services outside `App\Billing\Drivers`, or controllers other than Stripe-specific webhook adapters.
+
+Creem customer portal: `CreemGateway::createPortalSession(Tenant $tenant)` (driver helper; not required by `BillingEngine`).
 
 ## Encrypted credentials
 
@@ -62,8 +64,9 @@ CSRF exceptions: `stripe/*`, `webhooks/gateways/*`.
 | `payment_attempts` | Checkout/charge attempts |
 | `gateway_logs` | Admin/driver operational events |
 | `webhook_logs` | Inbound webhook audit |
+| `tenant_gateway_customers` | Provider-neutral `customer_reference` per gateway (Creem+) |
 
-No gateway-specific tables.
+No `creem_*` / provider-specific customer columns. Stripe still uses Cashier’s `tenants.stripe_id`.
 
 ## Tests
 
@@ -71,6 +74,8 @@ No gateway-specific tables.
 php artisan test --compact tests/Feature/Central/Billing/PaymentGatewayManagementTest.php
 php artisan test --compact tests/Feature/Central/Billing/PaymentGatewayIsolationTest.php
 php artisan test --compact tests/Feature/Central/Billing/GatewayWebhookRoutingTest.php
+php artisan test --compact tests/Feature/Central/Billing/CreemGatewayTest.php
+php artisan test --compact tests/Feature/Central/Billing/CreemWebhookTest.php
 ```
 
-Architecture tests assert `BillingEngine` and `GatewayManager` do not reference Stripe/Cashier.
+Architecture tests assert `BillingEngine` and `GatewayManager` do not reference Stripe/Cashier/Creem drivers.

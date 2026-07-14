@@ -10,6 +10,7 @@ Gateway-agnostic payment infrastructure for DC SaaS Central. The **Billing Engin
 | `GatewayManager` | Resolves drivers by `payment_gateways.code`; binds encrypted config onto the driver |
 | `BillingEngine` | Purchase / consolidate / handle normalized `GatewayEvent` — **no Stripe/Cashier imports** |
 | `StripeGateway` | Cashier Checkout + Stripe SDK + webhook normalization |
+| `CreemGateway` | Creem REST (HTTP client) + webhook normalization |
 | `ManualGateway` | Synchronous offline settlement |
 | `PaymentGatewayService` | Admin enable/disable/default/config/mode/test/logs |
 | `GatewayWebhookController` | `POST /webhooks/gateways/{code}` → driver → Billing Engine |
@@ -38,10 +39,12 @@ flowchart TB
   subgraph Drivers["Drivers"]
     MG[ManualGateway]
     SG[StripeGateway]
+    CG[CreemGateway]
   end
 
   subgraph Providers["External"]
     Stripe[Stripe API / Cashier]
+    Creem[Creem API]
   end
 
   PG --> PGC
@@ -52,7 +55,9 @@ flowchart TB
   GM --> IF
   IF --> MG
   IF --> SG
+  IF --> CG
   SG --> Stripe
+  CG --> Creem
 ```
 
 ## Checkout / activation sequence
@@ -151,3 +156,4 @@ Admin API: `GET/PUT /payment-gateways/{id}/module-prices`. Central UI: **Billing
 - [Webhook reference](payment-gateways-webhooks.md)
 - [Billing Engine](billing-engine.md)
 - [Stripe / Cashier notes](stripe-cashier.md)
+- [Creem gateway](creem.md)

@@ -1,5 +1,18 @@
 # Changelog
 
+## Creem payment gateway (2026-07-14)
+
+Add Creem as a second provider behind the existing `PaymentGatewayInterface` / `GatewayManager` stack. Stripe behavior is unchanged.
+
+- `CreemGateway` + HTTP `CreemClient`, webhook HMAC verification, provider-neutral `tenant_gateway_customers`
+- Config: `config/creem.php` (`CREEM_*` env fallbacks); seed + admin enable/disable/default/config
+- Webhooks: `POST /webhooks/gateways/creem` (`creem-signature`) → Billing Engine module activation
+- Product mapping uses Creem `prod_…` ids; Central UI credential fields + Creem-specific mapping copy
+- Return-URL / “Complete subscription” sync via `confirm-checkout` so paid checkouts activate without a second session when webhooks are delayed
+- Docs: `billing/creem.md`; tests: `CreemGatewayTest`, `CreemWebhookTest`, `CreemCheckoutConfirmTest`
+
+---
+
 ## Provider-agnostic billing (2026-07-14)
 
 Decouple Modules from Stripe. Stripe is one payment driver; catalog pricing stays on Modules.

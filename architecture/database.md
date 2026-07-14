@@ -16,11 +16,12 @@ central_users          tenants ──has──► workspace_module_subscriptions
                               ├── payment_methods, billing_addresses
                               ├── impersonation_sessions (central_user_id)
                               ├── (Cashier) subscriptions ──► subscription_items
-                              └── stripe_id / pm_type / pm_last_four (Billable)
+                              ├── stripe_id / pm_type / pm_last_four (Billable / Stripe)
+                              └── tenant_gateway_customers (provider-neutral customer_reference)
 
 modules ──► module_categories
 modules ──► module_dependencies (depends_on_module_id)
-payment_gateways ──► gateway_logs, webhook_logs, payment_attempts
+payment_gateways ──► gateway_logs, webhook_logs, payment_attempts, tenant_gateway_customers
 system_settings (key/value — Central Application settings; see Settings section)
 
 lead_stages / leads / lead_notes / lead_follow_ups / lead_activities

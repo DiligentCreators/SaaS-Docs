@@ -43,12 +43,27 @@ Drivers should populate `tenantId` when resolvable so `BillingEngine` stays prov
 
 Cashier still handles its own mirror tables on `/stripe/webhook`.
 
+## Creem events handled for billing activation
+
+Signature header: `creem-signature` (HMAC-SHA256 of raw body).
+
+- `subscription.paid` / `checkout.completed` → activate pending modules
+- `subscription.active` / `subscription.update` → link provider subscription id
+- `subscription.canceled` / `subscription.expired` → cancel module licensing
+- `subscription.past_due` → `payment_failed`
+- `refund.created` → ignored (`unsupported`) after signature verification
+
+See [Creem gateway](creem.md) for the full event matrix.
+
 ## Local development
 
 ```bash
 stripe listen --forward-to https://your-app.test/stripe/webhook
 # or
 stripe listen --forward-to https://your-app.test/webhooks/gateways/stripe
+
+# Creem: forward sandbox webhooks (ngrok / Herd) to:
+# https://your-app.test/webhooks/gateways/creem
 ```
 
-Use the CLI webhook signing secret for local verification (`whsec_…`).
+Use the CLI webhook signing secret for local verification (`whsec_…` for Stripe; Creem dashboard webhook secret for Creem).
