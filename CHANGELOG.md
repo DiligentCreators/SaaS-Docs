@@ -1,5 +1,16 @@
 # Changelog
 
+## Frontend production CI/CD (build-artifacts) (2026-07-15)
+
+Automated SPA production builds on merge to `main` without committing `dist/` to source.
+
+- GitHub Actions workflow `frontend-build.yml`: lint, typecheck, Vite production build, validation, secret scan
+- Uploads GitHub Actions artifact `frontend-build` (30-day retention)
+- Publishes deployment-ready assets to the `build-artifacts` branch with `build-info.json` provenance
+- Docs: `architecture/frontend-build-artifacts.md`; production runbook SPA section updated
+
+---
+
 ## Object storage migration (Wasabi / S3) (2026-07-15)
 
 All user uploads go through Laravel Storage via `FileUploadService`. Production uses `FILESYSTEM_DISK=s3` (Wasabi or any S3-compatible provider); local uses `FILESYSTEM_DISK=public`.

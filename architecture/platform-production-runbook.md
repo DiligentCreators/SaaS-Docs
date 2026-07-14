@@ -25,20 +25,26 @@ RC notes: [releases/rc1-production-readiness.md](../releases/rc1-production-read
 
 ## Frontend SPA deploy
 
-Build the React app and serve static assets behind HTTPS:
+Production builds are automated on merge to `main`. See [frontend-build-artifacts.md](frontend-build-artifacts.md).
+
+**Preferred:** deploy from the **`build-artifacts`** branch (or the GitHub Actions artifact `frontend-build`). Set repository variable `VITE_API_URL` (required), optional `VITE_APP_NAME` / `VITE_API_MODE`, in the SaaS-Frontend GitHub repo before relying on CI.
+
+**Manual fallback:**
 
 ```bash
 cd SaaS-Frontend
 npm ci
+# VITE_* must be set at build time (see .env.example)
 npm run build
 ```
 
-Set `VITE_API_URL` (and related `VITE_*` vars from `.env.example`) **at build time**. Publish `dist/` to your CDN/static host.
+Publish `dist/` (or the `build-artifacts` tree) to your CDN/static host / web root.
 
 Cache guidance:
 
 - `index.html` — short TTL or `no-cache` (always revalidate)
 - Hashed assets under `assets/` — long-lived immutable cache
+- Use `build-info.json` on the artifact branch to confirm which `main` commit was built
 
 Point `FRONTEND_URL` / `CORS_ALLOWED_ORIGINS` on the API at the SPA origin(s).
 
