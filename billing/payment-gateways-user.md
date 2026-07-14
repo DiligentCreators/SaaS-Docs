@@ -19,6 +19,7 @@ Settings → Billing still holds invoice prefix / trial toggles — **not** gate
 2. Use row actions:
    - **View details** — capabilities, currencies, webhook status, recent logs
    - **Configure** — enter publishable/secret/webhook keys (Stripe)
+   - **Product mapping** — map catalog modules to provider product/price references (Stripe and other drivers that need them). Module create/edit does **not** collect provider IDs.
    - **Test connection** — verifies credentials against the provider
    - **Set as default** — used for new checkouts / consolidated billing
    - **Enable / Disable** — disabled gateways cannot process (cannot disable the current default)

@@ -92,6 +92,8 @@ erDiagram
   PAYMENT_GATEWAYS ||--o{ PAYMENT_ATTEMPTS : attempts
   PAYMENT_GATEWAYS ||--o{ GATEWAY_LOGS : audits
   PAYMENT_GATEWAYS ||--o{ WEBHOOK_LOGS : receives
+  PAYMENT_GATEWAYS ||--o{ PAYMENT_GATEWAY_MODULE_PRICES : maps
+  MODULES ||--o{ PAYMENT_GATEWAY_MODULE_PRICES : priced_as
   TENANTS ||--o{ PAYMENT_METHODS : prefers
   TENANTS ||--o{ PAYMENTS : owns
   INVOICES ||--o{ PAYMENTS : settled_by
@@ -105,7 +107,16 @@ erDiagram
     bool is_default
     string mode
     text config "encrypted:array"
+    json capabilities
     string webhook_status
+  }
+
+  PAYMENT_GATEWAY_MODULE_PRICES {
+    int payment_gateway_id
+    int module_id
+    string billing_cycle
+    string gateway_product_reference
+    string gateway_price_reference
   }
 
   PAYMENT_METHODS {
@@ -117,13 +128,20 @@ erDiagram
 
 > `payment_methods` **is** the workspace preferred-method table (`tenant_id` + `is_default`). No separate `workspace_payment_methods` table.
 
+## Product mapping
+
+Gateways with `checkout` + `subscriptions` capabilities (`requiresProductMapping()`) store provider product/price references in `payment_gateway_module_prices`. Modules never store Stripe (or any provider) IDs.
+
+Admin API: `GET/PUT /payment-gateways/{id}/module-prices`. Central UI: **Billing → Payment Gateways → Product mapping**.
+
 ## Adding a new gateway
 
 1. Implement `App\Billing\Drivers\{Name}Gateway extends AbstractGateway`.
 2. Register in `config/core-platform.php` → `payment_gateways`.
 3. Seed a `payment_gateways` row (`code`, `driver`, capabilities, currencies).
-4. Point provider webhooks to `POST /webhooks/gateways/{code}`.
-5. **Do not** change `BillingEngine`.
+4. If the gateway needs provider price IDs, implement mapping via `payment_gateway_module_prices` (no Module schema changes).
+5. Point provider webhooks to `POST /webhooks/gateways/{code}`.
+6. **Do not** change `BillingEngine` or Module catalog fields.
 
 ## Related docs
 

@@ -15,8 +15,9 @@ See also: [Payment Gateway Architecture](payment-gateways.md).
 | `ProrationCalculator` | Mid-cycle purchase amount from workspace `proration_mode` |
 | `InvoiceService` / `PaymentService` | Ledger CRUD |
 | `PaymentGatewayService` | Admin gateway management |
+| `GatewayModulePriceService` | Per-gateway module product/price mappings (`payment_gateway_module_prices`) |
 
-Drivers implement `PaymentGatewayInterface`. Cashier tables are a Stripe mirror only — not the licensing or invoice SoT. `BillingEngine` must never import Stripe or Cashier.
+Drivers implement `PaymentGatewayInterface`. Cashier tables are a Stripe mirror only — not the licensing or invoice SoT. `BillingEngine` must never import Stripe or Cashier. Modules never store provider price IDs.
 
 ## Proration modes
 
@@ -34,8 +35,9 @@ Set per workspace (`tenants.proration_mode`) or default via system setting.
 POST /tenants/{tenant}/modules  →  ModuleSubscriptionService::install
   ├─ non-billable / included → status=active immediately
   └─ billable → status=pending
+       ├─ persist payment_gateway_id on the subscription
        ├─ manual gateway → draft invoice (proration line) → open → mark payment succeeded → activate
-       └─ other gateway → createCheckout via interface → return redirect URL; webhook activates on success
+       └─ other gateway → assert gateway price mapping when required → createCheckout (refs on CheckoutRequest) → redirect; webhook activates on success
 ```
 
 ## Consolidated billing sequence
@@ -44,8 +46,9 @@ Command: `php artisan billing:run-consolidated` (scheduled daily in `routes/cons
 
 ```
 For each tenant where next_billing_at <= now:
-  1. Collect active, billable workspace_module_subscriptions
-  2. Skip if none
+  1. Collect active, billable workspace_module_subscriptions that are platform-managed
+     (no payment gateway, or gateway does not supportRecurring())
+  2. Skip invoice creation if none (recurring-gateway renewals stay with the provider)
   3. Create draft invoice with one line per subscription (type=module)
   4. Open invoice
   5. Record payment; auto-succeed on manual gateway only

@@ -89,11 +89,11 @@ Create/update body adds: `phone?`, `avatar_path?`, `password` (create), `role[]`
 
 | Resource | Paths | Notes |
 |----------|-------|-------|
-| Modules | CRUD + restore/force | Full catalog admin. Fields include `uuid`, pricing, `status`, `is_default_included`, `is_billable`, Stripe price IDs |
+| Modules | CRUD + restore/force | Full catalog admin. Fields include `uuid`, pricing (`monthly_price`, `yearly_price`, `currency`), `status`, `is_default_included`, `is_billable` — **no** payment-provider IDs |
 
 Default-included modules (Leads, Tasks) cannot be deleted while marked `is_default_included`. Modules with workspace subscriptions cannot be deleted until those subscriptions are removed.
 
-Module create/update accepts optional Stripe price IDs (manual mapping only — the API never creates Stripe products/prices). Features catalog has been removed — modules are licensing products; Spatie permissions handle authorization.
+Provider price mappings are managed under Payment Gateways (`GET/PUT /payment-gateways/{id}/module-prices`), not on Modules. Features catalog has been removed — modules are licensing products; Spatie permissions handle authorization.
 
 ## Marketplace
 
@@ -143,7 +143,9 @@ Invoices are created by the Billing Engine (consolidated run or purchase settlem
 | GET | `/payment-gateways/{id}/webhook-status` | `payment-gateways.read` | |
 | GET | `/payment-gateways/{id}/logs` | `payment-gateways.read` | Operational logs |
 | GET | `/payment-gateways/{id}/webhook-logs` | `payment-gateways.read` | |
-| GET | `/payment-gateways/{id}/capabilities` | `payment-gateways.read` | Capabilities + currencies |
+| GET | `/payment-gateways/{id}/capabilities` | `payment-gateways.read` | Capabilities + currencies + `requires_product_mapping` |
+| GET | `/payment-gateways/{id}/module-prices` | `payment-gateways.read` | Gateway ↔ module product/price mappings |
+| PUT | `/payment-gateways/{id}/module-prices` | `payment-gateways.update` | Replace mappings (`{ mappings: [...] }`); 422 if gateway does not require mapping |
 
 Also accepts `billing.manage` as an alternate permission.
 

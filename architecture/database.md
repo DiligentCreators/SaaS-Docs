@@ -85,15 +85,25 @@ Laravel standard table: UUID `id`, `type`, morphs `notifiable`, `data` (text/JSO
 | `uuid` | Unique public id |
 | `name`, `slug` (unique), `description`, `icon` | |
 | `category_id` | FK `module_categories`, nullable |
-| `monthly_price`, `yearly_price`, `setup_fee` | Ready for paid modules; Leads/Tasks are `0` |
+| `monthly_price`, `yearly_price`, `currency`, `setup_fee` | Catalog amounts; Leads/Tasks are `0`. No provider IDs on modules |
 | `trial_days`, `version`, `status` | `draft` \| `published` \| `deprecated` |
 | `is_default_included` | Auto-install on workspace create |
-| `is_billable` | Whether consolidated billing charges this module |
-| `stripe_*_price_id` | Manual Stripe mapping for future paid modules |
+| `is_billable` | Whether the module can be charged when platform-managed |
 | `sort_order`, `is_active` | |
 | soft deletes | |
 
 Seeded today: **Leads**, **Tasks** only (`is_default_included=true`, `is_billable=false`). Modules are pure licensing products — they do not store permission lists. User authorization uses Spatie Roles & Permissions separately.
+
+### `payment_gateway_module_prices`
+
+Per-gateway catalog mapping (provider-agnostic price references):
+
+| Column | Notes |
+|--------|-------|
+| `payment_gateway_id`, `module_id`, `billing_cycle` | Unique triple (`monthly` \| `yearly`) |
+| `gateway_product_reference` | e.g. Stripe `prod_…`, PayPal plan id — nullable |
+| `gateway_price_reference` | e.g. Stripe `price_…` — required for checkout when gateway `requiresProductMapping()` |
+| `gateway_metadata` | JSON bag for driver-specific extras |
 
 ### `module_dependencies`
 
@@ -108,7 +118,8 @@ Seeded today: **Leads**, **Tasks** only (`is_default_included=true`, `is_billabl
 | `source` | `included` \| `purchased` \| `trial` |
 | `billing_cycle`, `price`, `currency`, `is_billable` | Snapshot for billing |
 | period timestamps | `trial_*`, `starts_at`, `ends_at`, `renews_at`, `cancelled_at` |
-| `provider`, `provider_subscription_id` | Gateway refs |
+| `provider`, `provider_subscription_id` | Gateway-facing refs |
+| `payment_gateway_id` | FK to `payment_gateways` (nullable) — which driver owns renewals |
 | soft deletes | |
 
 ### `workspace_module_subscription_history`

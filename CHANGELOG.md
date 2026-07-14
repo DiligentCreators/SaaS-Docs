@@ -1,5 +1,18 @@
 # Changelog
 
+## Provider-agnostic billing (2026-07-14)
+
+Decouple Modules from Stripe. Stripe is one payment driver; catalog pricing stays on Modules.
+
+- Added `payment_gateway_module_prices` (gateway × module × billing cycle → product/price references)
+- Migrated existing `modules.stripe_*` IDs into the mapping table, then dropped those columns
+- Added `modules.currency` and `workspace_module_subscriptions.payment_gateway_id`
+- `BillingEngine` / `StripeGateway` resolve checkout prices from mappings; consolidated billing skips recurring-gateway subscriptions
+- Central API + UI: Module form is catalog-only; **Payment Gateways → Product Mapping** manages provider refs
+- Docs: `billing/*`, `architecture/database.md`, `api/central-v1.md`, `admin-ui.md`
+
+---
+
 ## RC1 — Production Readiness (2026-07-14)
 
 Release Candidate hardening for paying-customer launch. No new business modules. Official notes: [releases/rc1-production-readiness.md](releases/rc1-production-readiness.md). Recommended tag: `v1.2.0-rc.1`.

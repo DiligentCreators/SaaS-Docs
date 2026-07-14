@@ -25,11 +25,12 @@ See [billing/billing-engine.md](billing-engine.md) and [payment-gateways.md](pay
 
 ## Manual price mapping
 
-Modules may store `stripe_product_id`, `stripe_monthly_price_id`, `stripe_yearly_price_id`. The platform never auto-creates Stripe products/prices.
+Modules stay payment-provider agnostic (`monthly_price`, `yearly_price`, `currency`). Stripe Product/Price IDs live in `payment_gateway_module_prices` (managed under **Payment Gateways → Product Mapping**). The platform never auto-creates Stripe products/prices.
 
 ## When Stripe is used
 
 - Default gateway = `stripe`: billable module installs return a Checkout redirect; webhook activates pending subscriptions and settles payments
+- Stripe supports recurring (`subscriptions` capability): provider renewals update the ledger via webhooks; those subscriptions are excluded from platform `billing:run-consolidated` charge lines
 - Default gateway = `manual`: purchases and consolidated runs mark payments succeeded immediately
 
 Cashier subscription rows stay in sync for Stripe-backed workspaces but do not drive entitlements.
