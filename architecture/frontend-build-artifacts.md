@@ -9,108 +9,81 @@ Production CI/CD for the **SaaS-Frontend** React + Vite SPA.
 
 ## Purpose
 
-After every merge into `main`, GitHub Actions builds production assets, validates them, uploads a GitHub Actions artifact, and updates the `build-artifacts` branch so ops can deploy without running Node on the production host (optional) and without polluting `main`.
+After every merge into `main`, GitHub Actions builds production assets, validates them, uploads a GitHub Actions artifact, and updates the `build-artifacts` branch.
+
+The same artifact is **multi-client ready**: each Laravel Forge site generates `/config.js` (`window.env`) from that site’s `.env` during deploy. No API URL is baked into CI.
 
 ## Triggers
 
-Runs **only** when:
-
-- Code is pushed to `main` (covers PR merges into `main`)
-- Manual **Run workflow** (`workflow_dispatch`) for recovery / rebuild
-
-Does **not** run for `feature/*`, `bugfix/*`, `develop`, `release/*`, tags, or unmerged pull requests.
+- Push to `main` or manual `workflow_dispatch`
+- Does **not** run for feature branches, tags, or unmerged PRs
 
 ## Build process
 
-1. Checkout repository (`main`)
-2. Setup Node.js (latest LTS) + restore npm cache
-3. Require `VITE_API_URL` repository variable
-4. `npm ci`
-5. Lint
-6. Typecheck
-7. Unit tests if a `test` script exists (`npm run test --if-present`)
-8. `npx vite build`
-9. Generate `build-info.json`
-10. Validate `dist/`, `index.html`, Vite manifest, `build-info.json`
-11. Secret scan (fail on `.env*`, PEMs, common secret patterns)
-12. Upload GitHub artifact **`frontend-build`** (retention **30 days**)
-13. Publish to **`build-artifacts`** (replace obsolete files; normal push, no force-push)
+1. Checkout `main`
+2. Node LTS + `npm ci`
+3. Lint / typecheck / optional unit tests
+4. `npx vite build` (without `VITE_API_URL`)
+5. `build-info.json`
+6. Validate (including `index.html` loads `/config.js`)
+7. Secret scan
+8. Upload artifact `frontend-build` (30 days)
+9. Publish to `build-artifacts`
 
-Failure at lint, typecheck, tests, build, validation, or publish fails the workflow. Publish failures leave the GitHub artifact intact for recovery.
+## Runtime configuration (Laravel Forge)
 
-Playwright E2E is **out of scope** for this job (requires a live API). See [testing/playwright.md](../testing/playwright.md).
+`index.html` loads `/config.js` before the React app. Forge deploy script (adapted from the platform’s existing pattern):
+
+```bash
+$CREATE_RELEASE()
+cd $FORGE_RELEASE_DIRECTORY
+
+if [ -f ../../.env ]; then
+  set -a
+  source ../../.env
+  set +a
+fi
+
+echo "window.env = {" > "$FORGE_RELEASE_DIRECTORY/config.js"
+echo "  VITE_API_URL: \"$VITE_API_URL\"," >> "$FORGE_RELEASE_DIRECTORY/config.js"
+echo "  VITE_APP_NAME: \"${VITE_APP_NAME:-DC SaaS}\"," >> "$FORGE_RELEASE_DIRECTORY/config.js"
+echo "  VITE_API_MODE: \"${VITE_API_MODE:-central}\"" >> "$FORGE_RELEASE_DIRECTORY/config.js"
+echo "};" >> "$FORGE_RELEASE_DIRECTORY/config.js"
+
+$ACTIVATE_RELEASE()
+```
+
+| Site `.env` key | Used as |
+|-----------------|---------|
+| `VITE_API_URL` | API origin (required in production) |
+| `VITE_APP_NAME` | Display name (optional; `VITE_CLIENT_NAME` also accepted) |
+| `VITE_API_MODE` | `central` (default) or `tenant` |
+
+Local Vite uses `.env` / `import.meta.env` when `window.env` is absent.
 
 ## `build-artifacts` branch
 
 | Property | Value |
 |----------|--------|
-| Contents | Deployment-ready SPA files only |
 | Includes | `index.html`, hashed `assets/`, `.vite/manifest.json`, `build-info.json` |
-| Excludes | `src/`, `node_modules/`, tests, docs, configs, `.env` |
-| Commit message | `build(frontend): update production artifacts from <commit_sha>` |
-| Creation | Automatic on first successful publish |
+| Excludes | `src/`, `config.js` (host-generated), `.env`, tooling |
 
-Suitable for Nginx, Apache, Laravel `public/build`, CDN, Wasabi, CloudFront, and Cloudflare. Vite uses default `base: '/'` (no host-specific filesystem paths).
-
-## `build-info.json`
-
-Written into the artifact root so deployments can identify provenance:
-
-- commit SHA
-- branch
-- build timestamp (UTC)
-- build number (`github.run_number`)
-- GitHub Actions run ID
-- application version
-- Node version
-- Vite version
-
-## Repository configuration
-
-### Actions variables (SaaS-Frontend repo)
+## Actions variables
 
 | Variable | Required | Notes |
 |----------|----------|--------|
-| `VITE_API_URL` | **Yes** | Production API origin (baked in at build time) |
-| `VITE_APP_NAME` | No | Default `DC SaaS` |
+| `VITE_APP_NAME` | No | Build-time fallback only |
 | `VITE_API_MODE` | No | Default `central` |
-| `APP_VERSION` | No | Overrides `package.json` version in metadata |
+| `APP_VERSION` | No | Metadata override |
 
-### Permissions / branch protection
-
-- Workflow `permissions.contents: write` so `GITHUB_TOKEN` can push `build-artifacts`.
-- Protect `main` normally; this job does not push to `main`.
-- Allow `github-actions[bot]` to push `build-artifacts`, or leave that branch unprotected.
-- Force-push is not used.
+`VITE_API_URL` is **not** required in GitHub Actions.
 
 ## Security
 
-- Never place AWS / Wasabi / Stripe / Creem / SMTP secrets in frontend CI.
-- Only `VITE_*` (public, client-visible) values belong in the SPA build.
-- Post-build scan rejects secret-like filenames and common secret material in text assets.
-
-## Recovery procedure
-
-1. Open the failed/successful Actions run → download **`frontend-build`** (30-day retention).
-2. Or **Actions → Frontend production build → Run workflow** after fixing variables or code on `main`.
-3. To roll forward after a bad publish: merge a fix to `main` (or re-run on the known-good commit via workflow_dispatch if that commit is still `main` HEAD / you temporary reset — prefer forward fix).
-
-## Manual rebuild (operator)
-
-```bash
-cd SaaS-Frontend
-export VITE_APP_NAME="DC SaaS"
-export VITE_API_URL="https://api.example.com"
-export VITE_API_MODE=central
-npm ci
-npm run lint
-npm run typecheck
-npx vite build
-```
-
-Do **not** commit `dist/` to `main`. Prefer the GitHub workflow so `build-artifacts` stays authoritative.
+- No cloud/payment secrets in frontend CI
+- SPA API URL is public; keep it on Forge `.env` per site
 
 ## Related
 
-- [platform-production-runbook.md](platform-production-runbook.md) — SPA deploy checklist
-- [object-storage.md](object-storage.md) — Wasabi / S3 for **uploads** (not SPA hosting)
+- [platform-production-runbook.md](platform-production-runbook.md)
+- [object-storage.md](object-storage.md)

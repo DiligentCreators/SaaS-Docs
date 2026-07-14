@@ -27,7 +27,7 @@ RC notes: [releases/rc1-production-readiness.md](../releases/rc1-production-read
 
 Production builds are automated on merge to `main`. See [frontend-build-artifacts.md](frontend-build-artifacts.md).
 
-**Preferred:** deploy from the **`build-artifacts`** branch (or the GitHub Actions artifact `frontend-build`). Set repository variable `VITE_API_URL` (required), optional `VITE_APP_NAME` / `VITE_API_MODE`, in the SaaS-Frontend GitHub repo before relying on CI.
+**Preferred:** deploy from the **`build-artifacts`** branch (or GitHub Actions artifact `frontend-build`). On Laravel Forge, generate `/config.js` (`window.env`) from the site `.env` in the deploy script (`VITE_API_URL`, optional `VITE_APP_NAME` / `VITE_API_MODE`). Do not bake the API URL into CI.
 
 **Manual fallback:**
 

@@ -1,5 +1,16 @@
 # Changelog
 
+## SPA runtime config (multi-client / Forge) (2026-07-15)
+
+Frontend API origin is runtime via Forge-generated `/config.js` (`window.env`), not baked into CI.
+
+- Deploy script sources site `.env` and writes `VITE_API_URL` / `VITE_APP_NAME` / `VITE_API_MODE`
+- Same `build-artifacts` artifact for every client; each Forge site owns its `.env`
+- No committed `config.js` / `config.example.js` in the SPA repo
+- Docs: `architecture/frontend-build-artifacts.md`, production runbook
+
+---
+
 ## Frontend production CI/CD (build-artifacts) (2026-07-15)
 
 Automated SPA production builds on merge to `main` without committing `dist/` to source.
