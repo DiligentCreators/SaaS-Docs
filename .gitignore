@@ -6,12 +6,16 @@ Thumbs.db
 .idea/
 .vscode/
 
-# Generated testing media (never commit)
-**/testing/images/**
-!**/testing/images/.gitkeep
-**/testing/videos/
-**/testing/traces/
-*.webm
-**/trace.zip
+# Playwright run dumps — never commit
 /playwright-report/
 /test-results/
+/blob-report/
+**/testing/videos/
+**/testing/traces/
+**/error-context.md
+**/test-failed-*.png
+*.webm
+**/trace.zip
+
+# Curated screenshots under testing/images/ may be committed intentionally.
+# Do not dump raw Playwright output here — copy only when documenting a workflow.

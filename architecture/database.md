@@ -1,140 +1,263 @@
-# Database architecture (Phase 1)
+# Database architecture
 
-Single shared MySQL database. Catalog tables are **central-only** (no `tenant_id`). Tenant-scoped rows use `tenant_id` FKs.
+Single shared database. Catalog tables are **central-only** (no `tenant_id`). Workspace-scoped rows use `tenant_id` FKs.
 
 ## Entity overview
 
 ```
-central_users ──owns──► tenants ──has──► tenant_subscriptions ──► plans
-                              │                │                   │
-                              │                └── subscription_events
-                              │                                    │
-                              ├── tenant_settings                  ├── plan_module ──► modules ──► features
-                              ├── tenant_usage_counters ──► limit_definitions
-                              ├── (Cashier) subscriptions ──► subscription_items      ├── plan_feature ──► features
-                              └── stripe_id / pm_type / pm_last_four (Billable)       └── plan_limits ──► limit_definitions
-system_settings (key/value; may reference default_plan_id)
+central_users          tenants ──has──► workspace_module_subscriptions ──► modules
+                              │                │
+                              │                └── workspace_module_subscription_history
+                              │
+                              ├── tenant_settings
+                              ├── billing profile columns (anchor, cycle, proration, next_billing_at)
+                              ├── invoices ──► invoice_items
+                              ├── payments ──► payment_transactions
+                              ├── payment_methods, billing_addresses
+                              ├── impersonation_sessions (central_user_id)
+                              ├── (Cashier) subscriptions ──► subscription_items
+                              ├── stripe_id / pm_type / pm_last_four (Billable / Stripe)
+                              └── tenant_gateway_customers (provider-neutral customer_reference)
+
+modules ──► module_categories
+modules ──► module_dependencies (depends_on_module_id)
+payment_gateways ──► gateway_logs, webhook_logs, payment_attempts, tenant_gateway_customers
+system_settings (key/value — Central Application settings; see Settings section)
+
+lead_stages / leads / lead_notes / lead_follow_ups / lead_activities
+lead_assignment_histories
+  (tenant-scoped CRM — Leads module)
+
+tasks / task_notes / task_activities
+  (tenant-scoped work items — Tasks module)
+
+notifications
+  (Laravel database notifications — polymorphic notifiable)
 ```
 
-`tenants` is the Cashier **billable** model (`stripe_id`, `pm_type`, `pm_last_four`, `trial_ends_at`). Cashier's `subscriptions`/`subscription_items` tables are the Stripe mirror, keyed by `tenant_id`; `tenant_subscriptions` remains the platform's business source of truth for plan/limit/feature resolution. See [billing/stripe-cashier.md](../billing/stripe-cashier.md) for how the two ledgers stay in sync.
+`tenants` is the Cashier **billable** model. Cashier's `subscriptions`/`subscription_items` are the Stripe mirror. **`workspace_module_subscriptions` is the business source of truth** for licensing. **`invoices` / `payments` are the financial ledger SoT.**
 
-## Table dictionary
+Plans, plan pivots, limit definitions, feature catalogs, and `tenant_subscriptions` have been **removed**.
 
-### `central_users`
+## Leads module tables
 
-Platform identities (admins). Spatie roles on `central-api` guard. Tenants reference `owner_id`.
+### `lead_stages`
 
-| Column | Notes |
-|--------|-------|
-| `id` | Auto-increment PK |
-| `name`, `email` (unique), `password` | |
-| `phone` | Nullable |
-| `avatar_path` | Nullable |
-| `is_suspended` | Boolean, default `false` |
-| `last_login_at` | Set on successful login |
-| `invite_token`, `invite_sent_at` | Set when the user is created via the invite flow |
-| soft deletes | |
+Per-workspace pipeline: `tenant_id`, `uuid`, `name`, `slug`, `color`, `sort_order`, `is_won`, `is_lost`, `is_default`, soft deletes. Seeded New → Contacted → Qualified → Proposal → Negotiation → Won / Lost.
 
-Activity (`spatie/laravel-activitylog`) is logged for `name`, `email`, `is_suspended`, `last_login_at` and surfaced per-user via `GET /users/{user}/activity`.
+### `leads`
 
-### `tenants`
+`tenant_id`, `uuid`, `name`, contact fields, `stage_id`, `status` (`active`|`waiting`|`on_hold`|`closed`|`archived`), `priority` (`low`|`medium`|`high`|`urgent`), `assigned_to`, `lead_value` (renamed from `estimated_value`), `last_contacted_at`, `next_follow_up_at`, `converted_at`, `conversion_meta` (JSON), soft deletes. Status is **independent** of stage. Spatie activity log name `leads`.
 
-| Column | Notes |
-|--------|-------|
-| `id` | UUID string PK (Stancl) |
-| `owner_id` | FK `central_users`, nullable |
-| `company_name`, `workspace_name` | `workspace_name` is optional, falls back to `company_name` for the Cashier customer name |
-| `slug` (unique), `email`, `phone` | |
-| `logo_path`, `address`, `notes` | Nullable profile fields |
-| `status` | `active` \| `suspended` \| `cancelled` |
-| `archived_at` | Nullable; independent of soft delete — see [Archive vs soft delete](#archive-vs-soft-delete) |
-| `stripe_id`, `pm_type`, `pm_last_four` | Cashier `Billable` columns |
-| `timezone`, `currency`, `country`, `locale` | first-class |
-| `trial_ends_at` | denormalized from subscription for filters; also read by Cashier's `Billable` trial checks |
-| `data` | Stancl virtual storage only |
-| soft deletes | |
+### `lead_notes` / `lead_follow_ups` / `lead_activities`
 
-### `plans`
+Notes (author + body), follow-ups (due/complete/status), and CRM timeline (`type`, `description`, `properties` JSON).
 
-| Column | Notes |
-|--------|-------|
-| `name`, `slug` (unique), `description` | |
-| `monthly_price`, `yearly_price`, `currency`, `trial_days` | |
-| `is_default`, `is_public`, `is_popular` | Booleans; exactly one plan should have `is_default = true` |
-| `stripe_product_id`, `stripe_monthly_price_id`, `stripe_yearly_price_id` | **Manually entered** in the plan form — the platform never creates Stripe products/prices on a plan's behalf |
-| `sort_order`, `is_active` | |
-| soft deletes | |
+### `lead_assignment_histories`
+
+`tenant_id`, `lead_id`, `old_user_id`, `new_user_id`, `changed_by`, `reason`, timestamps. Records assignee changes.
+
+## Tasks module tables
+
+### `tasks`
+
+`tenant_id`, `uuid`, `title`, `description`, `status` (`open`|`in_progress`|`waiting`|`completed`|`cancelled`), `priority` (`low`|`medium`|`high`|`urgent`), `due_at`, `assigned_to`, `created_by`, `completed_at`, soft deletes. Spatie activity log name `tasks`. UI labels `open` as **To Do**.
+
+### `task_notes` / `task_activities`
+
+Notes / comments (author + body) and task timeline (`type`, `description`, `properties` JSON).
+
+## Notifications
+
+### `notifications`
+
+Laravel standard table: UUID `id`, `type`, morphs `notifiable`, `data` (text/JSON), `read_at`, timestamps. Used for in-app CRM notifications (mail is a separate channel on the same notification classes).
+
+## Table dictionary (licensing & catalog)
+
+### `module_categories`
+
+`name`, `slug` (unique), `description`, `sort_order`, `is_active`.
 
 ### `modules`
 
-Sellable capability packages: `name`, `slug`, `description`, `icon`, `category`, `sort_order`, `is_active`, soft deletes.
+| Column | Notes |
+|--------|-------|
+| `uuid` | Unique public id |
+| `name`, `slug` (unique), `description`, `icon` | |
+| `category_id` | FK `module_categories`, nullable |
+| `monthly_price`, `yearly_price`, `currency`, `setup_fee` | Catalog amounts; Leads/Tasks are `0`. No provider IDs on modules |
+| `trial_days`, `version`, `status` | `draft` \| `published` \| `deprecated` |
+| `is_default_included` | Auto-install on workspace create |
+| `is_billable` | Whether the module can be charged when platform-managed |
+| `sort_order`, `is_active` | |
+| soft deletes | |
 
-### `features`
+Seeded today: **Leads**, **Tasks** only (`is_default_included=true`, `is_billable=false`). Modules are pure licensing products — they do not store permission lists. User authorization uses Spatie Roles & Permissions separately.
 
-Boolean capabilities belonging to one module (`module_id`). Globally unique `slug` (e.g. `leads.create`).
+### `payment_gateway_module_prices`
 
-### `plan_module`
+Per-gateway catalog mapping (provider-agnostic price references):
 
-M:N `(plan_id, module_id)`, unique pair. Including a module grants all of that module's active features, unless overridden — see `plan_feature`.
+| Column | Notes |
+|--------|-------|
+| `payment_gateway_id`, `module_id`, `billing_cycle` | Unique triple (`monthly` \| `yearly`) |
+| `gateway_product_reference` | e.g. Stripe `prod_…`, PayPal plan id — nullable |
+| `gateway_price_reference` | e.g. Stripe `price_…` — required for checkout when gateway `requiresProductMapping()` |
+| `gateway_metadata` | JSON bag for driver-specific extras |
 
-### `plan_feature`
+### `module_dependencies`
 
-M:N `(plan_id, feature_id)`, unique pair. Lets a plan grant or restrict individual features independently of module inclusion — e.g. a plan can include the Leads module but exclude one gated feature, or grant a feature without granting the whole module. See [entitlements.md](entitlements.md) for resolution order.
+`(module_id, depends_on_module_id)` unique. Optional flag `is_optional`. Enforced on marketplace install.
 
-### `limit_definitions`
+### `workspace_module_subscriptions`
 
-Quota catalog: unique `key` (`leads.max`), optional `module_id`, `unit` (`count`, `bytes`, `calls`), `is_active`.
+| Column | Notes |
+|--------|-------|
+| `tenant_id`, `module_id` | Unique pair |
+| `status` | `pending` \| `trial` \| `active` \| `expired` \| `cancelled` \| `suspended` |
+| `source` | `included` \| `purchased` \| `trial` |
+| `billing_cycle`, `price`, `currency`, `is_billable` | Snapshot for billing |
+| period timestamps | `trial_*`, `starts_at`, `ends_at`, `renews_at`, `cancelled_at` |
+| `provider`, `provider_subscription_id` | Gateway-facing refs |
+| `payment_gateway_id` | FK to `payment_gateways` (nullable) — which driver owns renewals |
+| soft deletes | |
 
-### `plan_limits`
+### `workspace_module_subscription_history`
 
-`(plan_id, limit_definition_id)` unique. `value` is `BIGINT UNSIGNED NULL` — **`NULL` means unlimited**.
+Append-only events: `module_installed`, `module_purchase_pending`, `module_activated`, `module_cancelled`, `module_suspended`, etc.
 
-### `tenant_usage_counters`
+### `tenants` billing profile columns
 
-`(tenant_id, limit_definition_id)` unique. `used` (`BIGINT UNSIGNED`, default `0`) tracks consumption against the tenant's resolved `plan_limits.value`. Populated by the tenant details page's usage card; not yet wired to live enforcement — see [README non-goals](../README.md#explicit-non-goals).
+| Column | Notes |
+|--------|-------|
+| `billing_anchor_day` | 1–28 |
+| `billing_cycle` | Workspace default (`monthly` / `yearly`) |
+| `proration_mode` | `prorated` \| `free_until_next` \| `none` |
+| `next_billing_at` | Next consolidated invoice run |
 
-### `tenant_subscriptions`
+Workspace profile columns include `company_name`, `workspace_name`, `slug`, `email`, `phone`, `logo_path`, `notes`, `timezone`, `currency`, `country`, `locale`. There is **no** `owner_id` or `address` column.
 
-Business-facing plan assignment: `tenant_id`, `plan_id`, `status`, `billing_cycle`, trial/period timestamps, nullable `provider` / `provider_subscription_id` (Stripe subscription ID when `provider = 'stripe'`), `meta` JSON, soft deletes.
+## Table dictionary (financial ledger)
 
-`status` values: `trial`, `active`, `expired`, `cancelled`, `suspended`. Cancel/resume/suspend actions transition this row and append a `subscription_events` entry.
+### `payment_gateways`
 
-### `subscription_events`
+| Column | Notes |
+|--------|-------|
+| `code` (unique), `name`, `driver` | Driver class FQCN |
+| `is_active`, `is_default`, `mode` | `sandbox` \| `live` |
+| `config` | Encrypted array (credentials); never expose secrets via API |
+| `supported_currencies`, `capabilities` | Cached/display; drivers remain source of truth |
+| `webhook_status`, `webhook_last_received_at` | Ingress health |
+| `last_tested_at`, `last_test_status`, `last_test_message` | Connection probe |
+| `sort_order` | |
 
-Append-only audit trail: `tenant_subscription_id` (FK, cascade), `event` (e.g. `cancelled`, `resumed`, `suspended`, `status_changed`), `description`, `meta` JSON, `created_at` only (no `updated_at`). Rendered as a timeline on the subscription view sheet and the tenant details page.
+Seeded: `manual`, `stripe`.
 
-### Cashier `subscriptions` / `subscription_items`
+### `payment_methods`
 
-Laravel Cashier's own tables, customized to key off `tenant_id` instead of `user_id`:
+Workspace preferred / saved methods: `tenant_id`, `payment_gateway_id`, `type`, `brand`, `last_four`, encrypted `token`, `is_default`.
 
-- `subscriptions`: `tenant_id` (FK `tenants`, cascade), `type`, `stripe_id` (unique), `stripe_status`, `stripe_price`, `quantity`, `trial_ends_at`, `ends_at`
-- `subscription_items`: `subscription_id`, `stripe_id` (unique), `stripe_product`, `stripe_price`, `quantity`, plus `meter_id` / `meter_event_name` for Stripe usage-based pricing
+### `payment_attempts`
 
-These are the Stripe mirror used by Cashier's billing portal/checkout APIs. `BillingService::syncFromStripe()` keeps `tenant_subscriptions.status` aligned with Stripe subscription status on webhook events. See [billing/stripe-cashier.md](../billing/stripe-cashier.md).
+Gateway-agnostic checkout/charge attempts linked to optional `payment_id` / `invoice_id`.
 
-### `tenant_settings`
+### `gateway_logs` / `webhook_logs`
 
-Open key/value per tenant (`tenant_id`, `key`, `value`).
+Operational admin/driver events and inbound webhook audit trail.
+
+### `billing_addresses`
+
+Workspace billing addresses: `tenant_id`, address lines, `is_default`.
+
+### `taxes`, `coupons`, `refunds`, `credit_notes`
+
+Supporting ledger tables for future tax/discount/refund flows. Not exposed in Central v1 read APIs yet.
+
+### `invoices`
+
+| Column | Notes |
+|--------|-------|
+| `uuid`, `number` | Unique identifiers |
+| `tenant_id` | FK `tenants` |
+| `status` | `draft` \| `open` \| `paid` \| `void` \| … |
+| `subtotal`, `tax_total`, `discount_total`, `total`, `amount_paid`, `amount_due` | |
+| `payment_gateway_id`, `coupon_id`, `billing_address_id` | Nullable FKs |
+| `issue_date`, `due_date`, `paid_at` | |
+| soft deletes | |
+
+### `invoice_items`
+
+Line items: `invoice_id`, `type` (`module` \| `proration` \| …), optional `module_id` + `workspace_module_subscription_id`, `description`, `quantity`, `unit_amount`, `total`, `meta`.
+
+### `payments`
+
+| Column | Notes |
+|--------|-------|
+| `uuid` | Unique public id |
+| `tenant_id`, `invoice_id` | |
+| `payment_gateway_id`, `payment_method_id` | |
+| `amount`, `tax`, `currency`, `status` | `pending` \| `succeeded` \| `failed` \| … |
+| `transaction_id`, `reference`, `gateway_response`, `webhook_payload` | |
+| `captured_at`, `failure_reason` | |
+
+### `payment_transactions`
+
+Append-only gateway status events per payment: `payment_id`, `status`, `amount`, `error`, `raw_payload`.
+
+## Table dictionary (impersonation)
+
+### `impersonation_sessions`
+
+| Column | Notes |
+|--------|-------|
+| `central_user_id` | FK `central_users` (admin) |
+| `tenant_id` | FK `tenants` |
+| `reason` | Required audit text |
+| `ip_address`, `user_agent` | Request metadata |
+| `started_at`, `ended_at`, `duration_seconds` | Session window |
 
 ### `system_settings`
 
-Platform key/value with `type` and `group`. Groups map to the settings UI sections: `general`, `localization`, `mail`, `branding`, `security`, `maintenance`, `billing`, `feature_flags`. Keys include `default_plan_id`, `registration_enabled`, `trial_enabled`, `maintenance_mode`, `stripe_enabled`, `stripe_webhook_configured`, plus branding/mail/security fields — see [api/central-v1.md](../api/central-v1.md#system-settings) for the full key list.
+Key/value store for Central Application settings (`key` unique, `value`, `type`, `group`).
+
+Groups: `general`, `localization`, `mail`, `branding`, `security`, `maintenance`, `billing`.
+
+Sensitive values (`mail_password`) are encrypted at rest and masked in the admin API. Logo/favicon paths store relative object keys (`branding/logos`, `branding/favicons`) on the configured uploads disk (`public` locally / `s3` in production).
+
+`maintenance_mode` gates the **Tenant Application** only — never Laravel `artisan down` for Central.
+
+Catalog (see `App\Support\SystemSettingDefinitions`):
+
+| Group | Keys |
+|-------|------|
+| general | `app_name`, `company_name`, `timezone`, `locale`, `currency`, `registration_enabled` |
+| localization | `date_format`, `time_format` |
+| mail | `mail_driver`, `mail_host`, `mail_port`, `mail_username`, `mail_password`, `mail_encryption`, `mail_from_name`, `mail_from_address` |
+| branding | `button_color`, `support_email`, `logo_path`, `favicon_path` |
+| security | `session_lifetime_minutes`, `password_min_length`, `password_require_special` |
+| maintenance | `maintenance_mode`, `maintenance_message`, `maintenance_eta` |
+| billing | `invoice_prefix`, `proration_mode`, `trial_enabled`, `stripe_enabled`, `stripe_webhook_configured`, `default_payment_gateway` |
+
+Obsolete (removed by migration/seeder): `primary_color`, `queue_connection_display`, `filesystem_disk`, `feature_registration`, `feature_invites`, `default_plan_id`.
+
+Docs: [settings/settings.md](../settings/settings.md).
+
+### `tenant_settings`
+
+Per-workspace overrides of Central defaults (`tenant_id` + `key` unique, `value`, `type`, `group`).
+
+Resolution hierarchy (via `TenantSettingService`): tenant override → tenant profile columns → Central `system_settings` → system default.
+
+Groups: `general`, `branding`, `mail`. Sensitive `mail_password` encrypted. Branding files under `tenants/{uuid}/branding/…` on the configured uploads disk.
+
+Docs: [settings/tenant-settings.md](../settings/tenant-settings.md).
+
+## Removed tables
+
+`plans`, `plan_module`, `plan_feature`, `plan_limits`, `limit_definitions`, `tenant_usage_counters`, `tenant_subscriptions`, `subscription_events` (replaced by module subscription history), `features` (removed — modules are licensing only; Spatie permissions handle authorization).
 
 ## Archive vs soft delete
 
-Tenants have two independent lifecycle signals:
+Unchanged: `archived_at` is independent of soft delete.
 
-- **`archived_at`** — a reversible, non-destructive "hide from active view" flag toggled via `/tenants/{tenant}/archive` and `/unarchive`. Archived tenants keep their data, users, and subscriptions untouched.
-- **Soft delete (`deleted_at`)** — the standard delete/restore/force-delete lifecycle. Deleting a tenant also cascades to its domains and tenant subscriptions on force delete; restoring a tenant restores its soft-deleted users and domains too.
-
-A tenant can be archived and not deleted, but archiving does not imply deletion (and vice versa).
-
-## Unlimited semantics
-
-Never use `-1` sentinels. `plan_limits.value IS NULL` ⇒ unlimited.
-
-## Remaining expansion (not yet built)
-
-- Tenant-side product/CRM data model (Leads, Tasks, Contacts, Pipelines, Calendar) — out of scope for the Central Platform
-- Live usage-metering enforcement against `tenant_usage_counters` (the table and admin display exist; nothing increments or blocks on it yet)
-- Stripe Checkout Session endpoint (the `BillingService` method exists but isn't exposed via a route)

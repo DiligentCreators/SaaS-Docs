@@ -2,52 +2,98 @@
 
 Canonical product and architecture documentation for the Diligent Creators SaaS platform.
 
-## Phase 1 scope
+## Architecture freeze
 
-**Central Platform (Platform / Core) only.**
+The platform foundation is **locked** as of **[v1.1.0-platform](releases/v1.1.0-platform.md)** (Production Ready). See [architecture/platform-freeze.md](architecture/platform-freeze.md).
+
+New business capability ships as **modules** following the [Module Development Standard](modules/module-development.md). **Leads** and **Tasks** are the canonical reference implementations; later modules must mirror them.
+
+Product sequencing (CRM → Sales → Billing → … → ERP) is defined in the [Product Roadmap](product-roadmap.md).
+
+## Current foundation scope
+
+**Central Platform + Tenant Authentication + shared UI + Module Development Standard.**
 
 In scope:
 
-- Tenant management: company/workspace profile, contact and address details, logo, notes, localization, status lifecycle, soft delete, **archive/unarchive**, and a dedicated tenant details page
-- Platform users: central authentication, admin RBAC, **invites**, phone/avatar fields, last-login tracking, and per-user activity timeline
-- Roles: CRUD, **delete**, **clone**, and a platform-wide **permissions matrix**
-- Plans, Modules, Features, Plan Modules, **Plan Features** (per-plan feature overrides), Limit Definitions, Plan Limits
-- Billing foundation: Laravel Cashier on the `Tenant` billable model, **manual Stripe product/price ID mapping** on Plans, Stripe webhook sync, tenant subscription lifecycle (cancel/resume/suspend) with an event trail
-- System settings, expanded into sectioned groups (General, Localization, Mail, Branding, Security, Maintenance, Billing, Feature Flags)
-- Real dashboard: tenant/user/subscription stats, MRR/ARR, growth trend, recent activity
+- Workspace (tenant) management: profile, archive/unarchive, soft delete, tabbed details page
+- Platform users, roles, permissions matrix, invites
+- **Tenant authentication** — register, login, forgot/reset password, logout
+- **Shared AppLayout shell** for Central and Tenant (sidebar, topbar, breadcrumbs, command palette)
+- **Tenant Application** — widget dashboard, in-app notifications (polled), workspace Settings (branding/mail), shared Profile, **Leads** (Kanban/table) and **Tasks** (board/list) CRM modules
+- **Tenant branding & configuration** — hierarchy Tenant → Central → system; isolated asset storage; SMTP fallback
+- **Tenant RBAC** — workspace-isolated users, roles, permissions; module + permission gating
+- **Central auth under `/central/*`** with isolated SPA sessions from tenant auth
+- **Module marketplace catalog** (Leads + Tasks today) with dependency resolution
+- **Workspace module subscriptions** — install, cancel, deactivate; default-included Leads/Tasks on create
+- **Billing Engine** — gateway-agnostic invoicing, payments ledger, consolidated billing, proration
+- **Payment gateways** — Stripe (Cashier) and Creem via `PaymentGatewayInterface`; Manual for offline
+- **Object storage** — Wasabi / S3-compatible uploads via `FileUploadService`
+- **Frontend CI/CD** — production build artifacts on `build-artifacts` + GitHub Actions artifacts
+- **Financial ledger** — invoices, invoice items, payments, payment transactions (read APIs)
+- **Impersonation** — audited admin sessions into workspaces (token handoff reserved)
+- Entitlements API (`{ core, modules }`) for tenant app module loading — licensing only; Spatie handles authorization
+- System settings (runtime-applied identity, localization, SMTP, branding, security, tenant-only maintenance), dashboard (workspace + module subscription + revenue metrics)
 - Central admin API + admin UI
 
-In progress / not yet enforced:
+Removed:
 
-- Usage counters exist (`tenant_usage_counters`) but are not yet metered against live product usage
-- Stripe Checkout session creation exists as a service method but is not yet wired to a public endpoint
+- Plans, plan tiers, plan modules/features/limits
+- Features catalog (module → feature entitlement layer)
+- Product usage limits (e.g. lead caps)
+- Plan-based `tenant_subscriptions`
 
-## Explicit non-goals
+## Explicit non-goals (still)
 
-Do **not** implement in Phase 1:
-
-- Tenant business/CRM modules (Leads, Contacts, Tasks, Pipelines, Calendar product features) and tenant-side product APIs/dashboards
-- Tenant team members (separate from central platform users)
-- **Automatic Stripe product/price creation** — Stripe IDs are mapped manually on Plans; the platform never calls Stripe to create products or prices
-- Payment providers other than Stripe (Paddle, LemonSqueezy, etc.)
-- Invoices, PDF receipts, and usage-metering enforcement
+- Building future product modules before they are scheduled (Invoices, Inventory, etc. follow the Leads/Tasks blueprint)
+- Automatic Stripe product/price creation
+- Full invoices/payments write UI (ledger is API + engine; list/detail read in admin; some Central Billing nav items remain placeholders)
+- Automatic Creem product creation / programmatic Creem refunds (dashboard-operated)
+- Central → Tenant impersonation token exchange (architecture prepared; not shipped)
+- Divergent Central vs Tenant shell redesigns (foundation stays shared)
+- Laravel Modules packages / plugin auto-discovery
 
 ## Documentation map
 
 | Document | Description |
 |----------|-------------|
-| [architecture/database.md](architecture/database.md) | ERD, table dictionary, unlimited semantics |
-| [architecture/entitlements.md](architecture/entitlements.md) | Modules vs features vs limits; plan feature overrides; default plan & trial rules |
+| [product-roadmap.md](product-roadmap.md) | CRM → ERP module phases and delivery order |
+| [architecture/platform-freeze.md](architecture/platform-freeze.md) | Locked foundation; when refactoring is allowed |
+| [modules/module-development.md](modules/module-development.md) | Module Development Standard + Definition of Done |
+| [modules/leads.md](modules/leads.md) | Leads reference module guides |
+| [modules/tasks.md](modules/tasks.md) | Tasks module guides |
+| [api/tenant-v1-leads.md](api/tenant-v1-leads.md) | Tenant Leads REST API |
+| [api/tenant-v1-tasks.md](api/tenant-v1-tasks.md) | Tenant Tasks REST API |
+| [api/tenant-v1-notifications.md](api/tenant-v1-notifications.md) | Tenant in-app notifications API |
+| [api/tenant-v1-dashboard.md](api/tenant-v1-dashboard.md) | Tenant dashboard + widget registry |
+| [architecture/database.md](architecture/database.md) | ERD / table dictionary |
+| [architecture/object-storage.md](architecture/object-storage.md) | Wasabi / S3 uploads, migration command, local vs production disks |
+| [architecture/frontend-build-artifacts.md](architecture/frontend-build-artifacts.md) | Frontend CI/CD → `build-artifacts` branch + GitHub artifacts |
+| [architecture/entitlements.md](architecture/entitlements.md) | Module licensing vs Spatie authorization |
+| [architecture/shared-ui.md](architecture/shared-ui.md) | Shared design system & layout reuse |
+| [ui/shared-layout.md](ui/shared-layout.md) | Shared layout guides index |
+| [ui/shared-layout-developer.md](ui/shared-layout-developer.md) | Shell, nav, and page structure for engineers |
+| [ui/tenant-application-user.md](ui/tenant-application-user.md) | Tenant navigation & dashboard overview |
+| [authentication/authentication-developer.md](authentication/authentication-developer.md) | Auth architecture, guards, reset flow |
+| [authentication/authentication-user.md](authentication/authentication-user.md) | Register, login, forgot/reset guides |
+| [authentication/authentication-production.md](authentication/authentication-production.md) | Mail, reset, session, security ops |
 | [api/central-v1.md](api/central-v1.md) | Central REST API reference |
 | [admin-ui.md](admin-ui.md) | Admin console screen map |
-| [testing/playwright.md](testing/playwright.md) | Central Playwright E2E guide (suite lives in Frontend) |
-| [billing/stripe-cashier.md](billing/stripe-cashier.md) | Cashier setup, manual Stripe ID mapping, webhook sync |
-| [workflows/tenant-provisioning.md](workflows/tenant-provisioning.md) | Tenant create → plan/trial/subscription flow |
-| [CHANGELOG.md](CHANGELOG.md) | Phase delivery notes |
+| [billing/billing-engine.md](billing/billing-engine.md) | Billing Engine architecture |
+| [billing/payment-gateways.md](billing/payment-gateways.md) | Payment gateway architecture & guides |
+| [settings/settings.md](settings/settings.md) | Central Application settings (user / developer / production) |
+| [settings/tenant-settings.md](settings/tenant-settings.md) | Tenant workspace branding & configuration hierarchy |
+| [authorization/tenant-rbac.md](authorization/tenant-rbac.md) | Tenant users, roles, permissions (RBAC) |
+| [billing/stripe-cashier.md](billing/stripe-cashier.md) | Cashier / Stripe driver notes |
+| [billing/creem.md](billing/creem.md) | Creem gateway checkout, webhooks, and ops |
+| [architecture/platform-production-runbook.md](architecture/platform-production-runbook.md) | Production deploy / go-live checklist |
+| [workflows/tenant-provisioning.md](workflows/tenant-provisioning.md) | Workspace create → default modules |
+| [testing/playwright.md](testing/playwright.md) | Playwright E2E suites (Central + Tenant) |
+| [development/local-demo-data.md](development/local-demo-data.md) | Local demo CRM seeding (users, leads, tasks) |
+| [releases/v1.1.0-platform.md](releases/v1.1.0-platform.md) | Official Platform Foundation release |
+| [CHANGELOG.md](CHANGELOG.md) | Delivery notes |
 
 ## Related repositories
 
 - Backend: `SaaS-Backend` (Laravel 13 API)
-- Frontend: `SaaS-Frontend` (React 19 central admin)
-
-Install and local setup remain in each repo's README. Product truth lives here.
+- Frontend: `SaaS-Frontend` (React 19 — Central admin + Tenant Application shell)

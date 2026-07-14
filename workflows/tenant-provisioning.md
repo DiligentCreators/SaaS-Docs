@@ -1,19 +1,40 @@
-# Tenant provisioning workflow
+# Workspace provisioning
 
-## Happy path (admin creates tenant)
+## Flow
 
-1. Admin submits tenant create (company/workspace name, slug, email, phone, logo/address/notes, localization, optional `owner_id`).
-2. API resolves default plan (`system_settings.default_plan_id` → `plans.is_default`).
-3. Tenant row inserted with `status=active`.
-4. Domain created from slug (Stancl).
-5. `tenant_subscriptions` row created:
-   - If `trial_enabled`: `status=trial`, `trial_starts_at=now`, `trial_ends_at=now + plan.trial_days`
-   - Else: `status=active`, trial columns null
-6. `tenants.trial_ends_at` mirrored when trial applies.
-7. Response returns tenant + current subscription placeholder.
+```
+Admin creates workspace (POST /tenants)
+  → Tenant row + domain
+  → Initialize billing profile (anchor day, cycle, proration mode, next_billing_at)
+  → Install every published module where is_default_included = true
+       (today: Leads, Tasks)
+  → Record workspace_module_subscription_history (module_installed)
+  → Entitlement cache ready
 
-## Invariants
+Self-service registration (POST /public/register-workspace)
+  → Same provisioning as above
+  → Ensure tenant-api roles + permissions
+  → Create workspace owner User (superadmin)
+  → Issue Sanctum tenant-token for SPA login
+```
 
-- Trial days always from plan configuration.
-- Existing subscriptions are never rewritten when the default plan changes.
-- No Stripe/payment provider calls happen during tenant creation — `tenants.stripe_id` is only populated later, if and when the tenant is billed through Cashier (see [billing/stripe-cashier.md](../billing/stripe-cashier.md)).
+## Rules
+
+- No plan assignment.
+- Default modules are `source=included`, `is_billable=false`, `price=0`, `status=active`.
+- Workspace owners cannot cancel included modules (`POST …/cancel` rejected); platform admin may deactivate.
+- Missing default modules at provision time fails closed (exception).
+- Additional modules are installed later via marketplace (`POST /tenants/{tenant}/modules`) or admin install; billable modules enter `pending` until the Billing Engine settles payment.
+- Consolidated billing (`billing:run-consolidated`) picks up billable active subscriptions on `next_billing_at` — not at provision time for included modules.
+- Admin-created workspaces do not auto-create an owner user (invite/create later). Self-service registration always creates the owner.
+
+## Billing profile defaults
+
+| Field | Initial value |
+|-------|---------------|
+| `billing_anchor_day` | Today's day, clamped 1–28 |
+| `billing_cycle` | `monthly` |
+| `proration_mode` | From system setting |
+| `next_billing_at` | Next month on anchor day |
+
+See [billing/billing-engine.md](../billing/billing-engine.md) for consolidated invoice sequence.
