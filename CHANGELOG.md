@@ -1,5 +1,29 @@
 # Changelog
 
+## Go-live hardening (2026-07-15)
+
+Production readiness audit for Central + Tenant with Leads & Tasks. Billing and security fixes only — no architecture redesign.
+
+**Critical / High**
+
+- Module cancel now calls Stripe/Creem `cancelSubscription` before local entitlement revoke (prevents silent continued charging)
+- Failed webhook logs are reclaimed on provider retry (no permanent swallow after a transient 500)
+- Recurring `invoice.payment_succeeded` creates a renewal invoice/payment when the provider transaction id is new
+- Cashier `/stripe/webhook` handles `invoice.payment_failed`
+- Email verification asserts the user belongs to the current tenant
+- Boot refuses `APP_DEBUG=true` in production; HTTPS scheme forced in production; `SecureHeaders` + `TrustProxies`
+- Lead CSV export escapes formula injection (`=+-@`)
+- Checkout merges admin `gateway_metadata` into Stripe/Creem session metadata
+- SPA: Leads/Tasks assignee fetches gated on `users.list` (no spurious 403 toast for staff); assignee fields PermissionGated in create/edit dialogs
+
+**Ops / docs**
+
+- CRM due-notification command applies tenant SMTP runtime config
+- Production runbook: cache isolation wording, Creem webhook secret, frontend SPA deploy notes
+- Tests: cancel-at-gateway, failed-webhook retry, renewal ledger; marketplace Stripe mocks allow `completedCheckoutEvent`
+
+---
+
 ## Creem payment gateway (2026-07-14)
 
 Add Creem as a second provider behind the existing `PaymentGatewayInterface` / `GatewayManager` stack. Stripe behavior is unchanged.

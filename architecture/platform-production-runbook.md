@@ -11,16 +11,35 @@ RC notes: [releases/rc1-production-readiness.md](../releases/rc1-production-read
 | Check | Requirement |
 |-------|-------------|
 | `APP_ENV` | `production` |
-| `APP_DEBUG` | `false` |
+| `APP_DEBUG` | `false` (boot throws if true in production) |
 | `APP_KEY` | Set and backed up |
 | `FRONTEND_URL` / `CORS_ALLOWED_ORIGINS` | Pin SPA origins (no `*`) |
-| `STRIPE_WEBHOOK_SECRET` | Non-empty when Stripe is live |
-| Cache | `CACHE_STORE=redis` (Stancl tenant cache tags are not safe on database/file) |
+| `STRIPE_WEBHOOK_SECRET` / `CREEM_WEBHOOK_SECRET` | Non-empty for each **active** gateway |
+| Cache | Prefer `CACHE_STORE=redis`. Isolation uses **explicit tenant-scoped keys** (`CacheTenancyBootstrapper` is intentionally off — do not rely on Redis tags alone) |
 | Queue worker | Always running (`queue:work` or Laravel Cloud background process) |
 | Scheduler | Cron/`schedule:run` every minute |
-| HTTPS | TLS terminated; `SESSION_SECURE_COOKIE=true` |
+| HTTPS | TLS at edge; app trusts proxies (`TrustProxies`); production forces `https` URL scheme; `SESSION_SECURE_COOKIE=true` |
 | Registration | `registration_enabled` intentional (defaults **false**) |
 | Health | `GET /up` returns 200 (DB; Redis when cache/queue use Redis) |
+
+## Frontend SPA deploy
+
+Build the React app and serve static assets behind HTTPS:
+
+```bash
+cd SaaS-Frontend
+npm ci
+npm run build
+```
+
+Set `VITE_API_URL` (and related `VITE_*` vars from `.env.example`) **at build time**. Publish `dist/` to your CDN/static host.
+
+Cache guidance:
+
+- `index.html` — short TTL or `no-cache` (always revalidate)
+- Hashed assets under `assets/` — long-lived immutable cache
+
+Point `FRONTEND_URL` / `CORS_ALLOWED_ORIGINS` on the API at the SPA origin(s).
 
 ## Required background processes
 
@@ -68,9 +87,15 @@ Notes:
 | `POST /stripe/webhook` | Cashier subscription mirror (+ BillingEngine when applicable) |
 | `POST /webhooks/gateways/{code}` | Billing engine (all gateways) |
 
-Both are CSRF-exempt and rate-limited (`throttle:webhooks`). Invalid Stripe signatures are rejected **before** full payload persistence. Both paths claim `webhook_logs` by `(payment_gateway_id, provider_event_id)` so the same Stripe `evt_…` cannot double-settle.
+Both are CSRF-exempt and rate-limited (`throttle:webhooks`). Invalid Stripe/Creem signatures are rejected **before** full payload persistence. Both paths claim `webhook_logs` by `(payment_gateway_id, provider_event_id)` so the same provider event cannot double-settle.
 
-Prefer configuring Stripe to deliver business events to `/webhooks/gateways/stripe` and keep Cashier URL for subscription sync as documented in your Stripe dashboard.
+**Failed processing:** if handling throws after the log row is created, status is `failed` and a **provider retry reprocesses** that event (reclaims the failed row). Successful/`ignored` events still return “already handled”.
+
+Prefer configuring Stripe to deliver business events to `/webhooks/gateways/stripe` and keep Cashier URL for subscription sync as documented in your Stripe dashboard. Creem: `POST /webhooks/gateways/creem` with `creem-signature`.
+
+## Module cancel
+
+Cancelling a purchased module subscription calls the payment gateway (`cancelSubscription`) **before** marking the local row cancelled and clearing entitlements. If the provider call fails, the local subscription stays active and the API returns a validation error so billing does not silently continue while access is revoked.
 
 ## Post-deploy smoke
 
