@@ -27,14 +27,16 @@ Highlights:
 | In-app plan upgrade/downgrade (monthly↔yearly swap) | Medium | Cancel + repurchase only; document as unsupported for now |
 | Staff role is view-mostly for Leads | Low | Product choice; `tasks.complete` only on Tasks |
 | Bearer tokens in web storage | Medium | SPA design; already tracked in RC1 |
-| No frontend CI / crash telemetry | Medium | Follow-up: GitHub Actions + Sentry |
+| Crash telemetry (Sentry) not wired | Medium | Follow-up: client + Laravel Nightwatch/Sentry |
 | Dual Stripe webhook ingress | Info | Shared idempotency; prefer `/webhooks/gateways/stripe` |
+| Creem refunds | Info | Dashboard-only; capability no longer advertises API refunds |
+| Central Billing placeholder screens | Low | Refunds/coupons/taxes/logs nav still “coming soon” |
 
 ## Verification
 
 ```bash
 cd SaaS-Backend && php artisan test --compact
-# Expected: 323 passed
+# Expected: 331+ passed
 ```
 
 Staging smoke: Central login → create tenant → Stripe/Creem test checkout → cancel module (confirm provider subscription cancelled) → Leads/Tasks as admin + staff.

@@ -27,6 +27,9 @@ In scope:
 - **Module marketplace catalog** (Leads + Tasks today) with dependency resolution
 - **Workspace module subscriptions** — install, cancel, deactivate; default-included Leads/Tasks on create
 - **Billing Engine** — gateway-agnostic invoicing, payments ledger, consolidated billing, proration
+- **Payment gateways** — Stripe (Cashier) and Creem via `PaymentGatewayInterface`; Manual for offline
+- **Object storage** — Wasabi / S3-compatible uploads via `FileUploadService`
+- **Frontend CI/CD** — production build artifacts on `build-artifacts` + GitHub Actions artifacts
 - **Financial ledger** — invoices, invoice items, payments, payment transactions (read APIs)
 - **Impersonation** — audited admin sessions into workspaces (token handoff reserved)
 - Entitlements API (`{ core, modules }`) for tenant app module loading — licensing only; Spatie handles authorization
@@ -44,8 +47,8 @@ Removed:
 
 - Building future product modules before they are scheduled (Invoices, Inventory, etc. follow the Leads/Tasks blueprint)
 - Automatic Stripe product/price creation
-- Full invoices/payments write UI (ledger is API + engine; list/detail read in admin)
-- Non-Stripe payment gateways beyond Manual (architecture reserved via `PaymentGatewayInterface`)
+- Full invoices/payments write UI (ledger is API + engine; list/detail read in admin; some Central Billing nav items remain placeholders)
+- Automatic Creem product creation / programmatic Creem refunds (dashboard-operated)
 - Central → Tenant impersonation token exchange (architecture prepared; not shipped)
 - Divergent Central vs Tenant shell redesigns (foundation stays shared)
 - Laravel Modules packages / plugin auto-discovery
@@ -82,6 +85,8 @@ Removed:
 | [settings/tenant-settings.md](settings/tenant-settings.md) | Tenant workspace branding & configuration hierarchy |
 | [authorization/tenant-rbac.md](authorization/tenant-rbac.md) | Tenant users, roles, permissions (RBAC) |
 | [billing/stripe-cashier.md](billing/stripe-cashier.md) | Cashier / Stripe driver notes |
+| [billing/creem.md](billing/creem.md) | Creem gateway checkout, webhooks, and ops |
+| [architecture/platform-production-runbook.md](architecture/platform-production-runbook.md) | Production deploy / go-live checklist |
 | [workflows/tenant-provisioning.md](workflows/tenant-provisioning.md) | Workspace create → default modules |
 | [testing/playwright.md](testing/playwright.md) | Playwright E2E suites (Central + Tenant) |
 | [development/local-demo-data.md](development/local-demo-data.md) | Local demo CRM seeding (users, leads, tasks) |
