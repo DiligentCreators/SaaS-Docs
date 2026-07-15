@@ -1,5 +1,15 @@
 # Changelog
 
+## Dedicated emails queue (2026-07-15)
+
+All `ShouldQueue` notifications dispatch to the named `emails` queue via `QueuesOnEmails`.
+
+- Worker: `php artisan queue:work --queue=emails --sleep=1 --tries=3 --max-time=3600`
+- Optional standby: `--queue=default` for future non-mail jobs
+- Docs: production runbook, module-development-developer, backend README Queue Setup
+
+---
+
 ## SPA runtime config (multi-client / Forge) (2026-07-15)
 
 Frontend API origin is runtime via Forge-generated `/config.js` (`window.env`), not baked into CI.
