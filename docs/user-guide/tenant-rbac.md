@@ -13,6 +13,8 @@ Open **Administration → Users**.
 | Edit | Row menu → **Edit** → update details and roles |
 | Activate / Deactivate | Suspend / Unsuspend (when available) |
 | Reset password | Row menu → change password |
+| Resend verification | Row menu → **Resend verification** (unverified users; requires `users.verify`) |
+| Mark email verified | Row menu → **Mark as verified** when the member never received the email (requires `users.verify`) |
 | Delete | Row menu → **Delete** (if your role allows it) |
 
 Each person belongs only to **this** workspace. They cannot see users from other workspaces.

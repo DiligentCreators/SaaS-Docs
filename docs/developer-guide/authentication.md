@@ -83,7 +83,11 @@ Set `FRONTEND_URL` in the backend `.env` so reset/invite emails open the SPA.
 Tenant `User` and Central users implement `MustVerifyEmail`. Verification is required before protected Central and tenant application APIs can be used. Routes:
 
 - `GET /api/tenant/v1/auth/email/verify/{id}/{hash}` (signed)
-- `POST /api/tenant/v1/me/email/verification-notification`
+- `POST /api/tenant/v1/me/email/verification-notification` (self-service resend)
+- `POST /api/tenant/v1/users/{user}/resend-verification` (`users.verify`; throttled `6,1`)
+- `POST /api/tenant/v1/users/{user}/verify-email` (`users.verify`; manual mark verified)
+
+Admin verify/resend cannot target self or (for non-owners) the workspace owner. Manual verify and resend write platform audit events `tenant_user_email_verified` / `tenant_user_verification_resent`.
 
 ## Impersonation compatibility
 

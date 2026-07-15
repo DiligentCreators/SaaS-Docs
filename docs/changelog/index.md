@@ -1,5 +1,17 @@
 # Changelog
 
+## Tenant manual member email verification (2026-07-16)
+
+Workspace owners and admins can help members who never receive the verification email.
+
+- Permission: `users.verify` (owner + admin role map)
+- API: `POST /api/tenant/v1/users/{user}/verify-email`, `POST /api/tenant/v1/users/{user}/resend-verification`
+- SPA Users row menu: **Resend verification** / **Mark as verified**
+- Audit: `tenant_user_email_verified`, `tenant_user_verification_resent`
+- Tests: `TenantUserVerifyEmailTest`; Playwright tenant RBAC covers mark-as-verified
+
+---
+
 ## Dedicated emails queue (2026-07-15)
 
 All `ShouldQueue` notifications dispatch to the named `emails` queue via `QueuesOnEmails`.
