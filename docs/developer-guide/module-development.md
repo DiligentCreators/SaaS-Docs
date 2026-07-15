@@ -1,0 +1,47 @@
+# Module Development Standard
+
+Every business capability on this platform is a **module**. Modules are licensed via the marketplace catalog and authorized via Spatie permissions. They are **not** PHP packages or plugins.
+
+**Reference implementation:** [Leads](/user-guide/leads-overview)
+
+## Guides
+
+| Audience | Document |
+|----------|----------|
+| Engineers | [module-development-developer.md](/developer-guide/module-development-guide) |
+| Production / ops | [module-development-production.md](/deployment/module-development) |
+| Architecture freeze | [../architecture/platform-freeze.md](/getting-started/platform-freeze) |
+
+## Principles
+
+1. **Consistency over abstraction** — flat Laravel layout; register through existing catalog, permissions, middleware, nav, and settings.
+2. **Licensing ≠ authorization** — `module:{slug}` then `can:{slug}.{action}`.
+3. **Mirror Leads** — Tasks, Invoices, Inventory, Purchases, HR, Payroll, Accounting, Assets, Projects must follow the same structure.
+4. **No shortcuts** — every module ships backend, frontend, tests, docs, and CHANGELOG.
+
+## Cross-cutting patterns (Sprint 2+)
+
+- **Dashboard widgets** — register via `DashboardWidgetService` on `GET /dashboard`; gate by module entitlement, permission, and assignee scope. Do not add a Calendar widget until the Calendar module exists.
+- **Notifications** — Laravel `mail` + `database` channels; expose list/unread/mark-read APIs; SPA may poll until Reverb/Echo ships. Due/overdue work uses `crm:send-due-notifications`.
+- **Assignee scoping** — reuse `ScopesToAssignee` so users without `{slug}.assign` only see their own records.
+
+## Definition of Done
+
+A module is complete only when:
+
+- [ ] Backend implementation complete (models, migrations, services, controllers, requests, resources, policies, events, notifications)
+- [ ] Frontend complete (pages, forms, tables, filters, dialogs/drawers, loading/empty/error states)
+- [ ] Permissions enforced (Spatie + UI gates)
+- [ ] Module licensing enforced (`module:` middleware + SPA nav)
+- [ ] Tenant isolation verified
+- [ ] Audit logging (`PlatformAuditService`) implemented
+- [ ] Activity logging (Spatie `LogsActivity` + domain timeline where applicable)
+- [ ] Notifications implemented where applicable
+- [ ] Pest tests pass (CRUD, authz, validation, tenant isolation, module gate)
+- [ ] Playwright suite passes (`test:e2e:{slug}`)
+- [ ] Manual browser QA passes
+- [ ] Developer / User / Production guides updated
+- [ ] API + database docs updated
+- [ ] CHANGELOG updated
+- [ ] No console errors; no failed network requests; build passes
+- [ ] No platform refactor required before the next module

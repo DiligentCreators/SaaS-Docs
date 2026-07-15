@@ -1,0 +1,239 @@
+# Production docs build — publishes compiled VitePress assets to the build-artifacts branch.
+# Triggers only on pushes to main (including merged pull requests) and manual runs.
+# Does not run for feature/*, bugfix/*, develop, release/*, or tags.
+name: Docs production build
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: docs-build-artifacts
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  NODE_VERSION: lts/*
+  ARTIFACT_NAME: docs-build
+  ARTIFACT_BRANCH: build-artifacts
+  DIST_DIR: docs/.vitepress/dist
+
+jobs:
+  build-and-publish:
+    name: Build, validate, and publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Node.js (latest LTS)
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production docs
+        run: |
+          set -euo pipefail
+          npm run docs:build 2>&1 | tee build.log
+
+          # Fail CI on VitePress/Vite warnings that indicate a dirty production build.
+          if grep -Ei \
+            'falling back|build failed|error during build|\[vitepress\].*warn|⚠|WARNING' \
+            build.log; then
+            echo "::error::docs:build produced warnings or errors that must be fixed before deploy"
+            exit 1
+          fi
+
+          echo "docs:build completed without warning patterns"
+
+      - name: Generate build-info.json
+        env:
+          APP_VERSION: ${{ vars.APP_VERSION }}
+        run: |
+          set -euo pipefail
+          DIST_DIR="${{ env.DIST_DIR }}"
+          NODE_VER="$(node -v | sed 's/^v//')"
+          VP_VER="$(node -p "require('vitepress/package.json').version")"
+          APP_VER="${APP_VERSION:-}"
+          if [ -z "$APP_VER" ]; then
+            APP_VER="$(node -p "require('./package.json').version")"
+          fi
+          BUILD_TS="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          cat > "${DIST_DIR}/build-info.json" <<EOF
+          {
+            "commitSha": "${{ github.sha }}",
+            "branch": "${{ github.ref_name }}",
+            "buildTimestampUtc": "${BUILD_TS}",
+            "buildNumber": "${{ github.run_number }}",
+            "githubRunId": "${{ github.run_id }}",
+            "applicationVersion": "${APP_VER}",
+            "nodeVersion": "${NODE_VER}",
+            "vitepressVersion": "${VP_VER}",
+            "siteUrl": "https://docs.saleos.app"
+          }
+          EOF
+          node -e "const fs=require('fs'); const p=process.argv[1]; fs.writeFileSync(p, JSON.stringify(JSON.parse(fs.readFileSync(p,'utf8')), null, 2) + '\n')" "${DIST_DIR}/build-info.json"
+          echo "Wrote ${DIST_DIR}/build-info.json"
+          cat "${DIST_DIR}/build-info.json"
+
+      - name: Verify build succeeded
+        run: |
+          set -euo pipefail
+          DIST_DIR="${{ env.DIST_DIR }}"
+
+          if [ ! -d "${DIST_DIR}" ]; then
+            echo "::error::${DIST_DIR} is missing after build"
+            exit 1
+          fi
+          if [ ! -f "${DIST_DIR}/index.html" ]; then
+            echo "::error::${DIST_DIR}/index.html is missing"
+            exit 1
+          fi
+          if [ ! -f "${DIST_DIR}/sitemap.xml" ]; then
+            echo "::error::${DIST_DIR}/sitemap.xml is missing"
+            exit 1
+          fi
+          if [ ! -f "${DIST_DIR}/robots.txt" ]; then
+            echo "::error::${DIST_DIR}/robots.txt is missing"
+            exit 1
+          fi
+          if [ ! -f "${DIST_DIR}/404.html" ]; then
+            echo "::error::${DIST_DIR}/404.html is missing"
+            exit 1
+          fi
+          if [ ! -f "${DIST_DIR}/build-info.json" ]; then
+            echo "::error::${DIST_DIR}/build-info.json is missing"
+            exit 1
+          fi
+
+          # Artifact must be static output only — no source / tooling leakage
+          for forbidden in package.json package-lock.json node_modules .git .github README.md; do
+            if [ -e "${DIST_DIR}/${forbidden}" ]; then
+              echo "::error::Forbidden path '${forbidden}' found under ${DIST_DIR}"
+              exit 1
+            fi
+          done
+
+          if find "${DIST_DIR}" -type f \( -name '*.md' -o -name '*.ts' -o -name '*.tsx' -o -name 'tsconfig*.json' -o -name 'vite.config.*' \) | grep -q .; then
+            echo "::error::Source-like files found under ${DIST_DIR}"
+            find "${DIST_DIR}" -type f \( -name '*.md' -o -name '*.ts' -o -name '*.tsx' -o -name 'tsconfig*.json' -o -name 'vite.config.*' \)
+            exit 1
+          fi
+
+          echo "Build validation passed"
+
+      - name: Verify artifacts contain no secrets
+        run: |
+          set -euo pipefail
+          DIST_DIR="${{ env.DIST_DIR }}"
+          FAILED=0
+
+          if find "${DIST_DIR}" -type f \( -name '.env' -o -name '.env.*' -o -name '*.pem' -o -name '*credentials*' -o -name '*secret*' \) 2>/dev/null | grep -q .; then
+            echo "::error::Forbidden secret-like filenames found under ${DIST_DIR}"
+            find "${DIST_DIR}" -type f \( -name '.env' -o -name '.env.*' -o -name '*.pem' -o -name '*credentials*' -o -name '*secret*' \)
+            FAILED=1
+          fi
+
+          if grep -RInE \
+            --include='*.js' --include='*.mjs' --include='*.cjs' --include='*.html' --include='*.json' --include='*.map' --include='*.txt' \
+            '(AWS_SECRET_ACCESS_KEY|WASABI_SECRET|STRIPE_SECRET|STRIPE_SECRET_KEY|CREEM_API_KEY|CREEM_WEBHOOK_SECRET|BEGIN (RSA |OPENSSH )?PRIVATE KEY)' \
+            "${DIST_DIR}" 2>/dev/null; then
+            echo "::error::Potential secret material detected in build output"
+            FAILED=1
+          fi
+
+          if [ "$FAILED" -ne 0 ]; then
+            exit 1
+          fi
+          echo "Secret scan passed"
+
+      - name: Upload GitHub Actions artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.DIST_DIR }}
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Publish to build-artifacts branch
+        env:
+          ARTIFACT_BRANCH: ${{ env.ARTIFACT_BRANCH }}
+          ARTIFACT_NAME: ${{ env.ARTIFACT_NAME }}
+          DIST_DIR: ${{ env.DIST_DIR }}
+          COMMIT_SHA: ${{ github.sha }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          REPO_URL="https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
+          WORK_DIR="${RUNNER_TEMP}/docs-build-artifacts-publish"
+
+          rm -rf "${WORK_DIR}"
+          mkdir -p "${WORK_DIR}"
+
+          if git ls-remote --exit-code --heads "${REPO_URL}" "${ARTIFACT_BRANCH}" >/dev/null 2>&1; then
+            echo "Cloning existing ${ARTIFACT_BRANCH} branch"
+            git clone --depth 1 --branch "${ARTIFACT_BRANCH}" "${REPO_URL}" "${WORK_DIR}"
+          else
+            echo "Creating ${ARTIFACT_BRANCH} branch (orphan)"
+            git clone --depth 1 "${REPO_URL}" "${WORK_DIR}"
+            cd "${WORK_DIR}"
+            git checkout --orphan "${ARTIFACT_BRANCH}"
+            git rm -rf . >/dev/null 2>&1 || true
+          fi
+
+          cd "${WORK_DIR}"
+
+          # Replace all published files; keep only .git
+          find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
+
+          # Copy only compiled production assets (contents of VitePress dist)
+          cp -a "${GITHUB_WORKSPACE}/${DIST_DIR}/." .
+
+          # Double-check we never publish source / tooling
+          for forbidden in \
+            docs node_modules tests e2e .github package.json package-lock.json \
+            README.md .gitignore .vitepress src .cursor; do
+            if [ -e "${forbidden}" ]; then
+              echo "::error::Forbidden path '${forbidden}' present in publish directory"
+              exit 1
+            fi
+          done
+
+          if find . -type f \( -name '*.md' -o -name '*.ts' -o -name 'tsconfig*.json' \) ! -path './.git/*' | grep -q .; then
+            echo "::error::Source-like files leaked into publish directory"
+            find . -type f \( -name '*.md' -o -name '*.ts' -o -name 'tsconfig*.json' \) ! -path './.git/*'
+            exit 1
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No artifact changes to publish (identical to previous build)."
+            exit 0
+          fi
+
+          git commit -m "build(docs): update production artifacts from ${COMMIT_SHA}"
+
+          if ! git push origin "HEAD:${ARTIFACT_BRANCH}"; then
+            echo "::error::Failed to push ${ARTIFACT_BRANCH}. GitHub Actions artifact '${ARTIFACT_NAME}' was already uploaded and is retained for 30 days."
+            echo "::error::Check branch protection rules allow github-actions[bot] to push to ${ARTIFACT_BRANCH}, or that the branch is unprotected."
+            exit 1
+          fi
+
+          echo "Published production docs assets to ${ARTIFACT_BRANCH} from ${COMMIT_SHA}"
