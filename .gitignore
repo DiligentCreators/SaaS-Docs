@@ -6,6 +6,17 @@ Thumbs.db
 .idea/
 .vscode/
 
+# Dependencies
+node_modules/
+
+# VitePress
+docs/.vitepress/dist/
+docs/.vitepress/cache/
+
+# Logs
+*.log
+npm-debug.log*
+
 # Playwright run dumps — never commit
 /playwright-report/
 /test-results/

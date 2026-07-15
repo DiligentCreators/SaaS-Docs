@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <rect width="1200" height="630" fill="#0f172a"/>
+  <rect x="0" y="0" width="1200" height="630" fill="url(#bg)"/>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0f766e"/>
+      <stop offset="1" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect x="72" y="72" width="96" height="96" rx="22" fill="#14b8a6"/>
+  <path d="M92 140V100h20.4c8.8 0 14.2 4.6 14.2 11.8 0 4.6-2.4 8.2-6.6 10.2L140 140h-10.4l-10.6-9.2h-9.8V140H92zm9.2-16.2h10.6c4 0 6.4-2 6.4-5s-2.4-5-6.4-5H101.2v10zM137 140l-12.8-32h10l7.6 21.4L157.6 108h9.8L155.4 140H137z" fill="#fff"/>
+  <text x="72" y="280" fill="#f8fafc" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="72" font-weight="700">SaleOS Docs</text>
+  <text x="72" y="360" fill="#ccfbf1" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="36">Official documentation for the SaleOS SaaS Platform.</text>
+  <text x="72" y="520" fill="#99f6e4" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="28">docs.saleos.app</text>
+</svg>

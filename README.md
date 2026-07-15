@@ -1,99 +1,190 @@
-# DC SaaS Platform Documentation
+# SaleOS Docs
 
-Canonical product and architecture documentation for the Diligent Creators SaaS platform.
+Official documentation site for the **SaleOS** SaaS platform, built with [VitePress](https://vitepress.dev/).
 
-## Architecture freeze
+**Production URL:** [https://docs.saleos.app](https://docs.saleos.app)
 
-The platform foundation is **locked** as of **[v1.1.0-platform](releases/v1.1.0-platform.md)** (Production Ready). See [architecture/platform-freeze.md](architecture/platform-freeze.md).
+## Requirements
 
-New business capability ships as **modules** following the [Module Development Standard](modules/module-development.md). **Leads** and **Tasks** are the canonical reference implementations; later modules must mirror them.
+| Tool | Version |
+|------|---------|
+| Node.js | **20+** / latest LTS (CI uses `lts/*`) |
+| npm | 10+ |
 
-Product sequencing (CRM → Sales → Billing → … → ERP) is defined in the [Product Roadmap](product-roadmap.md).
+## Local development
 
-## Current foundation scope
+```bash
+npm ci
+npm run docs:dev
+```
 
-**Central Platform + Tenant Authentication + shared UI + Module Development Standard.**
+Open the URL printed in the terminal (default `http://localhost:5173`).
 
-In scope:
+## Local production build
 
-- Workspace (tenant) management: profile, archive/unarchive, soft delete, tabbed details page
-- Platform users, roles, permissions matrix, invites
-- **Tenant authentication** — register, login, forgot/reset password, logout
-- **Shared AppLayout shell** for Central and Tenant (sidebar, topbar, breadcrumbs, command palette)
-- **Tenant Application** — widget dashboard, in-app notifications (polled), workspace Settings (branding/mail), shared Profile, **Leads** (Kanban/table) and **Tasks** (board/list) CRM modules
-- **Tenant branding & configuration** — hierarchy Tenant → Central → system; isolated asset storage; SMTP fallback
-- **Tenant RBAC** — workspace-isolated users, roles, permissions; module + permission gating
-- **Central auth under `/central/*`** with isolated SPA sessions from tenant auth
-- **Module marketplace catalog** (Leads + Tasks today) with dependency resolution
-- **Workspace module subscriptions** — install, cancel, deactivate; default-included Leads/Tasks on create
-- **Billing Engine** — gateway-agnostic invoicing, payments ledger, consolidated billing, proration
-- **Payment gateways** — Stripe (Cashier) and Creem via `PaymentGatewayInterface`; Manual for offline
-- **Object storage** — Wasabi / S3-compatible uploads via `FileUploadService`
-- **Frontend CI/CD** — production build artifacts on `build-artifacts` + GitHub Actions artifacts
-- **Financial ledger** — invoices, invoice items, payments, payment transactions (read APIs)
-- **Impersonation** — audited admin sessions into workspaces (token handoff reserved)
-- Entitlements API (`{ core, modules }`) for tenant app module loading — licensing only; Spatie handles authorization
-- System settings (runtime-applied identity, localization, SMTP, branding, security, tenant-only maintenance), dashboard (workspace + module subscription + revenue metrics)
-- Central admin API + admin UI
+```bash
+npm ci
+npm run docs:build
+```
 
-Removed:
+Static output:
 
-- Plans, plan tiers, plan modules/features/limits
-- Features catalog (module → feature entitlement layer)
-- Product usage limits (e.g. lead caps)
-- Plan-based `tenant_subscriptions`
+```text
+docs/.vitepress/dist
+```
 
-## Explicit non-goals (still)
+Preview:
 
-- Building future product modules before they are scheduled (Invoices, Inventory, etc. follow the Leads/Tasks blueprint)
-- Automatic Stripe product/price creation
-- Full invoices/payments write UI (ledger is API + engine; list/detail read in admin; some Central Billing nav items remain placeholders)
-- Automatic Creem product creation / programmatic Creem refunds (dashboard-operated)
-- Central → Tenant impersonation token exchange (architecture prepared; not shipped)
-- Divergent Central vs Tenant shell redesigns (foundation stays shared)
-- Laravel Modules packages / plugin auto-discovery
+```bash
+npm run docs:preview
+```
 
-## Documentation map
+`main` stays **source-only**. Do not commit `docs/.vitepress/dist`.
 
-| Document | Description |
-|----------|-------------|
-| [product-roadmap.md](product-roadmap.md) | CRM → ERP module phases and delivery order |
-| [architecture/platform-freeze.md](architecture/platform-freeze.md) | Locked foundation; when refactoring is allowed |
-| [modules/module-development.md](modules/module-development.md) | Module Development Standard + Definition of Done |
-| [modules/leads.md](modules/leads.md) | Leads reference module guides |
-| [modules/tasks.md](modules/tasks.md) | Tasks module guides |
-| [api/tenant-v1-leads.md](api/tenant-v1-leads.md) | Tenant Leads REST API |
-| [api/tenant-v1-tasks.md](api/tenant-v1-tasks.md) | Tenant Tasks REST API |
-| [api/tenant-v1-notifications.md](api/tenant-v1-notifications.md) | Tenant in-app notifications API |
-| [api/tenant-v1-dashboard.md](api/tenant-v1-dashboard.md) | Tenant dashboard + widget registry |
-| [architecture/database.md](architecture/database.md) | ERD / table dictionary |
-| [architecture/object-storage.md](architecture/object-storage.md) | Wasabi / S3 uploads, migration command, local vs production disks |
-| [architecture/frontend-build-artifacts.md](architecture/frontend-build-artifacts.md) | Frontend CI/CD → `build-artifacts` branch + GitHub artifacts |
-| [architecture/entitlements.md](architecture/entitlements.md) | Module licensing vs Spatie authorization |
-| [architecture/shared-ui.md](architecture/shared-ui.md) | Shared design system & layout reuse |
-| [ui/shared-layout.md](ui/shared-layout.md) | Shared layout guides index |
-| [ui/shared-layout-developer.md](ui/shared-layout-developer.md) | Shell, nav, and page structure for engineers |
-| [ui/tenant-application-user.md](ui/tenant-application-user.md) | Tenant navigation & dashboard overview |
-| [authentication/authentication-developer.md](authentication/authentication-developer.md) | Auth architecture, guards, reset flow |
-| [authentication/authentication-user.md](authentication/authentication-user.md) | Register, login, forgot/reset guides |
-| [authentication/authentication-production.md](authentication/authentication-production.md) | Mail, reset, session, security ops |
-| [api/central-v1.md](api/central-v1.md) | Central REST API reference |
-| [admin-ui.md](admin-ui.md) | Admin console screen map |
-| [billing/billing-engine.md](billing/billing-engine.md) | Billing Engine architecture |
-| [billing/payment-gateways.md](billing/payment-gateways.md) | Payment gateway architecture & guides |
-| [settings/settings.md](settings/settings.md) | Central Application settings (user / developer / production) |
-| [settings/tenant-settings.md](settings/tenant-settings.md) | Tenant workspace branding & configuration hierarchy |
-| [authorization/tenant-rbac.md](authorization/tenant-rbac.md) | Tenant users, roles, permissions (RBAC) |
-| [billing/stripe-cashier.md](billing/stripe-cashier.md) | Cashier / Stripe driver notes |
-| [billing/creem.md](billing/creem.md) | Creem gateway checkout, webhooks, and ops |
-| [architecture/platform-production-runbook.md](architecture/platform-production-runbook.md) | Production deploy / go-live checklist |
-| [workflows/tenant-provisioning.md](workflows/tenant-provisioning.md) | Workspace create → default modules |
-| [testing/playwright.md](testing/playwright.md) | Playwright E2E suites (Central + Tenant) |
-| [development/local-demo-data.md](development/local-demo-data.md) | Local demo CRM seeding (users, leads, tasks) |
-| [releases/v1.1.0-platform.md](releases/v1.1.0-platform.md) | Official Platform Foundation release |
-| [CHANGELOG.md](CHANGELOG.md) | Delivery notes |
+## GitHub Actions build pipeline
+
+Merges into **`main`** (and manual **workflow_dispatch**) run [`.github/workflows/docs-build.yml`](./.github/workflows/docs-build.yml).
+
+The workflow:
+
+1. Checks out the repository
+2. Sets up Node.js LTS with npm cache
+3. Runs `npm ci`
+4. Runs `npm run docs:build` and fails on build errors / warning patterns
+5. Writes `build-info.json` into the dist folder
+6. Validates that `docs/.vitepress/dist` exists and contains production files (`index.html`, `sitemap.xml`, `robots.txt`, `404.html`)
+7. Scans the artifact for secret-like material
+8. Uploads GitHub Actions artifact `docs-build` (30-day retention)
+9. Publishes **only** the contents of `docs/.vitepress/dist` to the **`build-artifacts`** branch
+
+The deploy branch never includes `node_modules`, Markdown/TypeScript sources, `package.json`, workflows, or README.
+
+This matches the SaaS-Frontend strategy: **build in CI, deploy compiled assets only**.
+
+## Laravel Forge deployment
+
+Forge should deploy from the **`build-artifacts`** branch (not `main`). The server must **not** run npm or VitePress.
+
+### Deploy script (minimal)
+
+```bash
+$CREATE_RELEASE()
+
+cd $FORGE_RELEASE_DIRECTORY
+
+$ACTIVATE_RELEASE()
+```
+
+No `npm ci`, no `npm install`, no `npm run docs:build`, no Node.js build.
+
+### Web root
+
+Because the `build-artifacts` branch root **is** the compiled site, set the Forge **Web Directory** to:
+
+```text
+/
+```
+
+(or leave empty / site root — **not** `docs/.vitepress/dist`)
+
+### Clean URLs
+
+VitePress uses `cleanUrls: true`. Nginx example:
+
+```nginx
+try_files $uri $uri.html $uri/ /index.html;
+```
+
+### Forge site settings checklist
+
+| Setting | Value |
+|---------|--------|
+| Repository | `DiligentCreators/SaaS-Docs` |
+| Branch | `build-artifacts` |
+| Web Directory | `/` |
+| Deploy script | `$CREATE_RELEASE()` → `$ACTIVATE_RELEASE()` only |
+| Node.js on server | **Not required** for deploy |
+
+Trigger a Forge deploy after each successful Actions publish to `build-artifacts` (Forge GitHub webhook or manual deploy).
+
+## Required GitHub configuration
+
+| Name | Type | Required | Purpose |
+|------|------|----------|---------|
+| `GITHUB_TOKEN` | Secret (automatic) | Yes | Push compiled assets to `build-artifacts` |
+| `APP_VERSION` | Repository variable | No | Overrides `package.json` version in `build-info.json` |
+
+No Forge SSH secrets are required in Actions — the same pattern as SaaS-Frontend: CI publishes the branch; Forge pulls it.
+
+Ensure `github-actions[bot]` can push to `build-artifacts` (branch unprotected, or allow the bot).
+
+## Deployment flow
+
+```mermaid
+flowchart LR
+  A[Push / merge to main] --> B[GitHub Actions]
+  B --> C["npm ci + docs:build"]
+  C --> D[Validate dist]
+  D --> E[Upload docs-build artifact]
+  D --> F[Publish build-artifacts branch]
+  F --> G[Laravel Forge deploy]
+  G --> H["CREATE_RELEASE + ACTIVATE_RELEASE"]
+  H --> I[docs.saleos.app]
+```
+
+```text
+main (source)
+    ↓  GitHub Actions
+docs/.vitepress/dist (CI only)
+    ↓  publish compiled files only
+build-artifacts (deploy branch)
+    ↓  Forge activate release
+https://docs.saleos.app
+```
+
+## Recovery
+
+| Situation | Action |
+|-----------|--------|
+| Need compiled files | Download Actions artifact `docs-build` |
+| Rebuild without a code change | Actions → **Docs production build** → **Run workflow** |
+| Forge showing stale site | Confirm site branch is `build-artifacts`, then redeploy |
+
+## Project structure
+
+```text
+.
+├── .github/workflows/docs-build.yml
+├── docs/
+│   ├── .vitepress/
+│   │   ├── config.ts
+│   │   ├── theme/
+│   │   ├── public/
+│   │   └── dist/          # local/CI build output (gitignored on main)
+│   ├── index.md
+│   ├── 404.md
+│   ├── getting-started/
+│   ├── user-guide/
+│   ├── developer-guide/
+│   ├── api/
+│   ├── deployment/
+│   ├── changelog/
+│   └── assets/
+├── package.json
+├── package-lock.json
+├── .gitignore
+└── README.md
+```
+
+## Scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm run docs:dev` | VitePress dev server |
+| `npm run docs:build` | Build static docs to `docs/.vitepress/dist` |
+| `npm run docs:preview` | Preview the production build |
 
 ## Related repositories
 
-- Backend: `SaaS-Backend` (Laravel 13 API)
-- Frontend: `SaaS-Frontend` (React 19 — Central admin + Tenant Application shell)
+- Backend: [SaaS-Backend](https://github.com/DiligentCreators/SaaS-Backend)
+- Frontend: [SaaS-Frontend](https://github.com/DiligentCreators/SaaS-Frontend) (same `build-artifacts` CI pattern)
