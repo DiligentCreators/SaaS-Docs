@@ -140,17 +140,19 @@ jobs:
           DIST_DIR="${{ env.DIST_DIR }}"
           FAILED=0
 
-          if find "${DIST_DIR}" -type f \( -name '.env' -o -name '.env.*' -o -name '*.pem' -o -name '*credentials*' -o -name '*secret*' \) 2>/dev/null | grep -q .; then
+          # Filenames only — docs content intentionally names env vars like STRIPE_SECRET / CREEM_WEBHOOK_SECRET.
+          if find "${DIST_DIR}" -type f \( -name '.env' -o -name '.env.*' -o -name '*.pem' -o -name '*credentials*' \) 2>/dev/null | grep -q .; then
             echo "::error::Forbidden secret-like filenames found under ${DIST_DIR}"
-            find "${DIST_DIR}" -type f \( -name '.env' -o -name '.env.*' -o -name '*.pem' -o -name '*credentials*' -o -name '*secret*' \)
+            find "${DIST_DIR}" -type f \( -name '.env' -o -name '.env.*' -o -name '*.pem' -o -name '*credentials*' \)
             FAILED=1
           fi
 
+          # High-confidence leaked *values* only (not documented env var names).
           if grep -RInE \
             --include='*.js' --include='*.mjs' --include='*.cjs' --include='*.html' --include='*.json' --include='*.map' --include='*.txt' \
-            '(AWS_SECRET_ACCESS_KEY|WASABI_SECRET|STRIPE_SECRET|STRIPE_SECRET_KEY|CREEM_API_KEY|CREEM_WEBHOOK_SECRET|BEGIN (RSA |OPENSSH )?PRIVATE KEY)' \
+            '(-----BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY-----|sk_live_[0-9a-zA-Z]{20,}|rk_live_[0-9a-zA-Z]{20,}|whsec_[0-9a-zA-Z]{20,}|AKIA[0-9A-Z]{16})' \
             "${DIST_DIR}" 2>/dev/null; then
-            echo "::error::Potential secret material detected in build output"
+            echo "::error::Potential secret values detected in build output"
             FAILED=1
           fi
 
