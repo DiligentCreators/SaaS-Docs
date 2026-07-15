@@ -19,6 +19,8 @@ Registration creates your workspace, owner account, default roles, and default m
 4. Verify your email when prompted; unverified accounts cannot open protected workspace pages. On the verify-email gate, **Sign out** ends the session and returns you to `/login` (or `/central/login` for Central).
 5. After success you land on `/dashboard`.
 
+If a new member never receives the verification email, a workspace owner or admin can open **Administration → Users**, open that user’s row menu, and either **Resend verification** or **Mark as verified**.
+
 Your browser does not save a workspace selection in local storage. Open the correct workspace host or enter the workspace again when using the shared login URL.
 
 ### Forgot password

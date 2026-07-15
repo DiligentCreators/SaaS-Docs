@@ -62,7 +62,7 @@ Prefix: `/api/tenant/v1` · Guard: `auth:tenant-api`
 
 | Resource | Routes |
 |----------|--------|
-| Users | CRUD + suspend / unsuspend / restore / force-delete / change-password |
+| Users | CRUD + suspend / unsuspend / restore / force-delete / change-password / verify-email / resend-verification |
 | Roles | CRUD + clone |
 | Permissions matrix | `GET roles/permissions-matrix` |
 
