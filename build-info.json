@@ -1,0 +1,11 @@
+{
+  "commitSha": "78c9a527bb850f8487efcba2b9211cd5849eb6c2",
+  "branch": "main",
+  "buildTimestampUtc": "2026-07-15T00:48:08Z",
+  "buildNumber": "2",
+  "githubRunId": "29380008105",
+  "applicationVersion": "1.0.0",
+  "nodeVersion": "24.18.0",
+  "vitepressVersion": "1.6.4",
+  "siteUrl": "https://docs.saleos.app"
+}
