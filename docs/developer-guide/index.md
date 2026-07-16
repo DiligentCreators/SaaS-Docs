@@ -14,6 +14,7 @@ Engineering documentation for extending SaleOS. New business capability ships as
 | [Frontend Build Artifacts](./frontend-build-artifacts) | CI/CD → `build-artifacts` branch |
 | [Playwright](./playwright) | E2E suites (Central + Tenant) |
 | [Tenant Provisioning](./tenant-provisioning) | Workspace create → default modules |
+| [Notification Architecture Contract](./notification-architecture-contract) | Frozen notification payload, batching, Reverb, registry |
 
 ## Auth, RBAC & settings
 

@@ -97,7 +97,7 @@ Nav visibility is filtered by installed module subscriptions and Spatie permissi
 - Profile update/password change omit forced `apiContext` so the axios interceptor uses `getAuthContext()` from the URL.
 - Tenant API base: `/api/tenant/v1` + `X-Tenant-Domain`.
 - Central API base: `/api/central/v1`.
-- Notifications: poll unread count (~25s); Reverb/Echo deferred.
+- Notifications: Echo private-channel updates are primary; unread count uses a 90-second fallback poll only while Echo is disconnected.
 
 ## Explicit non-goals (shell)
 

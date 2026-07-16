@@ -16,7 +16,8 @@ RC notes: [releases/rc1-production-readiness.md](/deployment/rc1-production-read
 | `FRONTEND_URL` / `CORS_ALLOWED_ORIGINS` | Pin SPA origins (no `*`) |
 | `STRIPE_WEBHOOK_SECRET` / `CREEM_WEBHOOK_SECRET` | Non-empty for each **active** gateway |
 | Cache | Prefer `CACHE_STORE=redis`. Isolation uses **explicit tenant-scoped keys** (`CacheTenancyBootstrapper` is intentionally off — do not rely on Redis tags alone) |
-| Queue worker | Always running (`queue:work --queue=emails` or Laravel Cloud background process) |
+| Queue worker | Always running (`queue:work --queue=emails,default` or Laravel Cloud background process) |
+| Reverb | Supervised process, public TLS endpoint, SPA origin pinned |
 | Scheduler | Cron/`schedule:run` every minute |
 | HTTPS | TLS at edge; app trusts proxies (`TrustProxies`); production forces `https` URL scheme; `SESSION_SECURE_COOKIE=true` |
 | Registration | `registration_enabled` intentional (defaults **false**) |
@@ -27,7 +28,7 @@ RC notes: [releases/rc1-production-readiness.md](/deployment/rc1-production-read
 
 Production builds are automated on merge to `main`. See [frontend-build-artifacts.md](/developer-guide/frontend-build-artifacts).
 
-**Preferred:** deploy from the **`build-artifacts`** branch (or GitHub Actions artifact `frontend-build`). On Laravel Forge, generate `/config.js` (`window.env`) from the site `.env` in the deploy script (`VITE_API_URL`, optional `VITE_APP_NAME` / `VITE_API_MODE`). Do not bake the API URL into CI.
+**Preferred:** deploy from the **`build-artifacts`** branch (or GitHub Actions artifact `frontend-build`). On Laravel Forge, generate `/config.js` (`window.env`) from the site `.env` in the deploy script (`VITE_API_URL`, optional `VITE_APP_NAME` / `VITE_API_MODE`, and `VITE_REVERB_*`). Do not bake the API URL into CI.
 
 **Manual fallback:**
 
@@ -53,13 +54,14 @@ Point `FRONTEND_URL` / `CORS_ALLOWED_ORIGINS` on the API at the SPA origin(s).
 1. **HTTP / PHP-FPM** (or Laravel Cloud web process)
 2. **Queue workers** — all `ShouldQueue` notifications use the dedicated `emails` queue (`QueuesOnEmails`)
    ```bash
-   # Required — auth + CRM mail/database notifications
-   php artisan queue:work --queue=emails --sleep=1 --tries=3 --max-time=3600
-
-   # Optional — idle until non-mail jobs exist
-   php artisan queue:work --queue=default --sleep=1 --tries=3 --max-time=3600
+   php artisan queue:work redis --queue=emails,default --sleep=1 --tries=3 --timeout=60 --max-time=3600
    ```
-3. **Scheduler** (every minute)
+3. **Reverb** — supervised WebSocket process behind TLS
+   ```bash
+   php artisan reverb:start --host=127.0.0.1 --port=8080
+   ```
+   See the [Notification System runbook](/deployment/notifications) for environment variables, Supervisor examples, origin pinning, and health checks.
+4. **Scheduler** (every minute)
    ```bash
    * * * * * cd /path/to/SaaS-Backend && php artisan schedule:run >> /dev/null 2>&1
    ```
@@ -70,6 +72,7 @@ Scheduled commands (all use `withoutOverlapping`):
 - `subscriptions:expire`
 - `billing:run-consolidated`
 - `crm:send-due-notifications`
+- `notifications:prune --days=90` (weekly)
 
 ## Deploy sequence
 
@@ -83,6 +86,7 @@ php artisan route:cache
 php artisan event:cache
 php artisan view:cache
 php artisan queue:restart
+php artisan reverb:restart
 php artisan up
 ```
 

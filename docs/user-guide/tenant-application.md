@@ -20,7 +20,7 @@ Header actions match Central:
 - Breadcrumbs
 - Search (⌘K / Ctrl+K)
 - Theme toggle
-- **Notifications** — in-app list with unread badge (polls every 25s; live push deferred)
+- **Notifications** — realtime in-app list and unread badge, with polling fallback when the live connection is unavailable
 - Settings shortcut
 - Account menu (Profile, Settings, Log out)
 

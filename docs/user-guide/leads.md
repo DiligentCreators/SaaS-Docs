@@ -30,7 +30,7 @@ Edit from the row menu or the detail drawer.
 
 ## Assignment
 
-Users with **assign** can set or clear the assignee. Assignment changes are recorded in **Assignment history**. The assignee receives an in-app and email notification when someone else assigns them.
+Users with **assign** can set or clear the assignee. Assignment changes are recorded in **Assignment history**. The assignee receives an in-app realtime notification when someone else assigns them. Lead-assignment email is disabled in v1.
 
 ## Notes & follow-ups
 

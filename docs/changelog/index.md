@@ -1,5 +1,36 @@
 # Changelog
 
+## In-app notifications production hardening (2026-07-16)
+
+Release hardening for the frozen notification stack (no architecture changes).
+
+- Backend: after-commit queueing, broadcast-after-persist guard, reassignment dedupe keys, Reverb origin pinning
+- Frontend: Forge `window.env` Reverb config, Echo reconnect + poll-only-when-disconnected, dead-code cleanup
+- Docs: [Notification System deployment runbook](/deployment/notifications), contract/API/runbook links, production checklist + troubleshooting
+
+---
+
+## In-app notifications production stack (2026-07-16)
+
+Phased delivery of the frozen notification architecture (payload v1 → digests → Reverb/Echo → registry → browser → prune).
+
+- Backend: schema_version envelope, route descriptors, NotificationBatch + lead digests, Reverb private channels, `notifications:prune`, unread indexes
+- Frontend: Laravel Echo, modular `src/notifications` registry, optimistic bell UX, Web Notification API manager
+- Docs: [notification-architecture-contract.md](/developer-guide/notification-architecture-contract), API + roadmap updated
+- Lead assigned: database + broadcast only (mail deferred); bulk/import → one digest per assignee
+
+---
+
+## Notification architecture contract frozen (2026-07-16)
+
+In-app notification contracts are frozen before phased implementation (payload v1, route descriptors, NotificationBatch, Reverb/Echo, modular registry).
+
+- Docs: [notification-architecture-contract.md](/developer-guide/notification-architecture-contract)
+- Linked from module development standard and tenant notifications API
+- No application code in this change; implementation follows Phases 1–8
+
+---
+
 ## Branding disk split (local logos/favicons) (2026-07-16)
 
 Logo and favicon can use a dedicated disk while other uploads stay on S3.
@@ -196,7 +227,7 @@ Leads/Tasks UX + notifications + tenant dashboard widgets. Platform freeze uncha
 
 **Notifications & dashboard**
 
-- Database + mail channels; APIs list / unread-count / mark read / mark all; SPA polls every 25s (Reverb/Echo deferred)
+- Historical initial release: database + mail channels; APIs list / unread-count / mark read / mark all; realtime was added in the later notification architecture rollout above
 - Hourly `crm:send-due-notifications` for due/overdue follow-ups and tasks
 - `GET /dashboard` widget registry gated by module + permission + assignee scope; no calendar widget until Calendar module
 
