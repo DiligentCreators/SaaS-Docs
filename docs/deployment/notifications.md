@@ -49,11 +49,13 @@ REVERB_ALLOWED_ORIGINS=https://app.example.com
 REVERB_APP_ACCEPT_CLIENT_EVENTS_FROM=none
 
 # Web Push (VAPID) — generate once and reuse across deploys:
-# php -r "print_r(Minishlink\WebPush\VAPID::createVapidKeys());"
+# php artisan tinker --execute "print_r(Minishlink\WebPush\VAPID::createVapidKeys());"
 VAPID_SUBJECT=mailto:ops@example.com
 VAPID_PUBLIC_KEY=<public-key>
 VAPID_PRIVATE_KEY=<private-key>
 ```
+
+`VAPID_SUBJECT` must be a `mailto:` or `https:` URI (RFC 8292). A plain `http://` value (e.g. a local `APP_URL`) is rejected by push services, so set an explicit `mailto:` in every environment. If `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` are absent, Web Push degrades gracefully: the `WebPushChannel` is skipped (logged as `notifications.webpush_skipped_unconfigured`) and database + Reverb delivery continue unaffected.
 
 `REVERB_HOST` is the public hostname used by the broadcaster and browser. `REVERB_SERVER_HOST` / `REVERB_SERVER_PORT` are the internal listener address behind Nginx or Forge. Use a unique app ID, key, secret, and `CACHE_PREFIX` for every environment.
 
@@ -79,6 +81,35 @@ VITE_REVERB_SCHEME=https
 ```
 
 On Laravel Forge, place these values in the site environment used to generate `/config.js` / `window.env`. Do not bake production API URLs or secrets into CI artifacts. The Reverb app key is public; the app secret must never be exposed to the SPA.
+
+## Web Push setup
+
+1. **Generate a VAPID key pair once** and store it in the environment (never commit real keys):
+
+   ```bash
+   php artisan tinker --execute "print_r(Minishlink\WebPush\VAPID::createVapidKeys());"
+   ```
+
+   Copy `publicKey` → `VAPID_PUBLIC_KEY`, `privateKey` → `VAPID_PRIVATE_KEY`, and set `VAPID_SUBJECT=mailto:ops@example.com`. Keys are stable — rotating them invalidates every existing browser subscription, so reuse the same pair across deploys.
+
+2. **Run the migration** to create the `push_subscriptions` table:
+
+   ```bash
+   php artisan migrate --force
+   ```
+
+3. **Refresh cached config** after changing any `VAPID_*` value so cached values pick up the new credentials:
+
+   ```bash
+   php artisan config:clear   # or: php artisan config:cache
+   ```
+
+   All Web Push settings are read via `config('webpush.*')`, so `config:cache` is fully supported; `env()` is only referenced inside `config/webpush.php`.
+
+4. **Browser requirements** (client side):
+   - The SPA must be served over **HTTPS** (or `http://localhost` in development) — service workers require a secure context.
+   - `public/sw.js` must be reachable at the site root so it can register with scope `/`.
+   - Permission is requested **only after explicit user action** (Profile → Desktop notifications, or the Notification Center control). The SPA fetches the public key from `GET /api/tenant/v1/push-subscriptions/vapid-public-key`, subscribes via the Push API, and syncs the subscription to the backend. Denied permission is remembered and never re-prompted automatically.
 
 ## Required processes
 
