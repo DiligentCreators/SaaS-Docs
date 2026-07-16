@@ -134,7 +134,7 @@ Set Supervisor's global `minfds=10000` for production Reverb. Forge's Reverb int
 
 Run the scheduler every minute:
 
-```cron
+```text
 * * * * * cd /home/forge/api.example.com && php artisan schedule:run >> /dev/null 2>&1
 ```
 
