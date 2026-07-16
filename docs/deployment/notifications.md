@@ -1,6 +1,6 @@
 # Notification System — Production Deployment
 
-This runbook deploys the frozen Laravel Notifications → Reverb → Echo → React → browser notification flow. The payload and module contracts are defined in the [Notification Architecture Contract](/developer-guide/notification-architecture-contract).
+This runbook deploys the frozen Laravel Notifications → Reverb → Echo → React flow, plus standards-based Web Push for closed/background browsers. The payload and module contracts are defined in the [Notification Architecture Contract](/developer-guide/notification-architecture-contract).
 
 ## Runtime flow
 
@@ -10,7 +10,8 @@ This runbook deploys the frozen Laravel Notifications → Reverb → Echo → Re
 4. The `broadcast` channel publishes `NotificationCreated` to the user's private tenant channel.
 5. Echo updates the TanStack Query caches for the list and unread count.
 6. When the tab is hidden and browser permission is already granted, the Browser Notification Manager projects the live event to an OS notification.
-7. If Echo is unavailable, the SPA polls the unread count. Initial fetches and reconnect backfills never create OS notifications.
+7. The `webpush` channel sends a platform payload to each stored browser subscription (after the DB row exists). Expired endpoints are removed automatically.
+8. If Echo is unavailable, the SPA polls the unread count. Initial fetches and reconnect backfills never create OS notifications.
 
 Bulk assignment and import use `NotificationBatch`. Per-lead delivery is suppressed while the batch is active, then the orchestrator sends one digest (or one single notification when the count is one) per assignee. Stable `dedupe_key` values and Redis-backed reservations protect retries.
 
@@ -46,9 +47,19 @@ REVERB_SERVER_HOST=127.0.0.1
 REVERB_SERVER_PORT=8080
 REVERB_ALLOWED_ORIGINS=https://app.example.com
 REVERB_APP_ACCEPT_CLIENT_EVENTS_FROM=none
+
+# Web Push (VAPID) — generate once and reuse across deploys:
+# php artisan tinker --execute "print_r(Minishlink\WebPush\VAPID::createVapidKeys());"
+VAPID_SUBJECT=mailto:ops@example.com
+VAPID_PUBLIC_KEY=<public-key>
+VAPID_PRIVATE_KEY=<private-key>
 ```
 
+`VAPID_SUBJECT` must be a `mailto:` or `https:` URI (RFC 8292). A plain `http://` value (e.g. a local `APP_URL`) is rejected by push services, so set an explicit `mailto:` in every environment. If `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` are absent, Web Push degrades gracefully: the `WebPushChannel` is skipped (logged as `notifications.webpush_skipped_unconfigured`) and database + Reverb delivery continue unaffected.
+
 `REVERB_HOST` is the public hostname used by the broadcaster and browser. `REVERB_SERVER_HOST` / `REVERB_SERVER_PORT` are the internal listener address behind Nginx or Forge. Use a unique app ID, key, secret, and `CACHE_PREFIX` for every environment.
+
+VAPID keys must stay stable; rotating them invalidates existing browser subscriptions. The SPA fetches the public key from `GET /api/tenant/v1/push-subscriptions/vapid-public-key` (optional `VITE_VAPID_PUBLIC_KEY` fallback only).
 
 Redis is required in production for queue durability, worker restart signals, notification dedupe reservations, and Reverb horizontal scaling. If Reverb runs on multiple hosts, also set:
 
@@ -70,6 +81,35 @@ VITE_REVERB_SCHEME=https
 ```
 
 On Laravel Forge, place these values in the site environment used to generate `/config.js` / `window.env`. Do not bake production API URLs or secrets into CI artifacts. The Reverb app key is public; the app secret must never be exposed to the SPA.
+
+## Web Push setup
+
+1. **Generate a VAPID key pair once** and store it in the environment (never commit real keys):
+
+   ```bash
+   php artisan tinker --execute "print_r(Minishlink\WebPush\VAPID::createVapidKeys());"
+   ```
+
+   Copy `publicKey` → `VAPID_PUBLIC_KEY`, `privateKey` → `VAPID_PRIVATE_KEY`, and set `VAPID_SUBJECT=mailto:ops@example.com`. Keys are stable — rotating them invalidates every existing browser subscription, so reuse the same pair across deploys.
+
+2. **Run the migration** to create the `push_subscriptions` table:
+
+   ```bash
+   php artisan migrate --force
+   ```
+
+3. **Refresh cached config** after changing any `VAPID_*` value so cached values pick up the new credentials:
+
+   ```bash
+   php artisan config:clear   # or: php artisan config:cache
+   ```
+
+   All Web Push settings are read via `config('webpush.*')`, so `config:cache` is fully supported; `env()` is only referenced inside `config/webpush.php`.
+
+4. **Browser requirements** (client side):
+   - The SPA must be served over **HTTPS** (or `http://localhost` in development) — service workers require a secure context.
+   - `public/sw.js` must be reachable at the site root so it can register with scope `/`.
+   - Permission is requested **only after explicit user action** (Profile → Desktop notifications, or the Notification Center control). The SPA fetches the public key from `GET /api/tenant/v1/push-subscriptions/vapid-public-key`, subscribes via the Push API, and syncs the subscription to the backend. Denied permission is remembered and never re-prompted automatically.
 
 ## Required processes
 
