@@ -11,6 +11,7 @@ Every business capability on this platform is a **module**. Modules are licensed
 | Engineers | [module-development-developer.md](/developer-guide/module-development-guide) |
 | Production / ops | [module-development-production.md](/deployment/module-development) |
 | Architecture freeze | [../architecture/platform-freeze.md](/getting-started/platform-freeze) |
+| Notification contracts | [notification-architecture-contract.md](/developer-guide/notification-architecture-contract) |
 
 ## Principles
 
@@ -22,7 +23,7 @@ Every business capability on this platform is a **module**. Modules are licensed
 ## Cross-cutting patterns (Sprint 2+)
 
 - **Dashboard widgets** — register via `DashboardWidgetService` on `GET /dashboard`; gate by module entitlement, permission, and assignee scope. Do not add a Calendar widget until the Calendar module exists.
-- **Notifications** — Laravel `mail` + `database` channels; expose list/unread/mark-read APIs; SPA may poll until Reverb/Echo ships. Due/overdue work uses `crm:send-due-notifications`.
+- **Notifications** — Follow the frozen [Notification Architecture Contract](/developer-guide/notification-architecture-contract): versioned payload, route descriptors, NotificationBatch aggregation, Reverb/Echo realtime, modular SPA registry. Due/overdue work uses `crm:send-due-notifications`. Retention: `notifications:prune`.
 - **Assignee scoping** — reuse `ScopesToAssignee` so users without `{slug}.assign` only see their own records.
 
 ## Definition of Done

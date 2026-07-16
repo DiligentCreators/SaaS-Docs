@@ -60,10 +60,10 @@ See [tenant-v1-dashboard.md](/api/tenant-v1-dashboard).
 
 ## In-app notifications
 
-- Prefer Laravel notifications with `via(): ['mail', 'database']` for CRM-style alerts.
+- Use Laravel notification channels required by the contract for that event (`database` plus `broadcast` for realtime in-app delivery; add `mail` only when product behavior requires it).
 - Implement `ShouldQueue` and use `App\Notifications\Concerns\QueuesOnEmails` so jobs land on the dedicated `emails` queue (`php artisan queue:work --queue=emails`).
 - Persist via the standard `notifications` table; expose tenant APIs under `/notifications*` ([tenant-v1-notifications.md](/api/tenant-v1-notifications)).
-- Frontend may poll unread count (~25s) until Reverb/Echo is adopted platform-wide.
+- Register realtime in-app types in the SPA Notification Registry; Echo updates Query caches and polling remains a recovery path.
 - Schedule due/overdue fan-out through `crm:send-due-notifications` rather than ad-hoc cron per module.
 
 ## Settings

@@ -71,7 +71,11 @@ Notes / comments (author + body) and task timeline (`type`, `description`, `prop
 
 ### `notifications`
 
-Laravel standard table: UUID `id`, `type`, morphs `notifiable`, `data` (text/JSON), `read_at`, timestamps. Used for in-app CRM notifications (mail is a separate channel on the same notification classes).
+Laravel standard table: UUID `id` (stable public notification id), `type`, morphs `notifiable`, `data` (JSON envelope `schema_version: 1`), `read_at`, timestamps.
+
+Indexes: morph index plus composites `(notifiable_type, notifiable_id, read_at)` and `(notifiable_type, notifiable_id, created_at)` for unread/list queries.
+
+Retention: `php artisan notifications:prune --days=90` (scheduled weekly) deletes **read** rows only. See [notification-architecture-contract](/developer-guide/notification-architecture-contract).
 
 ## Table dictionary (licensing & catalog)
 

@@ -20,7 +20,7 @@ The CRM is the foundation of the platform and is the first functional area deliv
 |---------------------|--------|
 | [Leads](/user-guide/leads-overview) | ✅ Completed (Sprint 2 UX: Kanban, KPIs, export, convert stub, independent status/priority) |
 | [Tasks](/user-guide/tasks-overview) | ✅ Completed (Sprint 2 UX: board, KPIs, waiting status, due-date permission, comments/history) |
-| In-app notifications + due digests | ✅ Completed (mail + database; polling; Reverb deferred) |
+| In-app notifications + Reverb | ✅ Completed (payload v1, NotificationBatch digests, Reverb/Echo, modular registry, browser toasts; poll fallback only) |
 | Tenant dashboard widgets | ✅ Completed (module/permission/assignee scoped; no calendar until Calendar module) |
 
 ### Planned
