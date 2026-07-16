@@ -23,6 +23,7 @@ Reference business module for the SaleOS platform. Every future module (Tasks, I
 - **Kanban board (default)** + table view; drag-and-drop opens the detail drawer; save commits the stage change
 - KPIs via `GET /leads/stats`; board via `GET /leads/board`
 - Export CSV / XLSX of the current filtered set (`leads.export`)
+- Import CSV / XLSX via multi-step wizard (`leads.import`) — column mapping, duplicate modes, preview, queued processing, history + reports
 - Convert stub (`leads.convert`) — sets `converted_at`, records a converted activity, sets status `closed`; Contacts/Clients deferred
 - Assignee scoping — without `leads.assign`, users only see their own leads
 - Module licensing (`module:leads`) + Spatie permissions
@@ -30,13 +31,11 @@ Reference business module for the SaleOS platform. Every future module (Tasks, I
 
 ## Permissions
 
-`leads.view` · `create` · `update` · `delete` · `assign` · `export` · `convert`
-
-**Not included:** import.
+`leads.view` · `create` · `update` · `delete` · `assign` · `export` · `import` · `convert`
 
 ## Explicitly deferred
 
 - Full conversion to Contacts / Companies
-- Import
+- Import retry execution (UI control present; processing deferred)
 - Automations / webhooks
 - Real-time board sync (Reverb / Echo)

@@ -1,5 +1,21 @@
 # Changelog
 
+## Lead Import (reusable Import framework) (2026-07-16)
+
+Bulk CSV/XLSX lead import with a reusable framework for future modules.
+
+- Permission: `leads.import` (admin/manager; mirrors export)
+- Package: Maatwebsite Laravel Excel; queue: `ProcessLeadImportJob` on `imports`
+- API: template, upload, mapping, options, preview, run, history, original/failed/error downloads
+- SPA: 5-step wizard + import history beside Export; polls queued progress
+- Duplicate modes: skip / update (needs `leads.update`) / keep; unique fields email and/or phone
+- Single migration `lead_imports`; row failures as downloadable CSVs (no per-row tables)
+- Writes via `LeadService::create()` / `update()`; audit `lead_import_completed` / `lead_import_failed`
+- Tests: `LeadImportTest`; Playwright `leads.import.spec.ts`
+- Docs: user/developer/API/deployment guides updated (import no longer deferred)
+
+---
+
 ## Tenant manual member email verification (2026-07-16)
 
 Workspace owners and admins can help members who never receive the verification email.

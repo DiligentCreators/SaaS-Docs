@@ -17,13 +17,23 @@ Existing workspaces without stages get stages lazily on first Leads API call.
 
 ## Permissions rollout
 
-After deploying Sprint 2 permissions (`leads.export`, `leads.convert`) and the renamed status vocabulary, re-bootstrap roles for existing workspaces (owner syncs all permissions; default roles use `tenant-default-role-permissions.php`).
+After deploying permissions (`leads.export`, `leads.import`, `leads.convert`) and the renamed status vocabulary, re-bootstrap roles for existing workspaces (owner syncs all permissions; default roles use `tenant-default-role-permissions.php`).
 
 Status migration maps legacy `open` → `active` and `won`/`lost` → `closed`. Column rename: `estimated_value` → `lead_value`.
 
+## Queue workers
+
+Lead imports always run on the dedicated `imports` queue:
+
+```bash
+php artisan queue:work --queue=imports,emails,default --sleep=1 --tries=3 --max-time=3600
+```
+
+Ensure at least one worker listens to `imports`. Uploads use the configured `filesystems.uploads` disk (`public` locally / `s3` in production) under `imports/{tenant_uuid}/`.
+
 ## Monitoring
 
-- Platform audit events: `lead_created`, `lead_updated`, `lead_deleted`, `lead_assigned`, `lead_stage_changed`, `lead_note_added`, `lead_follow_up_*`, convert-related activity
+- Platform audit events: `lead_created`, `lead_updated`, `lead_deleted`, `lead_assigned`, `lead_stage_changed`, `lead_note_added`, `lead_follow_up_*`, `lead_import_completed`, `lead_import_failed`, convert-related activity
 - Mail + database notifications: assignment, follow-up created, follow-up due/overdue (hourly `crm:send-due-notifications`)
 - Tenant mail settings with Central SMTP fallback
 
@@ -37,7 +47,8 @@ Ensure the Laravel scheduler is running in production.
 
 ## Deploy checklist
 
-1. Migrate lead tables + Sprint 2 enhance migration + `lead_assignment_histories`
-2. Deploy frontend (Kanban/table, KPIs, export, convert stub, notifications)
-3. Confirm `module:leads` + expanded permissions
-4. Smoke: register/login → Leads board → create → DnD stage (save) → export → convert stub
+1. Migrate lead tables + Sprint 2 enhance migration + `lead_assignment_histories` + `lead_imports`
+2. Deploy frontend (Kanban/table, KPIs, export, import wizard/history, convert stub, notifications)
+3. Confirm `module:leads` + expanded permissions (including `leads.import`)
+4. Confirm queue worker includes `imports`
+5. Smoke: register/login → Leads board → create → DnD stage (save) → export → import template → small CSV import → history download → convert stub

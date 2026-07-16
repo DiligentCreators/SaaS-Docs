@@ -2,7 +2,7 @@
 
 ## Who can use Leads
 
-Your workspace must have the **Leads** module installed (included by default on new workspaces). Your role must include the relevant permissions (`view`, `create`, `update`, `delete`, `assign`, `export`, `convert` as needed).
+Your workspace must have the **Leads** module installed (included by default on new workspaces). Your role must include the relevant permissions (`view`, `create`, `update`, `delete`, `assign`, `export`, `import`, `convert` as needed).
 
 Without **assign**, you only see leads assigned to you.
 
@@ -45,6 +45,21 @@ Users with **convert** can mark a lead converted. Today this is a **stub**: the 
 ## Export
 
 Users with **export** can download the current filtered set as **CSV** or **XLSX**.
+
+## Import
+
+Users with **import** can bulk-load leads from **CSV** or **XLSX**:
+
+1. Open **Import** and download a sample template if needed
+2. Upload a file (drag & drop or browse)
+3. Map spreadsheet columns to lead fields (Name is required)
+4. Choose unique fields (**Email** / **Phone**) and duplicate behavior (**Skip**, **Update existing**, or **Keep duplicate**)
+5. Preview counts and validation errors (nothing is written yet)
+6. Start the import — it runs in the background; watch progress until complete
+
+**Update existing** also requires the **update** permission.
+
+Use **Import history** to review past imports, download the original file, **failed_records.csv**, or **error_report.csv**. Fix failed rows and upload again.
 
 ## Activity timeline
 
