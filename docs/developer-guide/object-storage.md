@@ -7,6 +7,8 @@ Production file uploads use Laravel’s filesystem abstraction with an S3-compat
 | Concern | Behavior |
 |---------|----------|
 | Default disk | `FILESYSTEM_DISK` (`public` locally, `s3` in production) |
+| Uploads disk | `FILESYSTEM_UPLOADS_DISK` (defaults to `FILESYSTEM_DISK`) — imports, attachments, exports |
+| Branding disk | `FILESYSTEM_BRANDING_DISK` (defaults to uploads disk) — logo/favicon only |
 | Upload entrypoint | `App\Services\Storage\FileUploadService` |
 | DB values | Relative object keys only (e.g. `branding/logos/….png`) |
 | Public URLs | Always via `FileUploadService::url()` / `Storage::disk(…).url()` |
@@ -71,19 +73,36 @@ Never hardcode Wasabi hostnames in application code. Set `AWS_ENDPOINT` / `AWS_U
 
 The same `s3` disk works with AWS S3, Cloudflare R2, MinIO, and DigitalOcean Spaces — change endpoint/URL/credentials only.
 
+### Branding on local disk (optional split)
+
+Keep logos/favicons on the API server while other uploads stay on S3:
+
+```env
+FILESYSTEM_DISK=s3
+FILESYSTEM_BRANDING_DISK=public
+APP_URL=https://your-api-domain.com
+```
+
+```bash
+php artisan storage:link
+php artisan config:clear
+```
+
+Branding URLs resolve as `{APP_URL}/storage/{key}`. After switching branding from S3 → `public`, **re-upload** logo/favicon (existing S3 keys will not resolve on the public disk). Ensure the web server serves `/storage` and `storage/app/public` is persisted across deploys (shared volume if multi-instance).
+
 ### Bucket recommendations
 
 | Topic | Guidance |
 |-------|----------|
-| Visibility | Public-read for branding assets (logos/favicons). Keep private modules/exports private and serve via temporary URLs. |
-| Bucket policy | Allow `s3:GetObject` for public branding prefixes if objects are public; never grant public `PutObject` / `DeleteObject`. |
+| Visibility | When branding stays on S3: public-read for logos/favicons. Keep private modules/exports private and serve via temporary URLs. |
+| Bucket policy | Allow `s3:GetObject` for public prefixes if objects are public; never grant public `PutObject` / `DeleteObject`. |
 | CORS | Allow SPA origins (`FRONTEND_URL` + admin hosts) for `GET` (and `PUT` only if you later introduce direct browser uploads). |
 | Credentials | IAM / Wasabi keys with least privilege on this bucket only; never expose in the SPA. |
 | Versioning | Optional on the bucket for recoverability of branding assets. |
 
 ### `storage:link`
 
-Not required in production when `FILESYSTEM_DISK=s3`. Keep the symlink for local/`public` disk usage only.
+Required when branding (or uploads) use the `public` disk. Not required for S3-only branding. Keep the symlink for local/`public` disk usage.
 
 ## Migrating existing local files
 
@@ -126,10 +145,11 @@ Controllers must not call `store()` / `Storage::disk('public')` directly for use
 
 1. Create Wasabi (or other) bucket + access key.
 2. Set `FILESYSTEM_DISK=s3` and `AWS_*` on the app server / secrets store.
-3. Deploy code with `league/flysystem-aws-s3-v3`.
-4. Run `php artisan storage:migrate-to-s3` once (or `--dry-run` first).
-5. Smoke-test Central + tenant logo/favicon upload, replace, delete, and public bootstrap URLs.
-6. Confirm SPA `img` tags receive absolute URLs from the API (no hardcoded `/storage` paths).
+3. Optional: set `FILESYSTEM_BRANDING_DISK=public`, run `php artisan storage:link`, and confirm `APP_URL` is the public HTTPS API origin.
+4. Deploy code with `league/flysystem-aws-s3-v3`.
+5. Run `php artisan storage:migrate-to-s3` once (or `--dry-run` first) when migrating non-branding (or all) local objects to S3.
+6. Smoke-test Central + tenant logo/favicon upload, replace, delete, and public bootstrap URLs (`curl -I` the returned `logo_url`).
+7. Confirm SPA `img` tags receive absolute URLs from the API (no hardcoded `/storage` paths).
 
 ## Related
 

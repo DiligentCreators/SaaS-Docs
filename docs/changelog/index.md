@@ -1,5 +1,16 @@
 # Changelog
 
+## Branding disk split (local logos/favicons) (2026-07-16)
+
+Logo and favicon can use a dedicated disk while other uploads stay on S3.
+
+- Env: `FILESYSTEM_BRANDING_DISK` (defaults to uploads / `FILESYSTEM_DISK`)
+- Production split: `FILESYSTEM_DISK=s3` + `FILESYSTEM_BRANDING_DISK=public` + `php artisan storage:link`
+- `FileUploadService` branding helpers; central/tenant branding + workspace logos use the branding disk
+- Docs: `developer-guide/object-storage.md`; settings production checklists updated
+
+---
+
 ## Lead Import (reusable Import framework) (2026-07-16)
 
 Bulk CSV/XLSX lead import with a reusable framework for future modules.
