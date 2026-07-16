@@ -194,11 +194,34 @@ NotificationBatch::run(batchId, source, callable)
 
 | Channel | v1 |
 |---------|-----|
-| `database` | Yes |
-| `broadcast` (Reverb) | Yes (after Phase 3) |
-| Browser OS toast | Client projection of in-app events — not a Laravel channel |
+| `database` | Yes — source of truth |
+| `broadcast` (Reverb) | Yes — open-tab realtime |
+| Browser OS toast | Client projection of Echo events — not a Laravel channel |
+| `webpush` (standards Web Push / VAPID) | Yes — closed/background browsers via `WebPushChannel` |
 | `mail` | Disabled for lead assigned in v1; may return later via `via()` + preferences |
-| SMS / webhooks / mobile push | Future Laravel channels — same Notification classes |
+| SMS / webhooks / FCM / APNs | Future Laravel channels — same Notification classes + shared platform payload mapper |
+
+### Platform push payload
+
+Delivery channels that wake devices must consume `PlatformNotificationPayloadMapper` (single mapping from the CRM envelope). Do not invent Web Push–specific notification classes or duplicate title/body/url mapping per channel.
+
+Generic payload shape:
+
+```json
+{
+  "title": "",
+  "body": "",
+  "icon": "",
+  "badge": "",
+  "image": "",
+  "url": "",
+  "tag": "",
+  "type": "",
+  "data": {}
+}
+```
+
+`url` is a HashRouter SPA deep link derived from the route descriptor (server-side). CRM `data.route` remains descriptor-only in the database envelope.
 
 ## Reverb / Echo
 
@@ -233,26 +256,42 @@ Server remains source of truth for `title` / `body`.
 ## Browser Notification Manager
 
 - Permission only via explicit UX (not on login).
-- Prefer OS toasts when tab is hidden.
+- Prefer OS toasts when tab is hidden (Echo path).
 - Dedupe by notification UUID; multi-tab lock (`BroadcastChannel` / `localStorage`).
 - Live Echo events only — never toast on initial fetch or reconnect backfill.
 
-## REST API (unchanged surface)
+## Web Push (service worker)
 
-Additive only:
+- Explicit opt-in (Profile switch and Notification Center control). Never prompt on bootstrap.
+- Sticky denial: do not re-prompt after the user blocks notifications.
+- Service worker displays push payloads and focuses/opens the SPA on click.
+- Logout unsubscribes locally and deletes the backend subscription while the token is still valid.
+- Expired push endpoints (`404` / `410`) are deleted automatically by `WebPushChannel`.
+
+## REST API (additive surface)
+
+Inbox:
 
 - `GET /api/tenant/v1/notifications`
 - `GET /api/tenant/v1/notifications/unread-count`
 - `POST /api/tenant/v1/notifications/{id}/read`
 - `POST /api/tenant/v1/notifications/read-all`
 
+Web Push subscriptions (authenticated tenant user; self-scoped):
+
+- `GET /api/tenant/v1/push-subscriptions/vapid-public-key`
+- `POST /api/tenant/v1/push-subscriptions`
+- `PUT /api/tenant/v1/push-subscriptions`
+- `DELETE /api/tenant/v1/push-subscriptions`
+
 ## Testing strategy
 
 | Layer | Focus |
 |-------|--------|
-| Pest | Payload contract, digests O(users), idempotency, channel auth, tenant isolation |
+| Pest | Payload contract, digests O(users), idempotency, channel auth, tenant isolation, Web Push subscribe/dispatch/cleanup |
+| Vitest | Permission flow, SW subscription lifecycle, logout cleanup, click navigation helpers |
 | Playwright | Bell, navigation, mark read (Reverb gated by env) |
-| Manual | Reverb smoke, browser permission flows |
+| Manual | Reverb smoke, browser permission + Web Push delivery |
 
 ## Documentation strategy
 
@@ -270,16 +309,19 @@ Additive only:
 | `notifications.failed` | Job / channel failure |
 | `notifications.browser_shown` | SPA (sampled) |
 | `notifications.browser_clicked` | SPA on OS click |
+| `notifications.webpush` | After successful Web Push send |
+| `notifications.webpush_subscription_expired` | Expired endpoint cleanup |
 
 ## Module recipe (add a new notification type)
 
 1. Domain event + subscriber (mirror Leads).
-2. Laravel Notification class using `FormatsCrmDatabaseNotification` + optional `BroadcastsCrmNotification`.
+2. Laravel Notification class using `FormatsCrmDatabaseNotification` + optional `BroadcastsCrmNotification` / `SendsWebPushNotification`.
 3. Set `category`, `delivery`, `source`, `route` descriptor, `dedupe_key`.
 4. For bulk ops: wrap orchestrator in `NotificationBatch::run` and flush digests from result counts — never notify inside per-entity loops.
 5. Add SPA registry entry under `src/notifications/modules/{domain}.ts`.
 6. Pest: payload shape, idempotency, tenant isolation; Playwright if UI-visible.
+7. To wake closed browsers: implement `SupportsWebPush` and `withWebPushChannel(...)` in `via()` — do not create Web Push–specific notification classes.
 
 ## Out of scope (v1)
 
-Preferences UI, scheduled digests implementation, Firebase/OneSignal/mobile push, custom notifications table, NotificationRepository, AppLayout redesign.
+Full preferences UI (beyond Web Push enable/disable), scheduled digests implementation, Firebase/OneSignal/FCM channel implementation, custom notifications table, NotificationRepository, AppLayout redesign.

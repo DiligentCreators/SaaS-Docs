@@ -42,10 +42,11 @@ Marks all unread notifications for the current user as read.
 
 | Type | Channels (v1) |
 |------|----------------|
-| `lead.assigned` / `lead.reassigned` | `database`, `broadcast` |
-| `lead.assigned.digest` | `database`, `broadcast` (bulk/import via NotificationBatch) |
+| `lead.assigned` / `lead.reassigned` | `database`, `broadcast`, `webpush` |
+| `lead.assigned.digest` | `database`, `broadcast`, `webpush` (bulk/import via NotificationBatch) |
 | Follow-up created / due / overdue | `mail`, `database` |
-| Task assigned / status / due | `mail`, `database` |
+| Task assigned | `mail`, `database`, `webpush` |
+| Task status / due | `mail`, `database` |
 
 ### Aggregation
 
@@ -63,8 +64,36 @@ Bulk assign and import equal-distribution wrap `NotificationBatch`: per-lead ass
 
 `POST /broadcasting/auth` — middleware `tenancy`, `auth:tenant-api`, `tenant.user`. Channel class: `App\Broadcasting\TenantUserChannel`.
 
+## Web Push subscriptions
+
+Standards-based Web Push (VAPID). Subscriptions belong to the authenticated tenant user. Duplicate `endpoint` values upsert.
+
+### GET `/push-subscriptions/vapid-public-key`
+
+Returns `{ public_key, subject, configured }`. Never exposes the private key.
+
+### POST `/push-subscriptions`
+
+Body:
+
+| Field | Required | Notes |
+|-------|----------|--------|
+| `endpoint` | yes | Push service URL (max 500) |
+| `public_key` | yes | p256dh |
+| `auth_token` | yes | |
+| `content_encoding` | no | `aes128gcm` (default) or `aesgcm` |
+| `user_agent` | no | |
+
+### PUT `/push-subscriptions`
+
+Refresh/update keys for an endpoint (same body as POST; upsert semantics).
+
+### DELETE `/push-subscriptions`
+
+Body: `{ "endpoint": "..." }`. 404 if the endpoint is not owned by the current user.
+
 ## Future (hooks only)
 
 - Per-user preferences (in-app / browser / email)
 - `delivery: scheduled` digests
-- SMS / webhooks / mobile push as additional Laravel channels
+- SMS / webhooks / FCM / APNs as additional Laravel channels using `PlatformNotificationPayloadMapper`
