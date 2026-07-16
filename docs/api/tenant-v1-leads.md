@@ -58,6 +58,56 @@ Permission: `leads.export`.
 
 Query: same filters as list, plus `format` = `csv` (default) or `xlsx`. Streams a download of the filtered set.
 
+## Import
+
+Permission for all import routes: `leads.import` (+ `module:leads`).
+
+Duplicate mode `update` also requires `leads.update`.
+
+### GET `/leads/import/template`
+
+Query: `format` = `csv` (default) or `xlsx`. Downloads a sample template.
+
+### GET `/leads/imports`
+
+Paginated import history (status, user, file name, row counts, timestamps).
+
+### POST `/leads/imports`
+
+Multipart: `file` (CSV/XLSX). Stores the upload, returns import record + `context` (headers, sample rows, suggested mapping, fields). Status: `uploaded`.
+
+### PUT `/leads/imports/{uuid}`
+
+Body: `{ "mapping": { "name": "Name", "email": "Email", ... } }`. Status → `mapped`.
+
+### PUT `/leads/imports/{uuid}/options`
+
+Body: `{ "unique_fields": ["email","phone"], "duplicate_mode": "skip"|"update"|"keep" }`.
+
+### POST `/leads/imports/{uuid}/preview`
+
+Validates rows without writing leads. Returns preview counts + sample validation errors.
+
+### POST `/leads/imports/{uuid}/run`
+
+Queues `ProcessLeadImportJob` on the `imports` queue. Status → `queued` → `processing` → `completed`|`failed`. Poll `GET /leads/imports/{uuid}`.
+
+### GET `/leads/imports/{uuid}`
+
+Status + statistics for polling (`processed_rows` / `total_rows`, imported/updated/skipped/duplicate/failed counts).
+
+### GET `/leads/imports/{uuid}/file`
+
+Download the original uploaded file.
+
+### GET `/leads/imports/{uuid}/failed-records`
+
+Download `failed_records.csv` (original row + reason + validation errors).
+
+### GET `/leads/imports/{uuid}/error-report`
+
+Download `error_report.csv` (technical/processing exceptions).
+
 ## Actions
 
 ### POST `/leads/{id}/assign`
