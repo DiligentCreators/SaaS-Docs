@@ -1,5 +1,15 @@
 # Changelog
 
+## Multi-Provider Email Delivery roadmap (2026-07-19)
+
+Documentation-only: product roadmap for provider-agnostic email delivery (Central + Tenant).
+
+- Updated [Product Roadmap](/getting-started/product-roadmap): **Multi-Provider Email Delivery** section (`EmailManager` / driver abstraction, Central + tenant providers, logs, queue/retry, optional provider capabilities, analytics, test email, enterprise routing)
+- Distinguishes **Planned**, **Future**, and **Enterprise** capabilities; SMTP remains one interchangeable driver
+- No application code, schema, API, or settings implementation changes
+
+---
+
 ## Clean URL static fallbacks (2026-07-18)
 
 Deep links work on default Forge/Nginx without per-server `$uri.html` rewrites.

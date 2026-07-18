@@ -184,6 +184,157 @@ These modules will follow the same [Module Architecture](/architecture/module-ar
 
 ---
 
+## Multi-Provider Email Delivery
+
+Platform-wide capability (Central + Tenant). Today outgoing mail is **SMTP-centric** (Central defaults with optional tenant SMTP override). The roadmap evolves that into a **provider-agnostic delivery architecture** so SMTP is one driver among many — not the core design.
+
+This is a **platform infrastructure** improvement (settings, mail transport, logging, ops), not a Marketplace-licensed business module. Implementation must extend the existing settings hierarchy and runtime config overlay; it must not redesign the frozen foundation.
+
+| Status label | Meaning |
+|--------------|---------|
+| **Planned** | Near-term delivery target for production-grade multi-provider mail |
+| **Future** | Follow-on reliability, observability, and provider-specific features |
+| **Enterprise** | Advanced multi-provider routing and ops for large deployments |
+
+### Email transport abstraction (Planned)
+
+Introduce an `EmailManager` (or equivalent) that resolves an `EmailDriverInterface` implementation from the active configuration. Application code (notifications, mailables, invites, password resets, digests) should send through the manager — not bind to SMTP or a single vendor API.
+
+| Capability | Status |
+|------------|--------|
+| `EmailManager` + `EmailDriverInterface` | Planned |
+| SMTP driver | Planned (existing SMTP path becomes one driver) |
+| Postmark API driver | Planned |
+| Mailgun API driver | Planned |
+| Amazon SES driver | Future |
+| Resend driver | Future |
+| SendGrid driver | Future |
+| Brevo driver | Future |
+| SparkPost driver | Future |
+| MailerSend driver | Future |
+
+New providers must be addable by registering a driver — without scattering provider-specific logic through Controllers, Notifications, or settings UIs.
+
+### Central email provider (Planned)
+
+Central administrators select the **default outgoing email provider** for the platform (and for tenants that inherit Central mail).
+
+| Capability | Status |
+|------------|--------|
+| Provider selection: SMTP, Postmark API, Mailgun API | Planned |
+| Secure credential storage (encrypted secrets at rest) | Planned |
+| From identity (name / address) retained alongside provider config | Planned |
+| Additional providers via the same Central settings surface | Future |
+
+### Tenant email provider (Planned)
+
+Every tenant has two configuration modes:
+
+1. **Use Central / System Email Provider** — inherit platform delivery (default).
+2. **Use Custom Email Provider** — tenant-owned white-label delivery.
+
+When using a custom provider, the tenant may configure **SMTP**, **Postmark API**, or **Mailgun API** (same initial driver set as Central). Credentials remain tenant-scoped, encrypted, and never returned in clear text from admin APIs.
+
+| Capability | Status |
+|------------|--------|
+| Inherit Central / System provider | Planned |
+| Custom tenant provider (SMTP / Postmark / Mailgun) | Planned |
+| Encrypted tenant secrets + runtime resolution | Planned |
+
+### Email logs (Planned)
+
+Comprehensive, **isolated** email logs for Central and for each Tenant.
+
+Typical fields:
+
+- Subject, Recipient, CC, BCC
+- Provider, Driver, Message ID
+- Status, Sent Timestamp, Failure Reason
+- Queue Job ID
+- Notification / Mailable type
+
+Filtering:
+
+| Filter | Scope |
+|--------|--------|
+| Status, Provider, Date, User | Central and Tenant |
+| Tenant | Central only |
+
+| Capability | Status |
+|------------|--------|
+| Central email log store + UI filters | Planned |
+| Tenant email log store + UI filters (tenant-isolated) | Planned |
+
+### Queue & retry (Future)
+
+| Capability | Status |
+|------------|--------|
+| Queued email delivery | Future |
+| Retry policies + exponential backoff | Future |
+| Dead-letter handling | Future |
+| Manual resend from logs | Future |
+| Priority queues | Future |
+
+### Provider capabilities (Future)
+
+Optional **driver capabilities** — not required of every provider. Drivers advertise what they support; the platform enables features only when the active driver implements them.
+
+| Capability | Status |
+|------------|--------|
+| Delivery events | Future |
+| Bounce detection | Future |
+| Spam complaints | Future |
+| Open tracking | Future |
+| Click tracking | Future |
+| Webhook processing | Future |
+| Suppression lists | Future |
+
+### Email analytics (Future)
+
+Dashboards for Central and Tenant (each scoped to its own mail traffic):
+
+- Total Sent, Failed, Delivery Rate, Bounce Rate
+- Queue Size, Provider Usage
+- Daily Volume, Monthly Volume
+
+| Capability | Status |
+|------------|--------|
+| Central email analytics dashboard | Future |
+| Tenant email analytics dashboard | Future |
+
+### Test email (Planned)
+
+**Send Test Email** validates provider configuration before (or immediately after) saving credentials. Report:
+
+- Authentication failures
+- SMTP / API connectivity
+- DNS / configuration issues (where applicable)
+- Success / failure response
+- Response time
+
+| Capability | Status |
+|------------|--------|
+| Send Test Email for Central provider config | Planned (extends existing Central test-mail) |
+| Send Test Email for Tenant custom provider config | Planned (extends existing tenant test path) |
+
+### Enterprise enhancements (Enterprise)
+
+| Capability | Status |
+|------------|--------|
+| Multiple providers per tenant | Enterprise |
+| Automatic provider failover | Enterprise |
+| Provider priority | Enterprise |
+| Cost-aware routing | Enterprise |
+| Regional routing | Enterprise |
+| Per-notification provider selection | Enterprise |
+| Per-domain provider selection | Enterprise |
+| Rate limiting | Enterprise |
+| Provider health monitoring | Enterprise |
+
+**Goal:** Production-grade, extensible email delivery for Central and Tenant applications — provider-agnostic at the core, with SMTP as one interchangeable driver, white-label tenant providers, durable logs, and a clear path to reliability, analytics, and enterprise routing without redesigning the platform.
+
+---
+
 ## Development Principles
 
 Every module must:
