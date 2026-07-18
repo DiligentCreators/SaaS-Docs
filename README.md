@@ -87,12 +87,18 @@ Because the `build-artifacts` branch root **is** the compiled site, set the Forg
 
 (or leave empty / site root — **not** `docs/.vitepress/dist`)
 
-### Clean URLs
+### Clean URLs (no special Nginx required)
 
-VitePress uses `cleanUrls: true`. Nginx example:
+VitePress uses `cleanUrls: true`. After each `docs:build`, CI/local build also runs `scripts/ensure-clean-url-indexes.mjs`, which copies every page `foo/bar.html` to `foo/bar/index.html`.
+
+That means deep links such as `/getting-started/product-roadmap` work on **default** Forge/Nginx (`try_files $uri $uri/ …`) and Apache (`DirectoryIndex`) without adding `$uri.html` rewrites on each server.
+
+Optional hardened Nginx (still fine if you prefer it):
 
 ```nginx
-try_files $uri $uri.html $uri/ /index.html;
+location / {
+    try_files $uri $uri.html $uri/ /404.html;
+}
 ```
 
 ### Forge site settings checklist
@@ -155,6 +161,8 @@ https://docs.saleos.app
 ```text
 .
 ├── .github/workflows/docs-build.yml
+├── scripts/
+│   └── ensure-clean-url-indexes.mjs
 ├── docs/
 │   ├── .vitepress/
 │   │   ├── config.ts

@@ -1,5 +1,14 @@
 # Changelog
 
+## Clean URL static fallbacks (2026-07-18)
+
+Deep links work on default Forge/Nginx without per-server `$uri.html` rewrites.
+
+- Post-build script `scripts/ensure-clean-url-indexes.mjs` copies each VitePress page to a directory `index.html` so `/path/to/page` resolves via standard `try_files $uri $uri/`
+- Wired into `npm run docs:build` (CI publish included)
+
+---
+
 ## Modular architecture convention (2026-07-18)
 
 Documentation-only pass establishing the long-term modular architecture standard for all future modules.
