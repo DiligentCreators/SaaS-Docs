@@ -192,20 +192,20 @@ This is a **platform infrastructure** improvement (settings, mail transport, log
 
 | Status label | Meaning |
 |--------------|---------|
-| **Planned** | Near-term delivery target for production-grade multi-provider mail |
+| **Shipped** | Implemented in the platform |
 | **Future** | Follow-on reliability, observability, and provider-specific features |
 | **Enterprise** | Advanced multi-provider routing and ops for large deployments |
 
-### Email transport abstraction (Planned)
+### Email transport abstraction (Shipped)
 
-Introduce an `EmailManager` (or equivalent) that resolves an `EmailDriverInterface` implementation from the active configuration. Application code (notifications, mailables, invites, password resets, digests) should send through the manager — not bind to SMTP or a single vendor API.
+`EmailManager` resolves an `EmailDriverInterface` implementation from the active configuration. Application code (notifications, mailables, invites, password resets, digests) continues to send through Laravel Mail — the manager applies the active provider at runtime.
 
 | Capability | Status |
 |------------|--------|
-| `EmailManager` + `EmailDriverInterface` | Planned |
-| SMTP driver | Planned (existing SMTP path becomes one driver) |
-| Postmark API driver | Planned |
-| Mailgun API driver | Planned |
+| `EmailManager` + `EmailDriverInterface` | Shipped |
+| SMTP driver | Shipped |
+| Postmark API driver | Shipped |
+| Mailgun API driver | Shipped |
 | Amazon SES driver | Future |
 | Resend driver | Future |
 | SendGrid driver | Future |
@@ -215,18 +215,18 @@ Introduce an `EmailManager` (or equivalent) that resolves an `EmailDriverInterfa
 
 New providers must be addable by registering a driver — without scattering provider-specific logic through Controllers, Notifications, or settings UIs.
 
-### Central email provider (Planned)
+### Central email provider (Shipped)
 
 Central administrators select the **default outgoing email provider** for the platform (and for tenants that inherit Central mail).
 
 | Capability | Status |
 |------------|--------|
-| Provider selection: SMTP, Postmark API, Mailgun API | Planned |
-| Secure credential storage (encrypted secrets at rest) | Planned |
-| From identity (name / address) retained alongside provider config | Planned |
+| Provider selection: SMTP, Postmark API, Mailgun API | Shipped |
+| Secure credential storage (encrypted secrets at rest) | Shipped |
+| From identity (name / address) retained alongside provider config | Shipped |
 | Additional providers via the same Central settings surface | Future |
 
-### Tenant email provider (Planned)
+### Tenant email provider (Shipped)
 
 Every tenant has two configuration modes:
 
@@ -237,11 +237,11 @@ When using a custom provider, the tenant may configure **SMTP**, **Postmark API*
 
 | Capability | Status |
 |------------|--------|
-| Inherit Central / System provider | Planned |
-| Custom tenant provider (SMTP / Postmark / Mailgun) | Planned |
-| Encrypted tenant secrets + runtime resolution | Planned |
+| Inherit Central / System provider | Shipped |
+| Custom tenant provider (SMTP / Postmark / Mailgun) | Shipped |
+| Encrypted tenant secrets + runtime resolution | Shipped |
 
-### Email logs (Planned)
+### Email logs (Shipped)
 
 Comprehensive, **isolated** email logs for Central and for each Tenant.
 
@@ -262,15 +262,15 @@ Filtering:
 
 | Capability | Status |
 |------------|--------|
-| Central email log store + UI filters | Planned |
-| Tenant email log store + UI filters (tenant-isolated) | Planned |
+| Central email log store + UI filters | Shipped |
+| Tenant email log store + UI filters (tenant-isolated) | Shipped |
 
-### Queue & retry (Future)
+### Queue & retry (Partial / Future)
 
 | Capability | Status |
 |------------|--------|
-| Queued email delivery | Future |
-| Retry policies + exponential backoff | Future |
+| Queued email delivery (`emails` queue + runtime re-apply) | Shipped |
+| Retry policies + exponential backoff (`email.queue.*`) | Shipped (basic) |
 | Dead-letter handling | Future |
 | Manual resend from logs | Future |
 | Priority queues | Future |
@@ -302,7 +302,7 @@ Dashboards for Central and Tenant (each scoped to its own mail traffic):
 | Central email analytics dashboard | Future |
 | Tenant email analytics dashboard | Future |
 
-### Test email (Planned)
+### Test email (Shipped)
 
 **Send Test Email** validates provider configuration before (or immediately after) saving credentials. Report:
 
@@ -314,8 +314,8 @@ Dashboards for Central and Tenant (each scoped to its own mail traffic):
 
 | Capability | Status |
 |------------|--------|
-| Send Test Email for Central provider config | Planned (extends existing Central test-mail) |
-| Send Test Email for Tenant custom provider config | Planned (extends existing tenant test path) |
+| Send Test Email for Central provider config | Shipped |
+| Send Test Email for Tenant custom / system provider config | Shipped |
 
 ### Enterprise enhancements (Enterprise)
 

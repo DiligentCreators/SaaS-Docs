@@ -29,11 +29,11 @@ Hints under fields show when a value is still inheriting the Central default.
 
 ## Mail
 
-Configure SMTP only if this workspace should send from its own mail server.
+Choose **Use system provider** to inherit Central Application mail, or **Use custom provider** for workspace-specific SMTP / Postmark / Mailgun.
 
-- Leave **Host** empty to keep using the Central Application SMTP.
-- Password fields never show the stored secret; leave blank to keep the existing password.
-- Use **Send test** to verify delivery.
+- Password and API token fields never show the stored secret; leave blank to keep the existing value.
+- Use **Send test** to verify delivery (uses the form values, including unsaved changes when supported).
+- Delivery history is available under **Email logs**.
 
 ## What you cannot change
 
