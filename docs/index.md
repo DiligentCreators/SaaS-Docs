@@ -21,6 +21,10 @@ features:
     details: Platform freeze, product roadmap, and local demo data to orient new contributors quickly.
     link: /getting-started/
     linkText: Start here
+  - title: Architecture
+    details: Modular architecture, module dependencies, and independent licensing conventions for all future modules.
+    link: /architecture/
+    linkText: Read architecture
   - title: User Guide
     details: Day-to-day operator docs for authentication, RBAC, settings, Leads, Tasks, Communication Templates, and the admin console.
     link: /user-guide/

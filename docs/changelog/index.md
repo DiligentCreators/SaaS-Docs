@@ -1,5 +1,17 @@
 # Changelog
 
+## Modular architecture convention (2026-07-18)
+
+Documentation-only pass establishing the long-term modular architecture standard for all future modules.
+
+- Added [Architecture](/architecture/) section: [Module Architecture](/architecture/module-architecture), [Module Dependencies](/architecture/module-dependencies), [Module Licensing](/architecture/module-licensing)
+- Updated [Product Roadmap](/getting-started/product-roadmap): Calendar, Meetings (scheduling, Zoom, Google Meet, email reminders), AI Integration (Planning)
+- Documented development convention: self-contained modules, declared dependencies, independent licensing compatibility
+- Updated site footer copyright to © 2026 SaleOS. All rights reserved.
+- No application code, billing, marketplace, schema, or API changes
+
+---
+
 ## Documentation sync — migrate-only modules & auth/RBAC separation (2026-07-18)
 
 Docs pass aligning architecture, deployment, RBAC, provisioning, entitlements, database, API, and Communication Templates guides with the final production architecture.

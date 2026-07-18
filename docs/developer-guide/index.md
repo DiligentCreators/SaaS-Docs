@@ -8,6 +8,9 @@ Engineering documentation for extending SaleOS. New business capability ships as
 |----------|-------------|
 | [Module Development](./module-development) | Module Development Standard + Definition of Done |
 | [Module Development Guide](./module-development-guide) | End-to-end engineer checklist |
+| [Module Architecture](/architecture/module-architecture) | Self-contained modules and ownership boundaries |
+| [Module Dependencies](/architecture/module-dependencies) | Required vs optional; free vs billable dependencies |
+| [Module Licensing](/architecture/module-licensing) | Independent licensing convention |
 | [Entitlements](./entitlements) | Module licensing vs Spatie authorization |
 | [Database](./database) | ERD / table dictionary |
 | [Object Storage](./object-storage) | Wasabi / S3 uploads |
