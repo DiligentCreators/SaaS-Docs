@@ -34,6 +34,10 @@ Do **not** redesign:
 ## Related
 
 - [Product Roadmap](/getting-started/product-roadmap)
+- [Architecture](/architecture/)
+- [Module Architecture](/architecture/module-architecture)
+- [Module Dependencies](/architecture/module-dependencies)
+- [Module Licensing](/architecture/module-licensing)
 - [Module Development Standard](/developer-guide/module-development)
 - [Entitlements](/developer-guide/entitlements)
 - [Shared UI](/developer-guide/shared-ui)

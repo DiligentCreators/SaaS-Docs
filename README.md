@@ -164,6 +164,7 @@ https://docs.saleos.app
 │   ├── index.md
 │   ├── 404.md
 │   ├── getting-started/
+│   ├── architecture/
 │   ├── user-guide/
 │   ├── developer-guide/
 │   ├── api/

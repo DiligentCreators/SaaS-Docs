@@ -1,6 +1,6 @@
 # Entitlements model
 
-How to **build** a licensed module end-to-end: [Module Development Standard](/developer-guide/module-development). Platform freeze: [platform-freeze.md](/getting-started/platform-freeze).
+How to **build** a licensed module end-to-end: [Module Development Standard](/developer-guide/module-development). Platform freeze: [platform-freeze.md](/getting-started/platform-freeze). Long-term licensing convention: [Module Licensing](/architecture/module-licensing).
 
 ## Philosophy
 

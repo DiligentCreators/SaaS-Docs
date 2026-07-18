@@ -102,6 +102,7 @@ export default defineConfig({
 
     nav: [
       { text: 'Getting Started', link: '/getting-started/' },
+      { text: 'Architecture', link: '/architecture/' },
       { text: 'User Guide', link: '/user-guide/' },
       { text: 'Developer Guide', link: '/developer-guide/' },
       { text: 'API', link: '/api/' },
@@ -118,6 +119,17 @@ export default defineConfig({
             { text: 'Platform Freeze', link: '/getting-started/platform-freeze' },
             { text: 'Product Roadmap', link: '/getting-started/product-roadmap' },
             { text: 'Local Demo Data', link: '/getting-started/local-demo-data' },
+          ],
+        },
+      ],
+      '/architecture/': [
+        {
+          text: 'Architecture',
+          items: [
+            { text: 'Overview', link: '/architecture/' },
+            { text: 'Module Architecture', link: '/architecture/module-architecture' },
+            { text: 'Module Dependencies', link: '/architecture/module-dependencies' },
+            { text: 'Module Licensing', link: '/architecture/module-licensing' },
           ],
         },
       ],
@@ -162,6 +174,9 @@ export default defineConfig({
             { text: 'Overview', link: '/developer-guide/' },
             { text: 'Module Development', link: '/developer-guide/module-development' },
             { text: 'Module Development Guide', link: '/developer-guide/module-development-guide' },
+            { text: 'Module Architecture', link: '/architecture/module-architecture' },
+            { text: 'Module Dependencies', link: '/architecture/module-dependencies' },
+            { text: 'Module Licensing', link: '/architecture/module-licensing' },
             { text: 'Entitlements', link: '/developer-guide/entitlements' },
             { text: 'Database', link: '/developer-guide/database' },
             { text: 'Object Storage', link: '/developer-guide/object-storage' },
@@ -270,7 +285,7 @@ export default defineConfig({
 
     footer: {
       message: SITE_DESCRIPTION,
-      copyright: 'Copyright © 2024–present SaleOS',
+      copyright: '© 2026 SaleOS. All rights reserved.',
     },
 
     search: {

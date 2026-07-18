@@ -102,6 +102,9 @@ Paid modules: catalog `is_billable`, marketplace install, `ModuleSubscriptionSer
 
 ## Related
 
+- [Module Architecture](/architecture/module-architecture)
+- [Module Dependencies](/architecture/module-dependencies)
+- [Module Licensing](/architecture/module-licensing)
 - [Production module registration](/deployment/module-development)
 - [Communication Templates](/developer-guide/communication-templates) — reusable platform module pattern
 - [Tenant provisioning](/developer-guide/tenant-provisioning)

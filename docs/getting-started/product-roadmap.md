@@ -4,7 +4,7 @@ Long-term direction of the platform: evolution from a CRM into a complete SaaS E
 
 > **Architecture Policy**
 >
-> The platform foundation (authentication, tenancy, RBAC, billing, marketplace, settings, audit logging, and module licensing) is **frozen**. New functionality must be implemented as modules using the [Module Development Standard](/developer-guide/module-development). Architectural changes should only be made for critical security issues, production defects, or platform-wide improvements.
+> The platform foundation (authentication, tenancy, RBAC, billing, marketplace, settings, audit logging, and module licensing) is **frozen**. New functionality must be implemented as modules using the [Module Architecture](/architecture/module-architecture) convention and the [Module Development Standard](/developer-guide/module-development). Architectural changes should only be made for critical security issues, production defects, or platform-wide improvements.
 >
 > See [architecture/platform-freeze.md](/getting-started/platform-freeze).
 
@@ -26,14 +26,31 @@ The CRM is the foundation of the platform and is the first functional area deliv
 
 ### Planned
 
-| Module | Status |
-|--------|--------|
+| Module / capability | Status |
+|---------------------|--------|
 | Contacts | Planned (unlocks full lead convert) |
 | Companies | Planned |
-| Calendar | Planned (calendar dashboard widget) |
+| **Calendar** | Planned (calendar views + dashboard widget) |
+| **Meetings** | Planned |
 | Activities | Planned |
 
-**Goal:** Provide a complete customer relationship management experience with lead tracking, task management, customer records, scheduling, and activity history.
+#### Calendar
+
+- Calendar
+
+#### Meetings
+
+- Meetings
+- Meeting Scheduling
+- Zoom Integration
+- Google Meet Integration
+- Email reminders before meeting start for:
+  - Meeting owner
+  - All invitees
+
+> **Dependency note (convention):** Meetings is expected to depend on Calendar. See [Module Dependencies](/architecture/module-dependencies).
+
+**Goal:** Provide a complete customer relationship management experience with lead tracking, task management, customer records, scheduling, meetings, and activity history.
 
 ---
 
@@ -149,13 +166,21 @@ The platform architecture supports additional modules without requiring architec
 - Email Campaigns
 - SMS & WhatsApp provider integrations (Cloud API / Twilio) — templates + `wa.me` MVP already shipped
 - API & Webhooks
-- AI Assistants
+- **AI Integration (Planning)** — optional integrations with Leads, Tasks, CRM, and other domain modules
 - Multi-Branch Management
 - Multi-Currency Accounting
 - POS (Point of Sale)
 - E-Commerce Integrations
 
-These modules will follow the same Module Development Standard established by Leads and Tasks.
+### AI
+
+| Capability | Status |
+|------------|--------|
+| AI Integration (Planning) | Planned |
+
+AI is documented as a future cross-cutting capability. Integrations with Leads, Tasks, CRM, and similar modules should be **optional**. See [Module Dependencies](/architecture/module-dependencies).
+
+These modules will follow the same [Module Architecture](/architecture/module-architecture) and [Module Development Standard](/developer-guide/module-development) established by Leads and Tasks.
 
 ---
 
@@ -163,8 +188,9 @@ These modules will follow the same Module Development Standard established by Le
 
 Every module must:
 
-- Follow the established platform architecture ([platform freeze](/getting-started/platform-freeze))
-- Respect module licensing and Marketplace activation
+- Follow the established [Module Architecture](/architecture/module-architecture) and [platform freeze](/getting-started/platform-freeze)
+- Be self-contained, own its resources, and declare [dependencies](/architecture/module-dependencies) when required
+- Remain compatible with independent [module licensing](/architecture/module-licensing) and Marketplace activation
 - Enforce RBAC permissions
 - Maintain tenant isolation
 - Integrate with the shared settings framework where applicable
@@ -183,6 +209,10 @@ Evolve the platform into a modular, enterprise-grade SaaS ERP where organization
 
 ## Related
 
+- [Architecture](/architecture/)
+- [Module Architecture](/architecture/module-architecture)
+- [Module Dependencies](/architecture/module-dependencies)
+- [Module Licensing](/architecture/module-licensing)
 - [Platform Architecture Freeze](/getting-started/platform-freeze)
 - [Module Development Standard](/developer-guide/module-development)
 - [Entitlements](/developer-guide/entitlements)
