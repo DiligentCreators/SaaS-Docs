@@ -41,6 +41,26 @@ That is the complete path for catalog modules and tenant permission vocabulary c
 2. Provision default roles/permissions via `TenantAuthorizationProvisioningService`
 3. Create the owner via `TenantAuthBootstrapService` (no RBAC mutation on later logins)
 
+## Multi-Provider Email Delivery
+
+After pulling a release that includes multi-provider email:
+
+```bash
+composer install --no-dev --optimize-autoloader   # pulls symfony/postmark-mailer + mailgun-mailer
+php artisan migrate --force                       # email_logs tables + email-logs.* permission grants
+php artisan email:migrate-tenant-mail-modes       # optional; --dry-run first. Backfills mail_mode from legacy mail_host
+php artisan queue:restart                         # required — workers cache mailer config
+```
+
+Notes:
+
+- Legacy tenants with a filled `mail_host` still behave as custom SMTP until the migrate command runs (recommended).
+- Configure Central **Settings → Mail** (SMTP / Postmark / Mailgun). Env `MAIL_*` remains bootstrap fallback only.
+- After changing mail credentials in Settings, always run `php artisan queue:restart`.
+- Smoke: Central + Tenant **Send test**, then open **Email logs**.
+
+See [Multi-Provider Email](/developer-guide/multi-provider-email).
+
 ## Verification
 
 ```bash
@@ -58,4 +78,5 @@ Smoke:
 - [Platform production runbook](/deployment/platform-production-runbook)
 - [Module development — production](/deployment/module-development)
 - [Communication Templates deployment](/deployment/communication-templates)
+- [Multi-Provider Email](/developer-guide/multi-provider-email)
 - [Tenant provisioning](/developer-guide/tenant-provisioning)

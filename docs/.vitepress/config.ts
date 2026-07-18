@@ -192,6 +192,7 @@ export default defineConfig({
             { text: 'Tenant RBAC', link: '/developer-guide/tenant-rbac' },
             { text: 'Central Settings', link: '/developer-guide/central-settings' },
             { text: 'Tenant Settings', link: '/developer-guide/tenant-settings' },
+            { text: 'Multi-Provider Email', link: '/developer-guide/multi-provider-email' },
           ],
         },
         {

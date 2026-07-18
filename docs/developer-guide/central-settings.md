@@ -22,7 +22,7 @@ $settings->applyRuntimeConfig();
 $settings->configurePasswordDefaults();
 ```
 
-`applyRuntimeConfig()` overlays `app.name`, timezone, locale, session lifetime, Cashier currency, mail default/From/SMTP.
+`applyRuntimeConfig()` overlays `app.name`, timezone, locale, session lifetime, Cashier currency, and mail via `EmailManager` (SMTP / Postmark / Mailgun / log / array / sendmail).
 
 `Password::defaults()` and `PasswordRule` both read live settings (min length + special character).
 
@@ -32,12 +32,16 @@ $settings->configurePasswordDefaults();
 |--------|------|-------|
 | GET | `/api/central/v1/system-settings` | Masked secrets |
 | PUT | `/api/central/v1/system-settings` | `{ "settings": { "key": value } }` |
-| POST | `/api/central/v1/system-settings/test-mail` | `{ "email": "…" }` |
+| POST | `/api/central/v1/system-settings/test-mail` | `{ "email": "…", "settings"?: {…} }` — structured result; optional unsaved draft |
 | POST | `/api/central/v1/system-settings/branding/{logo\|favicon}` | Multipart `file` → `FileUploadService` |
+| GET | `/api/central/v1/email-logs` | Filter by status/provider/date/search |
+| GET | `/api/central/v1/email-logs/{uuid}` | Show one log |
 
-Permissions: `system-settings.list`, `system-settings.update`.
+Permissions: `system-settings.list`, `system-settings.update`, `email-logs.list`, `email-logs.view`.
 
-Empty / `********` `mail_password` on update leaves the existing encrypted value unchanged.
+Empty / `********` secrets (`mail_password`, Postmark token, Mailgun secret) on update leave existing encrypted values unchanged.
+
+Mail keys include `mail_provider` (canonical; `mail_driver` mirrored), SMTP fields, `mail_reply_to`, `mail_timeout`, and provider credentials. Runtime apply lives in `App\Services\Email\EmailManager`.
 
 Branding assets use the configured uploads disk (`FILESYSTEM_DISK=public` locally / `s3` in production). See [object-storage.md](/developer-guide/object-storage).
 

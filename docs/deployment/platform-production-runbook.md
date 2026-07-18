@@ -73,6 +73,7 @@ Scheduled commands (all use `withoutOverlapping`):
 - `billing:run-consolidated`
 - `crm:send-due-notifications`
 - `notifications:prune --days=90` (weekly)
+- `email-logs:prune` (weekly — retention from `EMAIL_LOGS_RETAIN_DAYS` / config `email.logs_retain_days`)
 
 ## Deploy sequence
 
@@ -88,6 +89,14 @@ php artisan queue:restart
 php artisan reverb:restart
 php artisan up
 ```
+
+After a Multi-Provider Email release, also run `php artisan email:migrate-tenant-mail-modes` once (see [Upgrade Guide](/deployment/upgrade)). Restart queue workers whenever Central/Tenant mail credentials change in Settings.
+
+Go-live smoke for mail:
+
+1. Central **Settings → Mail** — choose SMTP / Postmark / Mailgun (not Log/Array in production) → **Send test**
+2. Tenant **Settings → Mail** — system provider test (inherits Central) and/or custom provider test
+3. Open **Email logs** (Central + Tenant) and confirm the test rows appear
 
 ### Migration-driven releases (no production seeders)
 

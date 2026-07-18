@@ -20,13 +20,17 @@
 - `central` — `SystemSettingService`
 - `system` — hard-coded / config fallback
 
-Business code must call the service (`applicationName()`, `logoUrl()`, `supportEmail()`, `buttonColor()`, `hasTenantSmtp()`, …) instead of branching on raw settings.
+Business code must call the service (`applicationName()`, `logoUrl()`, `supportEmail()`, `buttonColor()`, `usesCustomMailProvider()`, …) instead of branching on raw settings.
 
-## SMTP
+## Mail provider
 
-`hasTenantSmtp()` is true when tenant `mail_host` is set. `applyRuntimeConfig()` then overlays Laravel mail config from the tenant; otherwise it re-applies Central mail via `SystemSettingService`.
+`mail_mode` is `system` (inherit Central via `EmailManager`) or `custom` (tenant provider: SMTP / Postmark / Mailgun / …).
 
-Passwords are encrypted with `Crypt` and masked as `********` in the admin API.
+`usesCustomMailProvider()` is true when `mail_mode=custom`, or (legacy) when `mail_host` is filled and `mail_mode` is unset. Backfill with `php artisan email:migrate-tenant-mail-modes`.
+
+Queued mail re-applies config via `ApplyEmailRuntimeConfig` on the `emails` queue.
+
+Secrets are encrypted with `Crypt` and masked as `********` in the admin API.
 
 ## Admin API
 
@@ -34,10 +38,12 @@ Passwords are encrypted with `Crypt` and masked as `********` in the admin API.
 |--------|------|-------|
 | GET | `/api/tenant/v1/settings` | Resolved values + `source` / `is_overridden` |
 | PUT | `/api/tenant/v1/settings` | `{ "settings": { "key": value } }` |
-| POST | `/api/tenant/v1/settings/test-mail` | `{ "email": "…" }` |
+| POST | `/api/tenant/v1/settings/test-mail` | `{ "email": "…", "settings"?: {…} }` — structured result |
 | POST | `/api/tenant/v1/settings/branding/{logo\|favicon}` | Multipart `file` → `FileUploadService` under `tenants/{uuid}/branding/…` |
+| GET | `/api/tenant/v1/email-logs` | Workspace-scoped delivery logs |
+| GET | `/api/tenant/v1/email-logs/{uuid}` | Show one log |
 
-Permissions (`config/tenant-permissions.php`): `settings.list`, `settings.update`.
+Permissions (`config/tenant-permissions.php`): `settings.list`, `settings.update`, `email-logs.list`, `email-logs.view`.
 
 Object storage: [object-storage.md](/developer-guide/object-storage).
 

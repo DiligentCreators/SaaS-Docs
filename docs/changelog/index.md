@@ -1,5 +1,29 @@
 # Changelog
 
+## Multi-Provider Email Delivery — production hardening (2026-07-19)
+
+Production-readiness fixes on top of the multi-provider email implementation:
+
+- Runtime isolation: `EmailManager` clears prior SMTP/Postmark/Mailgun secrets on every apply; queue middleware clears secrets after each mail job
+- Central HTTP middleware `central.mail` re-applies Central mail on every Central request
+- Tenant system-mode test mail inherits Central; test-mail restores prior runtime config in `finally`
+- Provider-conditional save validation; additive `email-logs.*` permission migration; unsupported webhook capabilities no longer advertised
+- Upgrade/runbook notes for migrate, `email:migrate-tenant-mail-modes`, composer packages, `queue:restart`
+
+## Multi-Provider Email Delivery implementation (2026-07-19)
+
+Platform infrastructure: provider-agnostic email delivery for Central and Tenant.
+
+- `EmailManager` + driver registry (SMTP, Postmark, Mailgun, log/array/sendmail) with Laravel mailer overlay + `Mail::forgetMailers()`
+- Central/Tenant settings: `mail_provider`, encrypted API secrets, `mail_mode` (system|custom), reply-to, timeout
+- Queue middleware `ApplyEmailRuntimeConfig` re-applies tenant/central mail config on the `emails` worker
+- Structured test-mail responses (draft settings supported); email logs API + UI + weekly prune
+- Artisan `email:migrate-tenant-mail-modes` backfills tenant modes from legacy `mail_host`
+- Future stubs: webhook capability interface, resend/analytics services, failover config keys
+- Developer guide: [Multi-Provider Email](/developer-guide/multi-provider-email)
+
+---
+
 ## Multi-Provider Email Delivery roadmap (2026-07-19)
 
 Documentation-only: product roadmap for provider-agnostic email delivery (Central + Tenant).
