@@ -17,8 +17,9 @@ Every business capability on this platform is a **module**. Modules are licensed
 
 1. **Consistency over abstraction** — flat Laravel layout; register through existing catalog, permissions, middleware, nav, and settings.
 2. **Licensing ≠ authorization** — `module:{slug}` then `can:{slug}.{action}`.
-3. **Mirror Leads** — Tasks, Invoices, Inventory, Purchases, HR, Payroll, Accounting, Assets, Projects must follow the same structure.
+3. **Mirror Leads** — Tasks, Communication Templates, Invoices, Inventory, Purchases, HR, Payroll, Accounting, Assets, Projects must follow the same licensing + permission + UI structure (Communication Templates is additionally a cross-cutting consumer pattern).
 4. **No shortcuts** — every module ships backend, frontend, tests, docs, and CHANGELOG.
+5. **Migrate-only production** — new default modules and permissions ship as data migrations; never production `db:seed` for catalog/RBAC.
 
 ## Cross-cutting patterns (Sprint 2+)
 

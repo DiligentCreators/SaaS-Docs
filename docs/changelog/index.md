@@ -1,5 +1,52 @@
 # Changelog
 
+## Documentation sync — migrate-only modules & auth/RBAC separation (2026-07-18)
+
+Docs pass aligning architecture, deployment, RBAC, provisioning, entitlements, database, API, and Communication Templates guides with the final production architecture.
+
+- Production deploy is migration-driven (`migrate --force` + `optimize`); no catalog/permission reseeding
+- Authentication has no authorization side effects; workspace RBAC is provisioned explicitly
+- Communication Templates documented as a reusable platform module (placeholders, render/preview, WhatsApp)
+- Future modules follow the data-migration registration pattern
+
+---
+
+## Authentication / authorization separation (2026-07-18)
+
+Keep login and authenticated requests free of RBAC side effects.
+
+- `TenantAuthorizationProvisioningService` provisions workspace roles during workspace create
+- `TenantAuthBootstrapService` only creates owners and issues tokens
+- Dashboard, role listing, and user listing no longer repair permissions
+- Legacy shared-role isolation remains an explicit `tenants:isolate-roles` maintenance command
+- Existing workspaces still receive new permissions through additive data migrations
+
+---
+
+## Communication Templates production deploy hardening (2026-07-17)
+
+Eliminate production `db:seed` for Communication Templates.
+
+- Data migrations register the catalog module and grant permissions additively during `php artisan migrate`
+- `DefaultModuleRegistrar` installs the module only for workspaces missing a subscription row (never reactivates cancelled/suspended)
+- `TenantPermissionSynchronizer` creates missing permission vocabulary and grants only new permissions without resetting customized roles
+- Authentication and dashboard requests no longer mutate roles or permissions
+- `TenantAuthorizationProvisioningService` creates default RBAC during workspace provisioning; deploy migrations add future permissions
+- CatalogSeeder remains insert-only for fresh/local environments
+
+---
+
+## Communication Templates module (MVP) (2026-07-17)
+
+Catalog module for reusable plain-text templates with a placeholder registry and WhatsApp Web (`wa.me`) from Leads.
+
+- Backend: `communication_templates` table, CRUD + preview/render APIs, Lead/shared placeholder providers, UUID route binding, permissions (`view|create|update|delete|use`), platform audit
+- Frontend: Templates admin page with chip inserter, Lead detail WhatsApp picker, module-gated nav
+- Docs: developer / user / API / deployment guides; E2E `test:e2e:communication-templates`
+- Default-included with Leads and Tasks for new workspaces
+
+---
+
 ## In-app notifications production hardening (2026-07-16)
 
 Release hardening for the frozen notification stack (no architecture changes).

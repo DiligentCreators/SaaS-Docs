@@ -30,17 +30,27 @@ Core Administration (Users, Roles, Settings) does not require a module subscript
 
 Spatie **teams** are not enabled. Isolation uses:
 
-1. `roles.tenant_id` set to the workspace UUID when roles are created (bootstrap + CRUD).
+1. `roles.tenant_id` set to the workspace UUID when roles are created (provisioning + CRUD).
 2. Unique index `(tenant_id, name, guard_name)`.
 3. Role assignment by **Role model instance** (not bare name), so Spatie attaches the correct row.
 4. Permission validation: `exists:roles,name` filtered by current `tenant_id` + `guard_name = tenant-api`.
 5. `RolePolicy` / `TenantUserPolicy` ensure actors only see/mutate resources in the current workspace.
 
-Permissions remain a shared catalog seeded from `config/tenant-permissions.php` (e.g. `users.list`, `leads.view`). They are not copied per tenant.
+Permissions remain a shared vocabulary defined in `config/tenant-permissions.php` (e.g. `users.list`, `leads.view`, `communication-templates.use`). They are not copied per tenant.
+
+**How permissions reach production:**
+
+| Moment | Mechanism |
+|--------|-----------|
+| New workspace | `TenantAuthorizationProvisioningService::provisionDefaults()` during `TenantProvisioningService` |
+| Existing workspace + new permissions | Additive **data migration** via `TenantPermissionSynchronizer::grantMissingDefaultRolePermissions([...])` |
+| Login / dashboard / role listing | **Never** mutates roles or permissions |
+
+Do not run permission seeders in production. Do not `syncPermissions()` on customized roles during deploy.
 
 ### Legacy shared roles
 
-Workspaces created before isolation may still have users on `tenant_id = null` roles. Listing users/roles calls `TenantAuthBootstrapService::ensureWorkspaceRoleIsolation()`, which creates workspace roles and reassigns users. Operators can also run:
+Workspaces created before isolation may still have users on `tenant_id = null` roles. Repair is an explicit maintenance operation; authenticated requests never mutate authorization state. Operators run:
 
 ```bash
 php artisan tenants:isolate-roles
@@ -48,7 +58,7 @@ php artisan tenants:isolate-roles
 
 ## Owner
 
-- Role name: `superadmin` (`TenantAuthBootstrapService::OWNER_ROLE`)
+- Role name: `superadmin` (`TenantAuthorizationProvisioningService::OWNER_ROLE`)
 - Created during workspace registration
 - Receives all tenant-api permissions
 - Protected from deletion (`config/tenant-protected-roles.php`)

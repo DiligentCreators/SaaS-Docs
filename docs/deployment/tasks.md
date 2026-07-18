@@ -17,7 +17,7 @@ No stage seeder (unlike Leads)—status/priority are enums on the task row.
 
 ## Permissions rollout
 
-After deploying Sprint 2 (`tasks.change_due_date`, `waiting` status), re-bootstrap roles for existing workspaces (owner syncs all permissions; default roles use `tenant-default-role-permissions.php`).
+New Tasks permissions for **existing** workspaces must ship as an additive **data migration** using `TenantPermissionSynchronizer::grantMissingDefaultRolePermissions([...])`. Do **not** re-seed roles or rely on login/dashboard to repair RBAC.
 
 ## Monitoring
 

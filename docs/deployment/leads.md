@@ -17,7 +17,7 @@ Existing workspaces without stages get stages lazily on first Leads API call.
 
 ## Permissions rollout
 
-After deploying permissions (`leads.export`, `leads.import`, `leads.convert`) and the renamed status vocabulary, re-bootstrap roles for existing workspaces (owner syncs all permissions; default roles use `tenant-default-role-permissions.php`).
+New Leads permissions for **existing** workspaces must ship as an additive **data migration** using `TenantPermissionSynchronizer::grantMissingDefaultRolePermissions([...])` (same pattern as Communication Templates). Do **not** re-seed roles or rely on login/dashboard to repair RBAC.
 
 Status migration maps legacy `open` → `active` and `won`/`lost` → `closed`. Column rename: `estimated_value` → `lead_value`.
 

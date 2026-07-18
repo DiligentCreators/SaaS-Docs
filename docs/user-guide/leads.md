@@ -38,6 +38,16 @@ Users with **assign** can set or clear the assignee. Assignment changes are reco
 - **Follow-ups** — titled reminders with due dates; edit/reschedule or complete when done
 - Assignees receive notifications when a follow-up is created for them (by someone else) and when due/overdue reminders run
 
+## WhatsApp (Communication Templates)
+
+When the **Communication Templates** module is installed and you have **use** permission:
+
+1. Open a lead that has a phone number
+2. Click **WhatsApp** next to the phone
+3. Choose a template, preview the filled message, then **Open WhatsApp**
+
+WhatsApp opens with the message pre-filled. SaleOS does not send the message for you. See [Communication Templates](/user-guide/communication-templates).
+
 ## Convert
 
 Users with **convert** can mark a lead converted. Today this is a **stub**: the lead is stamped with `converted_at`, status becomes Closed, and an activity is recorded. Creating Contact/Company records is deferred until those modules ship.

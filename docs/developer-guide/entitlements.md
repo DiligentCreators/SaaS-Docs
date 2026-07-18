@@ -11,7 +11,7 @@ The platform does **not** sell plans or features. Licensing is based entirely on
 | Layer | Concern | Meaning | Example |
 |-------|---------|---------|---------|
 | Core Platform | Always-on | Platform capabilities (not modules, not billed) | Auth, users, roles, dashboard, billing, marketplace shell |
-| Module | Licensing | Independently installable business domain | Leads, Tasks |
+| Module | Licensing | Independently installable business domain | Leads, Tasks, Communication Templates |
 | Spatie Permission | Authorization | User access within an installed module | `leads.view`, `tasks.create` |
 | Workspace module subscription | License row | Links a workspace to a module | Acme → Leads (`source=included`) |
 
@@ -23,12 +23,22 @@ A purchased or included module makes a business domain **available** to the work
 
 Core Platform capabilities live in `config/core-platform.php` and are always available.
 
-Business modules live in the `modules` catalog. Today only **Leads** and **Tasks** exist. They are:
+Business modules live in the `modules` catalog. Default-included today:
+
+| Slug | Notes |
+|------|-------|
+| `leads` | CRM pipeline |
+| `tasks` | Work items |
+| `communication-templates` | Plain-text templates + placeholder registry (WhatsApp handoff) |
+
+They are:
 
 - `is_default_included = true`
 - `is_billable = false`
 - Auto-installed on every new workspace (`source=included`)
 - Not cancellable by workspace owners (platform admin may **deactivate**)
+
+New default-included modules for **existing** production workspaces are registered via idempotent **data migrations** (`DefaultModuleRegistrar`), not `db:seed`. See [module-development production](/deployment/module-development).
 
 Schema remains flexible so they can become paid for *new* customers later without redesign (`is_billable`, pricing columns, `source`).
 

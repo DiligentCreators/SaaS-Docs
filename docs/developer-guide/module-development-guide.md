@@ -4,8 +4,8 @@ Canonical checklist for building a business module. Copy the **Leads** module st
 
 ## Registration recipe
 
-1. **Catalog** — Add a row via `CatalogSeeder` and/or Central Modules API (`slug`, pricing, `status=published`, `is_default_included` / `is_billable`).
-2. **Permissions** — Add `{slug} => [view, create, update, delete, …]` in `config/tenant-permissions.php` and default grants in `config/tenant-default-role-permissions.php`. Modules never auto-grant permissions; roles do.
+1. **Catalog (production)** — Ship an idempotent **data migration** that calls `App\Support\Catalog\DefaultModuleRegistrar` (`slug`, pricing defaults, `status=published`, `is_default_included` / `is_billable`). Also keep `CatalogSeeder` in sync for **local/CI fresh DBs only** — never rely on `db:seed` in production. Optional: Central Modules API for non-default / commercial catalog edits.
+2. **Permissions (production)** — Add `{slug} => [view, create, update, delete, …]` in `config/tenant-permissions.php` and default grants in `config/tenant-default-role-permissions.php`. Ship a data migration that calls `TenantPermissionSynchronizer::grantMissingDefaultRolePermissions([...])` so existing workspaces receive grants additively. Modules never auto-grant permissions; roles do. Login never syncs RBAC.
 3. **Routes** — Tenant API:
 
 ```php
@@ -21,7 +21,7 @@ Route::middleware(['auth:tenant-api', 'tenant.user', 'verified', 'module:{slug}'
 | Models | `app/Models/` + `BelongsToTenant` |
 | Migrations | `database/migrations/` |
 | Factories | `database/factories/` |
-| Seeders | `database/seeders/Tenant/` (or Central for catalog) |
+| Seeders | `database/seeders/Tenant/` for local/demo only; production catalog/permission rows use **data migrations** |
 | Controllers | `app/Http/Controllers/Tenant/Api/V1/` |
 | Form requests | `app/Http/Requests/Tenant/Api/V1/{Module}/` |
 | Resources | `app/Http/Resources/Tenant/Api/V1/{Module}/` |
@@ -96,3 +96,12 @@ Paid modules: catalog `is_billable`, marketplace install, `ModuleSubscriptionSer
 - Skipping `module:` or `can:` middleware
 - Static nav that ignores entitlements
 - Custom audit/notification systems outside platform services
+- Production `db:seed` / `CatalogSeeder` to register default modules
+- Login-time or dashboard-time permission “repair”
+- `syncPermissions()` on existing customized roles during deploy
+
+## Related
+
+- [Production module registration](/deployment/module-development)
+- [Communication Templates](/developer-guide/communication-templates) — reusable platform module pattern
+- [Tenant provisioning](/developer-guide/tenant-provisioning)

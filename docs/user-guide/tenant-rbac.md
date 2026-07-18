@@ -40,7 +40,7 @@ Example roles you might create: Sales Manager, Sales Agent, Finance, Support. De
 Permissions are checked actions such as `users.list` or `leads.create`.
 
 - Granted to **roles**, not directly to users (standard setup).
-- Grouped by area (Users, Roles, Settings, Leads, Tasks, …) when editing a role.
+- Grouped by area (Users, Roles, Settings, Leads, Tasks, Communication Templates, …) when editing a role.
 - The permissions list / matrix is read-only; change access by editing roles.
 
 ## Modules and access

@@ -2,7 +2,7 @@
 
 The platform foundation is **locked**. From this point forward, do not redesign core subsystems unless the change addresses a **critical security issue**, **data integrity issue**, or **production bug**.
 
-Business capability ships as **modules** on top of this foundation. The first reference module is **Leads**; every later module (Tasks, Invoices, Inventory, etc.) must mirror that structure.
+Business capability ships as **modules** on top of this foundation. The first reference module is **Leads**; every later module (Tasks, Communication Templates, Invoices, Inventory, etc.) must mirror that structure. Cross-cutting reusable modules (e.g. Communication Templates) still follow the same licensing + permission + migrate-only registration rules.
 
 ## Locked subsystems
 
