@@ -22,6 +22,7 @@ The CRM is the foundation of the platform and is the first functional area deliv
 | [Tasks](/user-guide/tasks-overview) | ✅ Completed (Sprint 2 UX: board, KPIs, waiting status, due-date permission, comments/history) |
 | In-app notifications + Reverb | ✅ Completed (payload v1, NotificationBatch digests, Reverb/Echo, modular registry, browser toasts; poll fallback only) |
 | Tenant dashboard widgets | ✅ Completed (module/permission/assignee scoped; no calendar until Calendar module) |
+| [Communication Templates](/user-guide/communication-templates) | ✅ Completed (plain-text templates, placeholder registry, WhatsApp `wa.me` from Leads; migrate-only production registration) |
 
 ### Planned
 
@@ -146,7 +147,7 @@ The platform architecture supports additional modules without requiring architec
 - Workflow Automation
 - Marketing Automation
 - Email Campaigns
-- SMS & WhatsApp Integrations
+- SMS & WhatsApp provider integrations (Cloud API / Twilio) — templates + `wa.me` MVP already shipped
 - API & Webhooks
 - AI Assistants
 - Multi-Branch Management

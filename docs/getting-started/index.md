@@ -14,4 +14,4 @@ Welcome to **SaleOS** documentation. Start here to understand the frozen platfor
 
 - Operators: [User Guide](/user-guide/)
 - Engineers: [Developer Guide](/developer-guide/)
-- Go-live: [Deployment](/deployment/)
+- Go-live / upgrades: [Deployment](/deployment/) · [Upgrade Guide](/deployment/upgrade)

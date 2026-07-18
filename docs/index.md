@@ -22,7 +22,7 @@ features:
     link: /getting-started/
     linkText: Start here
   - title: User Guide
-    details: Day-to-day operator docs for authentication, RBAC, settings, Leads, Tasks, and the admin console.
+    details: Day-to-day operator docs for authentication, RBAC, settings, Leads, Tasks, Communication Templates, and the admin console.
     link: /user-guide/
     linkText: Browse user docs
   - title: Developer Guide
@@ -30,11 +30,11 @@ features:
     link: /developer-guide/
     linkText: Build modules
   - title: API Reference
-    details: Central and Tenant REST APIs for dashboard, leads, tasks, notifications, and platform administration.
+    details: Central and Tenant REST APIs for dashboard, leads, tasks, communication templates, notifications, and platform administration.
     link: /api/
     linkText: View APIs
   - title: Deployment Guide
-    details: Production runbooks, go-live hardening, and ops checklists for mail, storage, auth, and gateways.
+    details: Production runbooks, migrate-only upgrades, go-live hardening, and ops checklists for mail, storage, auth, and gateways.
     link: /deployment/
     linkText: Deploy SaleOS
   - title: Changelog

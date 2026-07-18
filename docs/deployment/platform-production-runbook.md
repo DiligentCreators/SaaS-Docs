@@ -81,14 +81,24 @@ php artisan down --retry=60   # optional platform-wide maintenance
 git pull
 composer install --no-dev --optimize-autoloader
 php artisan migrate --force
-php artisan config:cache
-php artisan route:cache
-php artisan event:cache
-php artisan view:cache
+php artisan optimize
+# Or the equivalent discrete caches:
+# php artisan config:cache && php artisan route:cache && php artisan event:cache && php artisan view:cache
 php artisan queue:restart
 php artisan reverb:restart
 php artisan up
 ```
+
+### Migration-driven releases (no production seeders)
+
+Default modules and tenant permissions ship through **data migrations** that run with `php artisan migrate --force`.
+
+- Do **not** run `php artisan db:seed` / `CatalogSeeder` / role permission seeders in production to register modules or repair RBAC
+- New default-included modules use `DefaultModuleRegistrar` (insert-only catalog + missing-workspace installs)
+- New permissions use `TenantPermissionSynchronizer` (additive grants only)
+- Authentication has **no** authorization side effects; incomplete deploys are not silently “fixed” on login
+
+See [module-development.md](/deployment/module-development) and [communication-templates.md](/deployment/communication-templates).
 
 Notes:
 
@@ -116,12 +126,13 @@ Cancelling a purchased module subscription calls the payment gateway (`cancelSub
 
 1. Central login + dashboard
 2. Tenant login + dashboard
-3. Create lead / task (module gates)
-4. Stripe test webhook (or gateway health)
-5. Forgot-password email leaves the queue
-6. Suspend a test user → token immediately unusable
-7. `GET /up` healthy
-8. Failed jobs empty: `php artisan queue:failed`
+3. Create lead / task / communication template (module gates)
+4. Lead WhatsApp picker opens `wa.me` when phone + template present
+5. Stripe test webhook (or gateway health)
+6. Forgot-password email leaves the queue
+7. Suspend a test user → token immediately unusable
+8. `GET /up` healthy
+9. Failed jobs empty: `php artisan queue:failed`
 
 ## Rollback
 

@@ -31,6 +31,9 @@ lead_assignment_histories
 tasks / task_notes / task_activities
   (tenant-scoped work items — Tasks module)
 
+communication_templates
+  (tenant-scoped plain-text templates — Communication Templates module)
+
 notifications
   (Laravel database notifications — polymorphic notifiable)
 ```
@@ -67,6 +70,12 @@ Notes (author + body), follow-ups (due/complete/status), and CRM timeline (`type
 
 Notes / comments (author + body) and task timeline (`type`, `description`, `properties` JSON).
 
+## Communication Templates module tables
+
+### `communication_templates`
+
+`tenant_id`, `uuid` (route key), `name`, `context` (e.g. `leads`), `channel` (MVP: `whatsapp`), `category` (nullable), `body` (plain text), `is_active`, `created_by`, `updated_by`, `last_used_at`, soft deletes. Unique name per tenant+context+channel among non-deleted rows. Placeholders are not stored as rows — they come from the in-code registry.
+
 ## Notifications
 
 ### `notifications`
@@ -90,14 +99,14 @@ Retention: `php artisan notifications:prune --days=90` (scheduled weekly) delete
 | `uuid` | Unique public id |
 | `name`, `slug` (unique), `description`, `icon` | |
 | `category_id` | FK `module_categories`, nullable |
-| `monthly_price`, `yearly_price`, `currency`, `setup_fee` | Catalog amounts; Leads/Tasks are `0`. No provider IDs on modules |
+| `monthly_price`, `yearly_price`, `currency`, `setup_fee` | Catalog amounts; default CRM modules are `0`. No provider IDs on modules |
 | `trial_days`, `version`, `status` | `draft` \| `published` \| `deprecated` |
 | `is_default_included` | Auto-install on workspace create |
 | `is_billable` | Whether the module can be charged when platform-managed |
 | `sort_order`, `is_active` | |
 | soft deletes | |
 
-Seeded today: **Leads**, **Tasks** only (`is_default_included=true`, `is_billable=false`). Modules are pure licensing products — they do not store permission lists. User authorization uses Spatie Roles & Permissions separately.
+Default-included catalog modules today: **Leads**, **Tasks**, **Communication Templates** (`is_default_included=true`, `is_billable=false`). Production receives new default modules via **data migrations** (`DefaultModuleRegistrar`), not seeders. Modules are pure licensing products — they do not store permission lists. User authorization uses Spatie Roles & Permissions separately.
 
 ### `payment_gateway_module_prices`
 

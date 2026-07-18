@@ -4,7 +4,7 @@
 
 1. Run migrations (adds `type` / `group` on `tenant_settings`).
 2. Configure object storage: local `FILESYSTEM_DISK=public` + `php artisan storage:link`, or production `FILESYSTEM_DISK=s3`. Optional: `FILESYSTEM_BRANDING_DISK=public` so tenant branding under `tenants/{id}/branding/…` stays on local storage (see [object-storage.md](/developer-guide/object-storage)).
-3. Seed/sync tenant permissions so roles include `settings.list` and `settings.update` (`TenantAuthBootstrapService` / PermissionsSeeder).
+3. Ensure `settings.list` / `settings.update` exist in `config/tenant-permissions.php` and default role maps. New workspaces receive them via `TenantAuthorizationProvisioningService` during provisioning. Existing workspaces that need newly added settings permissions receive them via an additive permission **data migration** — not production seeders and not login-time sync.
 4. Confirm `APP_KEY` is stable — SMTP passwords are encrypted with Laravel Crypt.
 
 ## Security

@@ -9,7 +9,7 @@
 3. Otherwise enter company name, your name, work email, password, and optional workspace domain.
 4. After success you are signed in and taken to the workspace dashboard.
 
-Registration creates your workspace, owner account, default roles, and default modules (Leads, Tasks).
+Registration creates your workspace, owner account, default roles, and default modules (Leads, Tasks, Communication Templates).
 
 ### Login
 

@@ -11,6 +11,7 @@ The left sidebar includes:
 | **Dashboard** | Workspace overview with module widgets |
 | **Leads** | CRM pipeline (Kanban/table, notes, follow-ups) |
 | **Tasks** | Work items (board/list, status, priority, comments) |
+| **Templates** | Communication Templates (plain-text messages, WhatsApp from Leads) |
 | **Settings** | Workspace preferences |
 | **Profile** | Your name, email, and password |
 

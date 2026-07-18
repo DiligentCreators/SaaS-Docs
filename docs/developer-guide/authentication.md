@@ -57,10 +57,11 @@ Spatie roles/permissions are isolated by `guard_name` (`central-api` vs `tenant-
 `POST /api/central/v1/public/register-workspace` (honours `registration_enabled`):
 
 1. Creates workspace + domain
-2. Provisions default modules (Leads, Tasks) + billing profile
-3. Ensures tenant roles/permissions
-4. Creates workspace owner (`User`) with `superadmin` role
-5. Returns Sanctum `tenant-token` for immediate SPA login
+2. `TenantProvisioningService` — billing profile, default-included modules (Leads, Tasks, Communication Templates), authorization defaults, module seed data
+3. `TenantAuthBootstrapService::createOwner` — owner `User` with workspace `superadmin` role (roles must already exist)
+4. Returns Sanctum `tenant-token` for immediate SPA login
+
+Login and subsequent authenticated requests **do not** create or repair roles/permissions. See [tenant-provisioning.md](/developer-guide/tenant-provisioning).
 
 Required body fields: `company_name`, `owner_name`, `email`, `password`, `password_confirmation`.
 
@@ -91,8 +92,8 @@ Admin verify/resend cannot target self or (for non-owners) the workspace owner. 
 
 ## Impersonation compatibility
 
-Login and registration issue tokens through `TenantAuthBootstrapService::issueAccessToken()`.  
-`ImpersonationService::issueTenantAccessToken()` reuses the same helper for a future Central → Tenant handoff. Current impersonation endpoints still create audit sessions only.
+Login and registration issue tokens through `TenantAuthBootstrapService::issueAccessToken()` only — that service has **no authorization side effects**.  
+`ImpersonationService` reuses the same token helper for Central → Tenant handoff when issuing a tenant token.
 
 ## Token ↔ workspace binding
 

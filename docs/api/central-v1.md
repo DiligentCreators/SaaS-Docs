@@ -91,7 +91,7 @@ Create/update body adds: `phone?`, `avatar_path?`, `password` (create), `role[]`
 |----------|-------|-------|
 | Modules | CRUD + restore/force | Full catalog admin. Fields include `uuid`, pricing (`monthly_price`, `yearly_price`, `currency`), `status`, `is_default_included`, `is_billable` — **no** payment-provider IDs |
 
-Default-included modules (Leads, Tasks) cannot be deleted while marked `is_default_included`. Modules with workspace subscriptions cannot be deleted until those subscriptions are removed.
+Default-included modules (Leads, Tasks, Communication Templates) cannot be deleted while marked `is_default_included`. Modules with workspace subscriptions cannot be deleted until those subscriptions are removed.
 
 Provider price mappings are managed under Payment Gateways (`GET/PUT /payment-gateways/{id}/module-prices`), not on Modules. Features catalog has been removed — modules are licensing products; Spatie permissions handle authorization.
 

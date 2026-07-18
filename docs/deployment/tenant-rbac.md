@@ -13,7 +13,8 @@ Operational and security notes for workspace-isolated RBAC.
 ## Implementation checklist
 
 - [ ] `config/tenant-permissions.php` lists every tenant permission used in routes/policies/UI
-- [ ] New workspaces bootstrap roles via `TenantAuthBootstrapService` with `tenant_id` set
+- [ ] New workspaces provision roles via `TenantAuthorizationProvisioningService` with `tenant_id` set before owner creation
+- [ ] New permissions ship in additive data migrations; login never repairs RBAC
 - [ ] Role sync uses Role **models**, not bare names
 - [ ] Policies deny cross-tenant subjects even if IDs collide
 - [ ] Product routes use `module:` + `can:` together
@@ -26,7 +27,18 @@ Operational and security notes for workspace-isolated RBAC.
 | Assigning roles by name across tenants | Always resolve roles with `tenant_id` |
 | Enabling Spatie teams without migration | Keep custom `tenant_id` until pivots use UUID team keys |
 | Privilege escalation | Policies block self-escalation / Owner self-delete where defined; audit role updates |
-| Stale permission cache | Clear Spatie permission cache after seed/deploy of new permissions |
+| Stale permission cache | Data migrations and provisioning clear Spatie's permission cache |
+| Incomplete deploy “fixed” on login | Forbidden — auth has no RBAC side effects; ship additive permission migrations |
+
+## Maintenance
+
+Legacy shared roles (`tenant_id` null) — explicit only:
+
+```bash
+php artisan tenants:isolate-roles
+```
+
+Do not expect role listing or dashboard to backfill isolation.
 
 ## Monitoring
 
