@@ -2,10 +2,10 @@
 
 | Field | Value |
 |-------|--------|
-| **Recommended tag** | `v1.2.0-rc.1` |
+| **Recommended tag** | `v1.2.0-rc.1` *(never tagged — ship GA as [`v1.1.0`](/changelog/v1.1.0))* |
 | **Release date** | 2026-07-14 |
-| **Status** | Release Candidate |
-| **Base** | v1.1.0-platform + CRM Sprint 2 |
+| **Status** | Release Candidate — **absorbed into v1.1.0** |
+| **Base** | Platform foundation + CRM Sprint 2 |
 | **Scope** | Hardening only — no new business modules |
 
 ---
@@ -144,7 +144,7 @@ Frontend: build SPA and publish static assets behind HTTPS.
 | New/updated Pest (suspend, webhook idempotency, impersonation owner, related auth/settings) | Passed in hardening runs |
 | Full Pest / Playwright | Re-run before GA tag |
 
-Recommended GA tag after soak: `v1.2.0` once full suite + soak smoke are green.
+Recommended GA tag: [`v1.1.0`](/changelog/v1.1.0) (RC1 never received a git tag; GA uses clean SemVer).
 
 ---
 

@@ -1,0 +1,29 @@
+---
+description: Require documentation updates in the same PR as code/process changes; keep Docs as source of truth
+alwaysApply: true
+---
+
+# Documentation Governance
+
+SaleOS Docs is the **canonical** product narrative. A platform change is **not complete** until Docs, code, and tests are updated together.
+
+## Same-PR rule
+
+When documenting or changing processes for any feature, fix, enhancement, architecture, config, deployment, migration, permission, API, CI/CD, or operational change:
+
+1. Update the affected VitePress pages in **this same PR**.
+2. Update `/changelog/` delivery notes (and release pages under `/changelog/vX.Y.Z-platform` when cutting a platform release).
+3. Keep cross-links (User Guide ↔ Developer Guide ↔ Deployment ↔ API) consistent.
+4. Do **not** claim git tags or CI results that were not verified.
+
+Canonical page: `docs/developer-guide/documentation-governance.md`.
+
+## Coverage matrix
+
+Keep synchronized when relevant: Product Roadmap, Changelog, Architecture, Developer Guides, API, Deployment, Upgrade, Runbooks, Env/Config, Permissions, Testing, CI/CD, Release Process.
+
+## Non-negotiables
+
+- Respect platform freeze — no parallel foundation redesign docs.
+- Prefer migrate-only production guidance (no `db:seed` in upgrade paths).
+- Dead links fail the Docs Quality Gate (`ignoreDeadLinks: false`).

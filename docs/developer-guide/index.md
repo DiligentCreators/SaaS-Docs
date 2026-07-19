@@ -6,6 +6,7 @@ Engineering documentation for extending SaleOS. New business capability ships as
 
 | Document | Description |
 |----------|-------------|
+| [Documentation Governance](./documentation-governance) | Same-PR docs rule — code + tests + docs |
 | [Module Development](./module-development) | Module Development Standard + Definition of Done |
 | [Module Development Guide](./module-development-guide) | End-to-end engineer checklist |
 | [Module Architecture](/architecture/module-architecture) | Self-contained modules and ownership boundaries |
