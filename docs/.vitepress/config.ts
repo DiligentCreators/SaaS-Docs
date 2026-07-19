@@ -240,6 +240,7 @@ export default defineConfig({
             { text: 'Scheduling Platform', link: '/developer-guide/scheduling-platform' },
             { text: 'Zoom Meeting Provider', link: '/developer-guide/zoom-meeting-provider' },
             { text: 'Google Meet Provider', link: '/developer-guide/google-meet-provider' },
+            { text: 'Google Calendar Sync', link: '/developer-guide/google-calendar-sync' },
           ],
         },
         {

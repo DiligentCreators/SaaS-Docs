@@ -50,4 +50,6 @@ Required scope for Meet: `https://www.googleapis.com/auth/calendar.events`
 
 ## Explicitly out of Phase 6
 
-Google Calendar synchronization, Outlook, Teams, Jitsi, booking, AI, recording downloads.
+Outlook, Teams, Jitsi, booking, AI, recording downloads.
+
+Google Calendar synchronization shipped in [Phase 7](/developer-guide/google-calendar-sync) on the same Google connection.

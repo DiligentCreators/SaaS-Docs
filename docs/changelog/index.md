@@ -1,5 +1,18 @@
 # Changelog
 
+## Google Calendar Sync Phase 7 (2026-07-20)
+
+Calendar Provider Framework and Google Calendar synchronization on the shared Google Workspace connection (ADR-005). Scheduling Platform remains the source of truth; external calendars are projections.
+
+- Backend: `CalendarManager`, `CalendarProviderInterface` / Registry / Resolver, `GoogleCalendarProvider`, sync engine (`SynchronizationService`, `CalendarProjectionService`, `SyncStateService`, `ConflictResolver`), webhook `POST /webhooks/calendar/google`, queue jobs, Http::fake tests
+- Satellite manifest `google-calendar.integration.php` with `connection_integration=google` (no second OAuth row)
+- Tenant API: `/calendar/providers`, `/calendar/sync`, conflicts resolve (`keep_local` / `keep_remote`)
+- Frontend: Calendar Provider Settings — selection, health/diagnostics, sync status, manual sync, conflict indicators
+- Docs: [Google Calendar Sync](/developer-guide/google-calendar-sync)
+- Out of scope: Outlook, CalDAV, ICS, booking, public scheduling, automation, AI, recurring-event UI
+
+---
+
 ## Google Meet Provider Phase 6 (2026-07-20)
 
 Google Meet adapter on the shared Google Workspace connection (ADR-005).

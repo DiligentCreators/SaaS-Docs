@@ -1,9 +1,11 @@
 # Calendar — Developer Guide
 
-> **Status: Implemented (Phase 2)**  
-> Binding ADRs: ADR-001 (Calendar is presentation only), ADR-003 (no module FKs on calendar entities; ScheduleItems are SoT).
+> **Status: Implemented (Phase 2 + Phase 7 sync)**  
+> Binding ADRs: ADR-001 (Calendar is presentation only), ADR-003 (no module FKs on calendar entities; ScheduleItems are SoT), ADR-005 (shared Google connection for calendar sync).
 
 Marketplace module (`calendar`) that **consumes** the [Scheduling Platform](/developer-guide/scheduling-platform). It never becomes the source of truth for timed work.
+
+External calendar sync (Google Calendar) is a **projection** layer — see [Google Calendar Sync](/developer-guide/google-calendar-sync).
 
 ## Ownership
 
@@ -23,9 +25,10 @@ User-authored events: `CalendarService` upserts via `SchedulingContract` with `m
 | Models | `Calendar`, `CalendarMember`, `CalendarCategory`, `CalendarEventOverlay`, `CalendarUserSetting` |
 | Enums | `CalendarTypeEnum`, `CalendarMemberRoleEnum`, `CalendarViewEnum` |
 | Service | `app/Services/Tenant/CalendarService.php` |
-| Controllers | `CalendarController`, `CalendarCategoryController`, `CalendarEventController`, `CalendarSettingsController` |
+| Controllers | `CalendarController`, `CalendarCategoryController`, `CalendarEventController`, `CalendarSettingsController`, `CalendarProviderController` |
+| Sync | `app/Calendar/*` — provider framework + Google Calendar synchronization |
 | Policy | `app/Policies/CalendarPolicy.php` |
-| Tests | `tests/Feature/Tenant/Calendar/CalendarModuleTest.php` |
+| Tests | `tests/Feature/Tenant/Calendar/CalendarModuleTest.php`, `GoogleCalendarSyncTest.php` |
 
 No repository layer. Persistence stays on Eloquent inside the service (platform freeze).
 
