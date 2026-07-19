@@ -11,14 +11,18 @@ Optional env:
 ```env
 MEETINGS_DEFAULT_PROVIDER=builtin
 MEETINGS_BUILTIN_ENABLED=true
+INTEGRATIONS_GOOGLE_ENABLED=true
+INTEGRATIONS_GOOGLE_MEET_ENABLED=true
+INTEGRATIONS_GOOGLE_CLIENT_ID=
+INTEGRATIONS_GOOGLE_CLIENT_SECRET=
 INTEGRATIONS_ZOOM_ENABLED=false
 INTEGRATIONS_ZOOM_CLIENT_ID=
 INTEGRATIONS_ZOOM_CLIENT_SECRET=
 ```
 
-Manifests: `builtin.integration.php`, `zoom.integration.php`.
+Manifests: `builtin`, `zoom`, `google-meet` (credentials on `google`).
 
-Zoom OAuth redirect URI (API host): `/oauth/callback/zoom`.
+OAuth redirect URIs (API host): `/oauth/callback/google`, `/oauth/callback/zoom`.
 
 Tenant settings used for provider selection:
 

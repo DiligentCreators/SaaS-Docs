@@ -1,7 +1,7 @@
 # Meetings — Developer Guide
 
-> **Status: Implemented (Phase 3–5)**  
-> Binding ADRs: ADR-001 (Scheduling Platform SoT), ADR-002 (Integration Manifest), ADR-003 (ownership key), ADR-004 (Connections Center credentials), ADR-006 (enveloped events).
+> **Status: Implemented (Phase 3–6)**  
+> Binding ADRs: ADR-001 (Scheduling Platform SoT), ADR-002 (Integration Manifest), ADR-003 (ownership key), ADR-004 (Connections Center credentials), ADR-005 (shared Google connection), ADR-006 (enveloped events).
 
 Marketplace module (`meetings`) that **publishes** timed work through `SchedulingContract`. It never owns scheduling logic.
 
@@ -30,8 +30,9 @@ The Meetings module is **provider-agnostic**. Domain code depends on `MeetingMan
 | `MeetingProviderResolver` | Active provider from tenant settings + Connections Center + fallback |
 | `MeetingManager` | Orchestration, diagnostics, selection, capability checks |
 | `BuiltInMeetingProvider` | Built-in adapter (online / physical / hybrid + join token) |
-| `ZoomMeetingProvider` | First external adapter (OAuth + Zoom API) — see [Zoom Meeting Provider](/developer-guide/zoom-meeting-provider) |
-| Manifests | `builtin.integration.php`, `zoom.integration.php` |
+| `ZoomMeetingProvider` | Zoom adapter — see [Zoom Meeting Provider](/developer-guide/zoom-meeting-provider) |
+| `GoogleMeetMeetingProvider` | Google Meet on shared Google connection (ADR-005) — see [Google Meet Provider](/developer-guide/google-meet-provider) |
+| Manifests | `builtin`, `zoom`, `google-meet` (`connection_integration=google`) |
 
 Resolution order: preferred slug → tenant setting `meetings_provider` → `config('meetings.default_provider')` → fallback `builtin`.
 
@@ -67,6 +68,6 @@ Provider APIs: `meetings.view` to read; `meetings.manage` to validate/select.
 Routes: `module:meetings` + `can:meetings.*`.  
 `POST /meetings` requires `Idempotency-Key` (Appendix A).
 
-## Explicitly out of Phase 5
+## Explicitly out of Phase 6
 
-Google Meet, Teams, Jitsi, calendar sync, booking, public scheduling, recording downloads, AI, automation.
+Google Calendar synchronization, Teams, Jitsi, booking, public scheduling, recording downloads, AI, automation.

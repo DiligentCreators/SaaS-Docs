@@ -25,13 +25,16 @@ Path: `config/integrations/manifests/{slug}.integration.php`
 
 Shipped manifests:
 
-- `google.integration.php` — OAuth + health; adapters null until later phases
-- `builtin.integration.php` — Built-in Meetings adapter (`adapters.meeting` → `BuiltInMeetingProvider`; `connection_type=none`)
-- `zoom.integration.php` — Zoom OAuth + `ZoomMeetingProvider` + `ZoomHealthCheck` (Phase 5)
+- `google.integration.php` — shared Google Workspace OAuth connection (ADR-005)
+- `google-meet.integration.php` — Meet adapter satellite (`connection_integration=google`)
+- `builtin.integration.php` — Built-in Meetings adapter (`connection_type=none`)
+- `zoom.integration.php` — Zoom OAuth + meeting adapter
+
+Optional manifest field `connection_integration` (ADR-005): credential store slug when a capability adapter reuses another connection. Satellite manifests are excluded from Connections Center discovery.
 
 Invalid manifests fail boot outside production; production logs and disables that slug.
 
-Meeting provider discovery (Phase 4+) reads manifests with a non-null `adapters.meeting` class. See [Meetings](/developer-guide/meetings) and [Zoom Meeting Provider](/developer-guide/zoom-meeting-provider).
+Meeting provider discovery reads non-null `adapters.meeting`. See [Meetings](/developer-guide/meetings), [Zoom](/developer-guide/zoom-meeting-provider), [Google Meet](/developer-guide/google-meet-provider).
 
 ## Connections
 

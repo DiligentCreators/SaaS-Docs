@@ -239,6 +239,7 @@ export default defineConfig({
             { text: 'Integration Framework', link: '/developer-guide/integration-framework' },
             { text: 'Scheduling Platform', link: '/developer-guide/scheduling-platform' },
             { text: 'Zoom Meeting Provider', link: '/developer-guide/zoom-meeting-provider' },
+            { text: 'Google Meet Provider', link: '/developer-guide/google-meet-provider' },
           ],
         },
         {

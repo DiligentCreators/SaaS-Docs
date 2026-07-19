@@ -1,5 +1,17 @@
 # Changelog
 
+## Google Meet Provider Phase 6 (2026-07-20)
+
+Google Meet adapter on the shared Google Workspace connection (ADR-005).
+
+- Backend: `GoogleMeetMeetingProvider`, Calendar API Meet conference create/update/delete, `google-meet.integration.php` with `connection_integration=google`; OAuth via existing `GoogleOAuthProvider` (expanded `calendar.events` scope)
+- No second Google connection — Connections Center discovery excludes satellite manifests
+- Frontend: Provider Settings Connect uses `connection_integration` (google-meet → google)
+- Docs: [Google Meet Provider](/developer-guide/google-meet-provider)
+- Out of scope: Google Calendar sync, Teams, Jitsi, booking, AI
+
+---
+
 ## Zoom Meeting Provider Phase 5 (2026-07-20)
 
 First external meeting adapter on the Phase 4 provider framework.

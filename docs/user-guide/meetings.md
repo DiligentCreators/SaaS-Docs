@@ -24,7 +24,11 @@ Workspace admins with `meetings.manage` can open **Meeting providers** (Administ
 
 **Built-in** supports online, physical, and hybrid meetings with an internal join URL/token.
 
-**Zoom** (when enabled and connected) supports online meetings with Zoom join URLs. Capability badges (waiting room, passcode, recording, …) describe what the active provider supports — the product does not hardcode feature checks to a brand name.
+**Zoom** (when enabled and connected) supports online meetings with Zoom join URLs.
+
+**Google Meet** (when enabled) uses your existing **Google Workspace** connection — you do not connect Google twice. After Google is connected, select Google Meet as the active provider.
+
+Capability badges (waiting room, captions, recording, …) describe what the active provider supports — the product does not hardcode feature checks to a brand name.
 
 ## Requirements
 
