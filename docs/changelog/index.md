@@ -1,5 +1,39 @@
 # Changelog
 
+## WhatsApp Cloud Integration roadmap (2026-07-20)
+
+Documentation-only: official architectural blueprint for a future WhatsApp Cloud API communication platform.
+
+- Added [WhatsApp Cloud Integration](/developer-guide/whatsapp-cloud-integration) under **Future Integrations** (current `wa.me` state vs Cloud API vision, messaging driver architecture, OAuth, multi-tenant WABA/phone ownership, conversations, templates, security, automation, Meta Lead Ads complementarity)
+- Cross-linked with [Lead Source Driver Architecture](/developer-guide/lead-source-driver-architecture) and [Meta Lead Ads Integration](/developer-guide/meta-lead-ads-integration)
+- Sidebar / Developer Guide index / Product Roadmap updated
+- No backend or frontend application code changes
+
+---
+
+## Lead Source Driver Architecture (2026-07-20)
+
+Documentation-only: architectural decision for all future lead ingestion in SaleOS.
+
+- Added [Lead Source Driver Architecture](/developer-guide/lead-source-driver-architecture) (`LeadSourceDriverInterface` responsibilities, shared pipeline, `NormalizedLeadData`, driver vs Lead ownership, driver catalog, Open/Closed extensibility)
+- Updated [Meta Lead Ads Integration](/developer-guide/meta-lead-ads-integration): `MetaLeadAdsDriver` is the first production implementation of the architecture
+- Sidebar / Developer Guide index: Future Integrations cross-links both pages
+- Product Roadmap: Phase 1 Planned entry for Lead Source Driver Architecture
+- No backend or frontend application code changes
+
+---
+
+## Meta Lead Ads Integration roadmap (2026-07-20)
+
+Documentation-only: official implementation blueprint for a future Meta Lead Ads → Leads integration.
+
+- Added [Meta Lead Ads Integration](/developer-guide/meta-lead-ads-integration) under **Future Integrations** (architecture, OAuth, multi-tenant Page ID resolution, field mapping, `LeadDuplicateService` + `LeadService` gates, security, Meta permissions, error handling, future enhancements)
+- Sidebar: Developer Guide → Future Integrations → Meta Lead Ads
+- Product Roadmap: Phase 1 Planned entry linking to the blueprint
+- No backend or frontend application code changes
+
+---
+
 ## Fix: persist Open/Click webhook event settings (2026-07-19)
 
 - Fixed settings save treating `mail_webhook_events` list arrays as `{value:…}` wrappers (Open/Click were stored as null and UI checkboxes cleared after save)

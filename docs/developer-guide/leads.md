@@ -51,6 +51,8 @@ Routes use `module:leads` then `can:leads.*` / policies.
 - Single table `lead_imports` holds file metadata, mapping, options, status, stats, and report paths
 - Platform audit: `lead_import_completed` / `lead_import_failed`
 
+Future ingestion (not implemented): all external sources must use the [Lead Source Driver Architecture](/developer-guide/lead-source-driver-architecture). First production driver: [Meta Lead Ads](/developer-guide/meta-lead-ads-integration) (`MetaLeadAdsDriver`). Drivers normalize only; `LeadDuplicateService` + `LeadService` remain the sole write path.
+
 ## API (tenant)
 
 Base: `/api/tenant/v1` — full reference [tenant-v1-leads.md](/api/tenant-v1-leads).

@@ -147,6 +147,8 @@ new PlaceholderRegistry(
 
 SaleOS does **not** send messages or store outbound message history in this version.
 
+Future Cloud API send/receive, conversations, and shared inbox are documented separately — see [WhatsApp Cloud Integration](/developer-guide/whatsapp-cloud-integration) (planned; not implemented).
+
 ## Permission model
 
 Config: `config/tenant-permissions.php` → `communication-templates` actions.

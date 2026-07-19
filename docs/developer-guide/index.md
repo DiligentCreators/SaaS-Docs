@@ -56,3 +56,11 @@ Engineering documentation for extending SaleOS. New business capability ships as
 | [Leads](./leads) | Leads reference implementation |
 | [Tasks](./tasks) | Tasks module engineering guide |
 | [Communication Templates](./communication-templates) | Templates, placeholders, WhatsApp render |
+
+## Future Integrations
+
+| Document | Description |
+|----------|-------------|
+| [Lead Source Driver Architecture](./lead-source-driver-architecture) | Architectural standard for all future lead ingestion (not implemented) |
+| [Meta Lead Ads](./meta-lead-ads-integration) | Planned blueprint — `MetaLeadAdsDriver` (first production driver) |
+| [WhatsApp Cloud Integration](./whatsapp-cloud-integration) | Planned blueprint — Cloud API messaging beyond `wa.me` (not implemented) |
