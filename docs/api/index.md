@@ -11,3 +11,4 @@ REST API documentation for Central and Tenant surfaces of SaleOS.
 | [Tenant Communication Templates](./tenant-v1-communication-templates) | Templates, placeholders, WhatsApp render |
 | [Tenant Notifications](./tenant-v1-notifications) | In-app notifications |
 | [Tenant Integrations & Connections](./tenant-v1-integrations) | Integration discovery + Connections Center |
+| [Tenant Scheduling](./tenant-v1-scheduling) | Schedule items, availability, working hours |

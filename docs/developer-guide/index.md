@@ -62,6 +62,7 @@ Engineering documentation for extending SaleOS. New business capability ships as
 | Document | Description |
 |----------|-------------|
 | [Integration Framework](./integration-framework) | Phase 0 — Manifests, Connections Center, OAuthManager (Google), health, event envelope, correlation IDs |
+| [Scheduling Platform](./scheduling-platform) | Phase 1 — Always-on ScheduleItems, availability, working hours, reminder engine foundation |
 
 ## Future Integrations
 

@@ -1,5 +1,17 @@
 # Changelog
 
+## Scheduling Platform Phase 1 (2026-07-20)
+
+Always-on platform scheduling service (ADR-001 / ADR-003). Not the Calendar or Meetings modules.
+
+- Backend: `schedule_items`, working hours, holidays, reminders; `ScheduleItemService`, `AvailabilityService`, `WorkingHoursService`, `ReminderEngine`, `SchedulingContract`
+- Tenant APIs: `/schedule-items`, `/availability`, `/working-hours`
+- Permissions: `scheduling.view`, `scheduling.manage`
+- Docs: [Scheduling Platform](/developer-guide/scheduling-platform), [Tenant Scheduling API](/api/tenant-v1-scheduling)
+- Out of scope: Calendar UI, Meetings, providers, sync, booking, frontend
+
+---
+
 ## Integration Framework Phase 0 (2026-07-20)
 
 Platform foundation for third-party connections (Architecture v1.0 ADRs).
