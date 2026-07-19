@@ -49,6 +49,18 @@ Defaults when unset: `delivered`, `bounced`, `complained`.
 4. Filter by `mail_webhook_events`.
 5. Match `CentralEmailLog` / `TenantEmailLog` by `message_id` and update status / `meta` (idempotent via `meta.webhook_event_ids`).
 
+### Status progression
+
+Typical path: `sending` → `sent` → `delivered` → `opened` → `clicked`.
+
+- Open/Click webhooks set status to `opened` / `clicked` (and increment `meta.opens` / `meta.clicks`).
+- Engagement statuses are not downgraded back to `delivered`.
+- Terminal statuses (`bounced`, `complained`, `failed`) are not overwritten by open/click.
+
+### Provider tracking requirements
+
+Selecting Open/Click in Central/Tenant settings only controls which inbound events SaleOS processes. You must also enable Open/Click on the **provider webhook** and turn on open/link tracking in the provider console (e.g. Postmark server tracking). Settings save does not sync checkboxes into Postmark/Mailgun.
+
 ## Extending a new provider
 
 1. Implement `EmailDriverInterface` + `SupportsWebhooks`.

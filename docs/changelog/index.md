@@ -1,5 +1,12 @@
 # Changelog
 
+## Email open/click tracking on email logs (2026-07-19)
+
+- Open and Click webhooks now set email log status to `opened` / `clicked` (counts also stored in `meta.opens` / `meta.clicks`)
+- Email Logs UI shows Opened/Clicked statuses plus open/click counts in the detail panel
+- Mail settings no longer wipe Open/Click checkboxes after save/reload
+- Postmark setup instructions note that Open tracking and Link tracking must be enabled in Postmark (settings save does not sync the provider UI)
+
 ## Email webhooks, body logging, and resend (2026-07-19)
 
 - Provider delivery webhooks for Postmark / Mailgun: `POST /webhooks/email/{provider}` (Central) and `…/{provider}/{tenant}` (Tenant custom mail)

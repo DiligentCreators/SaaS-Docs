@@ -34,5 +34,5 @@ When **Tenant maintenance mode** is on:
 - Change Application Name if you want the product title to update immediately (after save + public bootstrap refresh).
 - Use Company Name for legal/copyright wording without renaming the product in the chrome.
 - After mail provider changes, always send a test email before relying on invites or password resets. Restart queue workers after credential changes so queued mail picks up the new config.
-- For Postmark/Mailgun, paste the webhook URL into the provider dashboard and enable the same events selected in Settings.
-- Review delivery history under **Email logs** — open a row to see the full message body and use **Resend** when you have `email-logs.resend`.
+- For Postmark/Mailgun, paste the webhook URL into the provider dashboard and enable the same events selected in Settings. Open/Click also require open tracking and link tracking in the provider console — saving Central settings does not change Postmark/Mailgun checkboxes.
+- Review delivery history under **Email logs** — status progresses through delivered → opened → clicked when those webhooks arrive; open a row for open/click counts, full message body, and **Resend** when you have `email-logs.resend`.
