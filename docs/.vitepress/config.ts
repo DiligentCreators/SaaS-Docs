@@ -241,6 +241,7 @@ export default defineConfig({
             { text: 'Zoom Meeting Provider', link: '/developer-guide/zoom-meeting-provider' },
             { text: 'Google Meet Provider', link: '/developer-guide/google-meet-provider' },
             { text: 'Google Calendar Sync', link: '/developer-guide/google-calendar-sync' },
+            { text: 'Outlook Calendar Sync', link: '/developer-guide/outlook-calendar-sync' },
           ],
         },
         {

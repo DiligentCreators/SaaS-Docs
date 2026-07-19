@@ -5,7 +5,7 @@
 
 Marketplace module (`calendar`) that **consumes** the [Scheduling Platform](/developer-guide/scheduling-platform). It never becomes the source of truth for timed work.
 
-External calendar sync (Google Calendar) is a **projection** layer — see [Google Calendar Sync](/developer-guide/google-calendar-sync).
+External calendar sync is a **projection** layer — see [Google Calendar Sync](/developer-guide/google-calendar-sync) and [Outlook Calendar Sync](/developer-guide/outlook-calendar-sync).
 
 ## Ownership
 

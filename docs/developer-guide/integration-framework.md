@@ -28,6 +28,8 @@ Shipped manifests:
 - `google.integration.php` — shared Google Workspace OAuth connection (ADR-005)
 - `google-meet.integration.php` — Meet adapter satellite (`connection_integration=google`)
 - `google-calendar.integration.php` — Calendar sync adapter satellite (`connection_integration=google`)
+- `microsoft.integration.php` — Microsoft 365 shared connection (ADR-005)
+- `outlook-calendar.integration.php` — Outlook Calendar sync adapter satellite (`connection_integration=microsoft`)
 - `builtin.integration.php` — Built-in Meetings adapter (`connection_type=none`)
 - `zoom.integration.php` — Zoom OAuth + meeting adapter
 
@@ -37,7 +39,7 @@ Invalid manifests fail boot outside production; production logs and disables tha
 
 Meeting provider discovery reads non-null `adapters.meeting`. See [Meetings](/developer-guide/meetings), [Zoom](/developer-guide/zoom-meeting-provider), [Google Meet](/developer-guide/google-meet-provider).
 
-Calendar provider discovery reads non-null `adapters.calendar`. See [Google Calendar Sync](/developer-guide/google-calendar-sync).
+Calendar provider discovery reads non-null `adapters.calendar`. See [Google Calendar Sync](/developer-guide/google-calendar-sync), [Outlook Calendar Sync](/developer-guide/outlook-calendar-sync).
 
 ## Connections
 

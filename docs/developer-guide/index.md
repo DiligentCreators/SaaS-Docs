@@ -64,6 +64,7 @@ Engineering documentation for extending SaleOS. New business capability ships as
 | [Integration Framework](./integration-framework) | Phase 0 — Manifests, Connections Center, OAuthManager (Google), health, event envelope, correlation IDs |
 | [Scheduling Platform](./scheduling-platform) | Phase 1 — Always-on ScheduleItems, availability, working hours, reminder engine foundation |
 | [Google Calendar Sync](./google-calendar-sync) | Phase 7 — Calendar Provider Framework + Google Calendar projection sync (ADR-005) |
+| [Outlook Calendar Sync](./outlook-calendar-sync) | Phase 8 — Outlook Calendar on shared Microsoft connection (ADR-005) |
 
 ## Future Integrations
 

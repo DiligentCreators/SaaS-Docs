@@ -1,5 +1,17 @@
 # Changelog
 
+## Outlook Calendar Sync Phase 8 (2026-07-20)
+
+Microsoft Outlook Calendar as the second Calendar Provider on a shared Microsoft 365 connection (ADR-005). Reuses the Phase 7 Calendar Provider Framework; Scheduling Platform remains the source of truth.
+
+- Backend: `MicrosoftOAuthProvider`, `microsoft.integration.php`, satellite `outlook-calendar.integration.php`, `OutlookCalendarProvider` + Graph API client, webhook `POST /webhooks/calendar/outlook`, Http::fake tests + Google regression
+- No second Microsoft connection — Connections Center discovery excludes satellite manifests
+- Frontend: Calendar Provider Settings lists Outlook when Microsoft is connected (`connection_integration=microsoft`)
+- Docs: [Outlook Calendar Sync](/developer-guide/outlook-calendar-sync)
+- Out of scope: CalDAV, ICS, booking, public scheduling, automation, AI, recurring-event UI
+
+---
+
 ## Google Calendar Sync Phase 7 (2026-07-20)
 
 Calendar Provider Framework and Google Calendar synchronization on the shared Google Workspace connection (ADR-005). Scheduling Platform remains the source of truth; external calendars are projections.

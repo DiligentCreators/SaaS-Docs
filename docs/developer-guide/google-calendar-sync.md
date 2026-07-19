@@ -50,4 +50,6 @@ Required scope (shared with Meet): `https://www.googleapis.com/auth/calendar.eve
 
 ## Explicitly out of Phase 7
 
-Microsoft Outlook, CalDAV, ICS, booking pages, public scheduling, automation, workflow, AI, recurring-event UI.
+CalDAV, ICS, booking pages, public scheduling, automation, workflow, AI, recurring-event UI.
+
+Microsoft Outlook Calendar shipped in [Phase 8](/developer-guide/outlook-calendar-sync) on a shared Microsoft connection.
