@@ -9,7 +9,7 @@
 | Layer | Role |
 |-------|------|
 | Scheduling Platform | Source of truth for timed work (`schedule_items`) |
-| Calendar module (later) | UI / views over ScheduleItems |
+| Calendar module (Phase 2) | UI / views over ScheduleItems ([Calendar developer guide](/developer-guide/calendar)) |
 | Meetings module (later) | Domain meetings that upsert ScheduleItems |
 
 Calendar is **not** required for Scheduling Platform APIs.
@@ -52,4 +52,4 @@ Permissions: `scheduling.view`, `scheduling.manage` (not module-gated).
 
 ## Explicitly out of Phase 1
 
-Calendar UI, Meetings module, providers (Zoom/Meet), calendar sync, booking pages, frontend.
+Calendar UI (delivered in Phase 2), Meetings module, providers (Zoom/Meet), calendar sync, booking pages.

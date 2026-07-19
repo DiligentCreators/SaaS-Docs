@@ -1,5 +1,18 @@
 # Changelog
 
+## Calendar Module Phase 2 (2026-07-20)
+
+Marketplace Calendar module — presentation over the Scheduling Platform (ADR-001 / ADR-003).
+
+- Backend: calendars (personal/team), members, categories, event overlays, user settings; `CalendarService` writes timed work only via `SchedulingContract`
+- Tenant APIs: `/calendars`, `/calendar-categories`, `/calendar/settings`, `/calendar/projections`, `/calendar/events`
+- Permissions: `calendar.view|create|update|delete|manage` + `module:calendar`
+- Frontend: month / week / day / agenda views, navigation, filters, categories, colors
+- Docs: [Calendar user guide](/user-guide/calendar), [developer guide](/developer-guide/calendar), [API](/api/tenant-v1-calendar), [deployment](/deployment/calendar)
+- Out of scope: Meetings, providers, sync, booking, public scheduling, automation, AI
+
+---
+
 ## Scheduling Platform Phase 1 (2026-07-20)
 
 Always-on platform scheduling service (ADR-001 / ADR-003). Not the Calendar or Meetings modules.
