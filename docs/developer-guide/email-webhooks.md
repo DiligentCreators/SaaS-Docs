@@ -39,7 +39,7 @@ Drivers advertise a catalog; the UI multiselect stores these keys:
 
 `delivered`, `bounced`, `complained`, `opened`, `clicked`, `failed`
 
-Defaults when unset: `delivered`, `bounced`, `complained`.
+Defaults when unset: `delivered`, `bounced`, `complained`, `opened`, `clicked`.
 
 ## Processing
 

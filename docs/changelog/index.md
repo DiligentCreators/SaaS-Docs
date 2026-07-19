@@ -1,5 +1,11 @@
 # Changelog
 
+## Fix: persist Open/Click webhook event settings (2026-07-19)
+
+- Fixed settings save treating `mail_webhook_events` list arrays as `{value:…}` wrappers (Open/Click were stored as null and UI checkboxes cleared after save)
+- Default webhook events now include `opened` and `clicked`
+- Open webhooks update email log status once events are persisted
+
 ## Email open/click tracking on email logs (2026-07-19)
 
 - Open and Click webhooks now set email log status to `opened` / `clicked` (counts also stored in `meta.opens` / `meta.clicks`)
