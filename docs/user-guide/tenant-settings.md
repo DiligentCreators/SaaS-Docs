@@ -32,8 +32,9 @@ Hints under fields show when a value is still inheriting the Central default.
 Choose **Use system provider** to inherit Central Application mail, or **Use custom provider** for workspace-specific SMTP / Postmark / Mailgun.
 
 - Password and API token fields never show the stored secret; leave blank to keep the existing value.
+- With a custom Postmark/Mailgun provider, copy the workspace **Webhook URL**, set the signing secret, and select delivery events to process.
 - Use **Send test** to verify delivery (uses the form values, including unsaved changes when supported).
-- Delivery history is available under **Email logs**.
+- Delivery history is available under **Email logs** — open a message to view the full body and **Resend** when permitted.
 
 ## What you cannot change
 

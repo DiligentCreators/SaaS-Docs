@@ -81,4 +81,5 @@ Smoke:
 - [Module development — production](/deployment/module-development)
 - [Communication Templates deployment](/deployment/communication-templates)
 - [Multi-Provider Email](/developer-guide/multi-provider-email)
+- [Email Webhooks](/developer-guide/email-webhooks)
 - [Tenant provisioning](/developer-guide/tenant-provisioning)
