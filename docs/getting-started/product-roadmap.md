@@ -33,6 +33,9 @@ The CRM is the foundation of the platform and is the first functional area deliv
 | **Calendar** | Planned (calendar views + dashboard widget) |
 | **Meetings** | Planned |
 | Activities | Planned |
+| **Lead Source Driver Architecture** | Planned (docs only — [architectural standard](/developer-guide/lead-source-driver-architecture) for all lead ingestion) |
+| **Meta Lead Ads Integration** | Planned (docs blueprint only — first driver: [Meta Lead Ads](/developer-guide/meta-lead-ads-integration)) |
+| **WhatsApp Cloud Integration** | Planned (docs blueprint only — [Cloud API beyond `wa.me`](/developer-guide/whatsapp-cloud-integration)) |
 
 #### Calendar
 
@@ -164,7 +167,7 @@ The platform architecture supports additional modules without requiring architec
 - Workflow Automation
 - Marketing Automation
 - Email Campaigns
-- SMS & WhatsApp provider integrations (Cloud API / Twilio) — templates + `wa.me` MVP already shipped
+- SMS & WhatsApp provider integrations (Cloud API / Twilio) — templates + `wa.me` MVP already shipped; Cloud API blueprint: [WhatsApp Cloud Integration](/developer-guide/whatsapp-cloud-integration)
 - API & Webhooks
 - **AI Integration (Planning)** — optional integrations with Leads, Tasks, CRM, and other domain modules
 - Multi-Branch Management

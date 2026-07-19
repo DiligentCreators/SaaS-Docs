@@ -224,6 +224,14 @@ export default defineConfig({
             { text: 'Communication Templates', link: '/developer-guide/communication-templates' },
           ],
         },
+        {
+          text: 'Future Integrations',
+          items: [
+            { text: 'Lead Source Driver Architecture', link: '/developer-guide/lead-source-driver-architecture' },
+            { text: 'Meta Lead Ads', link: '/developer-guide/meta-lead-ads-integration' },
+            { text: 'WhatsApp Cloud Integration', link: '/developer-guide/whatsapp-cloud-integration' },
+          ],
+        },
       ],
       '/api/': [
         {
