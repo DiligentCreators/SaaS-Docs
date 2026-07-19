@@ -1,5 +1,24 @@
 # Changelog
 
+## v1.1.0 — Platform Stabilization (prepared 2026-07-19)
+
+First official coordinated platform tag. Official record: [v1.1.0](/changelog/v1.1.0).
+
+Git tag: **`v1.1.0`** (clean SemVer — **create only after CI is green on all three repos**). No `-platform` suffix.
+
+Highlights:
+
+- Multi-provider email (SMTP / Postmark / Mailgun) + logs + queue isolation
+- Production hardening (migrate-only modules/RBAC, auth≠RBAC, go-live runbooks)
+- Notifications + Communication Templates on the frozen foundation
+- Larastan level 5 at zero errors; standardized PR Quality Gates (Backend / Frontend / Docs)
+- [Documentation Governance](/developer-guide/documentation-governance) — same-PR rule for code + tests + docs
+- [Release Process](/deployment/release-process) with branch-protection checklist for admins
+
+Package versions: Frontend & Docs `1.1.0`; Backend tag-only. Legacy docs alias: [v1.1.0-platform](/changelog/v1.1.0-platform).
+
+---
+
 ## Multi-Provider Email Delivery — production hardening (2026-07-19)
 
 Production-readiness fixes on top of the multi-provider email implementation:
@@ -344,8 +363,8 @@ Leads/Tasks UX + notifications + tenant dashboard widgets. Platform freeze uncha
 
 Platform foundation declared **Production Ready** and **frozen**. No new business modules in this release — hardening only.
 
-Official release document: [releases/v1.1.0-platform.md](/changelog/v1.1.0-platform)  
-Git tag: `v1.1.0-platform`
+Logical freeze notes (never tagged in git). Official first tag: [`v1.1.0`](/changelog/v1.1.0).  
+Alias: [v1.1.0-platform](/changelog/v1.1.0-platform)
 
 **Verification**
 

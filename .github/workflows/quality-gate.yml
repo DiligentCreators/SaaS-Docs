@@ -1,0 +1,62 @@
+# PR / push quality gate — VitePress build with dead-link detection.
+# Artifact publishing stays in docs-build.yml (main only).
+name: Code Quality Gate
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+
+concurrency:
+  group: docs-quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: lts/*
+  DIST_DIR: docs/.vitepress/dist
+
+jobs:
+  quality-gate:
+    name: Quality Gate (VitePress)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build docs (fails on dead links)
+        run: |
+          set -euo pipefail
+          # ignoreDeadLinks: false in docs/.vitepress/config.ts
+          npm run docs:build 2>&1 | tee build.log
+
+          if grep -Ei \
+            'falling back|build failed|error during build|\[vitepress\].*warn|⚠|WARNING|dead link' \
+            build.log; then
+            echo "::error::docs:build produced warnings, errors, or dead-link reports"
+            exit 1
+          fi
+
+      - name: Verify build output
+        run: |
+          set -euo pipefail
+          DIST_DIR="${{ env.DIST_DIR }}"
+          test -d "${DIST_DIR}"
+          test -f "${DIST_DIR}/index.html"
+          test -f "${DIST_DIR}/sitemap.xml"
+          test -f "${DIST_DIR}/robots.txt"
+          test -f "${DIST_DIR}/404.html"

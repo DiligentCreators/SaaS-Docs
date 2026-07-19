@@ -348,7 +348,7 @@ Every module must:
 - Generate audit and activity logs where applicable
 - Include automated testing (Pest and Playwright)
 - Pass manual browser QA
-- Update the Developer Guide, User Guide, API documentation, database documentation, testing documentation, and [CHANGELOG](/changelog/) before being considered complete
+- Update the Developer Guide, User Guide, API documentation, database documentation, testing documentation, and [CHANGELOG](/changelog/) before being considered complete — see [Documentation Governance](/developer-guide/documentation-governance) (same-PR rule)
 
 Full checklist: [Module Development Standard](/developer-guide/module-development).
 

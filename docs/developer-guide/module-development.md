@@ -10,6 +10,7 @@ Every business capability on this platform is a **module**. Modules are licensed
 |----------|----------|
 | Engineers | [module-development-developer.md](/developer-guide/module-development-guide) |
 | Production / ops | [module-development-production.md](/deployment/module-development) |
+| Documentation | [documentation-governance.md](/developer-guide/documentation-governance) |
 | Architecture freeze | [../architecture/platform-freeze.md](/getting-started/platform-freeze) |
 | Module architecture | [module-architecture.md](/architecture/module-architecture) |
 | Module dependencies | [module-dependencies.md](/architecture/module-dependencies) |
@@ -21,7 +22,7 @@ Every business capability on this platform is a **module**. Modules are licensed
 1. **Consistency over abstraction** — flat Laravel layout; register through existing catalog, permissions, middleware, nav, and settings.
 2. **Licensing ≠ authorization** — `module:{slug}` then `can:{slug}.{action}`.
 3. **Mirror Leads** — Tasks, Communication Templates, Invoices, Inventory, Purchases, HR, Payroll, Accounting, Assets, Projects must follow the same licensing + permission + UI structure (Communication Templates is additionally a cross-cutting consumer pattern).
-4. **No shortcuts** — every module ships backend, frontend, tests, docs, and CHANGELOG.
+4. **No shortcuts** — every module ships backend, frontend, tests, docs, and CHANGELOG in the **same delivery** ([Documentation Governance](/developer-guide/documentation-governance)).
 5. **Migrate-only production** — new default modules and permissions ship as data migrations; never production `db:seed` for catalog/RBAC.
 6. **Self-contained modules** — each module owns its migrations, models, services, routes, UI, permissions, settings, docs, and tests; communicate through contracts/services only. See [Module Architecture](/architecture/module-architecture).
 7. **Declare dependencies** — required vs optional; free vs billable. See [Module Dependencies](/architecture/module-dependencies).
@@ -48,7 +49,7 @@ A module is complete only when:
 - [ ] Pest tests pass (CRUD, authz, validation, tenant isolation, module gate)
 - [ ] Playwright suite passes (`test:e2e:{slug}`)
 - [ ] Manual browser QA passes
-- [ ] Developer / User / Production guides updated
+- [ ] Developer / User / Production guides updated **in the same PR** ([Documentation Governance](/developer-guide/documentation-governance))
 - [ ] API + database docs updated
 - [ ] CHANGELOG updated
 - [ ] No console errors; no failed network requests; build passes

@@ -43,6 +43,8 @@ npm run docs:preview
 
 ## GitHub Actions build pipeline
 
+**Pull requests** to `main` / `develop` run [`.github/workflows/quality-gate.yml`](./.github/workflows/quality-gate.yml): VitePress build with dead-link detection (`ignoreDeadLinks: false`).
+
 Merges into **`main`** (and manual **workflow_dispatch**) run [`.github/workflows/docs-build.yml`](./.github/workflows/docs-build.yml).
 
 The workflow:

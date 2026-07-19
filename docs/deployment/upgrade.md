@@ -75,6 +75,8 @@ Smoke:
 
 ## Related
 
+- [Release Process](/deployment/release-process)
+- [v1.1.0 release](/changelog/v1.1.0)
 - [Platform production runbook](/deployment/platform-production-runbook)
 - [Module development — production](/deployment/module-development)
 - [Communication Templates deployment](/deployment/communication-templates)
