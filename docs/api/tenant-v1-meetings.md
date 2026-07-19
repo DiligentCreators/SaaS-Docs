@@ -32,7 +32,7 @@ Validates join access through the meeting’s provider (via `MeetingManager`).
 
 ## Providers (Phase 4)
 
-Only **installed** meeting adapters (non-null `adapters.meeting` on Integration Manifest v1) are returned. Google without a meeting adapter is not listed.
+Only **installed** meeting adapters (non-null `adapters.meeting` on Integration Manifest v1) are returned. Google without a meeting adapter is not listed. Zoom appears when `INTEGRATIONS_ZOOM_ENABLED=true` and is selectable only with a Connected Zoom connection (OAuth via `/connections/zoom/oauth/start`).
 
 | Method | Path | Permission |
 |--------|------|------------|

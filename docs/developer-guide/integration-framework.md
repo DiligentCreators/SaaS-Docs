@@ -27,10 +27,11 @@ Shipped manifests:
 
 - `google.integration.php` — OAuth + health; adapters null until later phases
 - `builtin.integration.php` — Built-in Meetings adapter (`adapters.meeting` → `BuiltInMeetingProvider`; `connection_type=none`)
+- `zoom.integration.php` — Zoom OAuth + `ZoomMeetingProvider` + `ZoomHealthCheck` (Phase 5)
 
 Invalid manifests fail boot outside production; production logs and disables that slug.
 
-Meeting provider discovery (Phase 4) reads manifests with a non-null `adapters.meeting` class. See [Meetings developer guide](/developer-guide/meetings).
+Meeting provider discovery (Phase 4+) reads manifests with a non-null `adapters.meeting` class. See [Meetings](/developer-guide/meetings) and [Zoom Meeting Provider](/developer-guide/zoom-meeting-provider).
 
 ## Connections
 

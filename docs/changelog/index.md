@@ -1,5 +1,17 @@
 # Changelog
 
+## Zoom Meeting Provider Phase 5 (2026-07-20)
+
+First external meeting adapter on the Phase 4 provider framework.
+
+- Backend: `ZoomMeetingProvider`, `ZoomApiClient`, `ZoomOAuthProvider`, `ZoomHealthCheck`, `zoom.integration.php`; OAuth via existing OAuthManager + Connections Center; Http::fake tests
+- Tenant: Zoom listed under `/meetings/providers` when enabled; selectable after Connected OAuth; create/update/cancel via existing Meetings APIs
+- Frontend: Provider Settings Connect flow for OAuth providers; connection/health/capabilities/validation display
+- Docs: [Zoom Meeting Provider](/developer-guide/zoom-meeting-provider)
+- Out of scope: Google Meet, Teams, Jitsi, calendar sync, booking, AI, recording downloads
+
+---
+
 ## Meeting Provider Framework Phase 4 (2026-07-20)
 
 Provider orchestration for Meetings without external integrations.

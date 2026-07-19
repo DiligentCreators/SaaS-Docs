@@ -1,6 +1,6 @@
 # Meetings — Developer Guide
 
-> **Status: Implemented (Phase 3 + Phase 4 provider framework)**  
+> **Status: Implemented (Phase 3–5)**  
 > Binding ADRs: ADR-001 (Scheduling Platform SoT), ADR-002 (Integration Manifest), ADR-003 (ownership key), ADR-004 (Connections Center credentials), ADR-006 (enveloped events).
 
 Marketplace module (`meetings`) that **publishes** timed work through `SchedulingContract`. It never owns scheduling logic.
@@ -29,8 +29,9 @@ The Meetings module is **provider-agnostic**. Domain code depends on `MeetingMan
 | `MeetingProviderRegistry` | Discovers `adapters.meeting` from Integration Manifest v1 |
 | `MeetingProviderResolver` | Active provider from tenant settings + Connections Center + fallback |
 | `MeetingManager` | Orchestration, diagnostics, selection, capability checks |
-| `BuiltInMeetingProvider` | Only implemented adapter (online / physical / hybrid + join token) |
-| Manifest | `config/integrations/manifests/builtin.integration.php` |
+| `BuiltInMeetingProvider` | Built-in adapter (online / physical / hybrid + join token) |
+| `ZoomMeetingProvider` | First external adapter (OAuth + Zoom API) — see [Zoom Meeting Provider](/developer-guide/zoom-meeting-provider) |
+| Manifests | `builtin.integration.php`, `zoom.integration.php` |
 
 Resolution order: preferred slug → tenant setting `meetings_provider` → `config('meetings.default_provider')` → fallback `builtin`.
 
@@ -66,6 +67,6 @@ Provider APIs: `meetings.view` to read; `meetings.manage` to validate/select.
 Routes: `module:meetings` + `can:meetings.*`.  
 `POST /meetings` requires `Idempotency-Key` (Appendix A).
 
-## Explicitly out of Phase 4
+## Explicitly out of Phase 5
 
-Zoom, Google Meet, Teams, Jitsi, OAuth changes, calendar sync, booking, public scheduling, recordings upload, AI, automation.
+Google Meet, Teams, Jitsi, calendar sync, booking, public scheduling, recording downloads, AI, automation.

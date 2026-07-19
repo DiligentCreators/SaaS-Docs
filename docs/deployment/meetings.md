@@ -11,9 +11,14 @@ Optional env:
 ```env
 MEETINGS_DEFAULT_PROVIDER=builtin
 MEETINGS_BUILTIN_ENABLED=true
+INTEGRATIONS_ZOOM_ENABLED=false
+INTEGRATIONS_ZOOM_CLIENT_ID=
+INTEGRATIONS_ZOOM_CLIENT_SECRET=
 ```
 
-Built-in provider manifest: `config/integrations/manifests/builtin.integration.php` (discovered with Integration Framework manifests).
+Manifests: `builtin.integration.php`, `zoom.integration.php`.
+
+Zoom OAuth redirect URI (API host): `/oauth/callback/zoom`.
 
 Tenant settings used for provider selection:
 
