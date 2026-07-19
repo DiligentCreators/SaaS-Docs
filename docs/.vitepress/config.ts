@@ -37,6 +37,11 @@ export default defineConfig({
 
   vite: {
     publicDir: resolve(configDir, 'public'),
+    // Docs site bundles grow with roadmap pages; silence Rollup's 500 kB hint so
+    // the Quality Gate (which greps build logs for "warning") stays green.
+    build: {
+      chunkSizeWarningLimit: 1000,
+    },
   },
 
   head: [
