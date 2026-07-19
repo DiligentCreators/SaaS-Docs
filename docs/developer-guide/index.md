@@ -57,6 +57,12 @@ Engineering documentation for extending SaleOS. New business capability ships as
 | [Tasks](./tasks) | Tasks module engineering guide |
 | [Communication Templates](./communication-templates) | Templates, placeholders, WhatsApp render |
 
+## Platform Integrations
+
+| Document | Description |
+|----------|-------------|
+| [Integration Framework](./integration-framework) | Phase 0 — Manifests, Connections Center, OAuthManager (Google), health, event envelope, correlation IDs |
+
 ## Future Integrations
 
 | Document | Description |

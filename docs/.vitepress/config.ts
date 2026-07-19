@@ -230,6 +230,12 @@ export default defineConfig({
           ],
         },
         {
+          text: 'Platform Integrations',
+          items: [
+            { text: 'Integration Framework', link: '/developer-guide/integration-framework' },
+          ],
+        },
+        {
           text: 'Future Integrations',
           items: [
             { text: 'Lead Source Driver Architecture', link: '/developer-guide/lead-source-driver-architecture' },
@@ -249,6 +255,7 @@ export default defineConfig({
             { text: 'Tenant Tasks', link: '/api/tenant-v1-tasks' },
             { text: 'Tenant Communication Templates', link: '/api/tenant-v1-communication-templates' },
             { text: 'Tenant Notifications', link: '/api/tenant-v1-notifications' },
+            { text: 'Tenant Integrations & Connections', link: '/api/tenant-v1-integrations' },
           ],
         },
       ],

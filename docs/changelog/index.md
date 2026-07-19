@@ -1,5 +1,16 @@
 # Changelog
 
+## Integration Framework Phase 0 (2026-07-20)
+
+Platform foundation for third-party connections (Architecture v1.0 ADRs).
+
+- Backend: Integration Manifest v1, registry, Connections Center API, OAuthManager + Google OAuth, connection health, ConnectionLock, domain event envelope, `X-Correlation-ID`
+- Permissions: `connections.view`, `connections.manage`, `connections.manage_user`
+- Docs: [Integration Framework](/developer-guide/integration-framework), [Tenant Integrations API](/api/tenant-v1-integrations)
+- Out of scope for Phase 0: Calendar, Meetings, Zoom, calendar sync, booking
+
+---
+
 ## WhatsApp Cloud Integration roadmap (2026-07-20)
 
 Documentation-only: official architectural blueprint for a future WhatsApp Cloud API communication platform.
