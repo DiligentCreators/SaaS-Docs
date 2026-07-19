@@ -1,5 +1,17 @@
 # Changelog
 
+## Meeting Provider Framework Phase 4 (2026-07-20)
+
+Provider orchestration for Meetings without external integrations.
+
+- Backend: `MeetingManager`, `MeetingProviderRegistry`, `MeetingProviderResolver`, capabilities, diagnostics, validation, tenant `meetings_provider` setting; `builtin.integration.php` manifest; `BuiltInMeetingProvider` refactored through the manager
+- Tenant APIs: `/meetings/providers` (list, active, capabilities, diagnostics, validate, select)
+- Frontend: Meeting providers settings page (`/meetings/providers`) — current provider, capabilities, diagnostics, validation, selection (installed adapters only)
+- Docs: Meetings user/developer/API/deployment updated; Integration Framework notes builtin manifest
+- Out of scope: Zoom/Meet/Teams/Jitsi, OAuth changes, sync, booking, AI, automation
+
+---
+
 ## Meetings Module Phase 3 (2026-07-20)
 
 Marketplace Meetings module — domain aggregate that publishes timed work via `SchedulingContract` (ADR-001 / ADR-003 / ADR-006).

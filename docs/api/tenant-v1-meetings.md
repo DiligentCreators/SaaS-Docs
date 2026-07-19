@@ -28,7 +28,25 @@ Body: `{ "status": "scheduled|in_progress|completed|cancelled|draft" }`.
 
 ### GET `/meetings/{id}/join?token=`
 
-Validates built-in join token.
+Validates join access through the meeting’s provider (via `MeetingManager`).
+
+## Providers (Phase 4)
+
+Only **installed** meeting adapters (non-null `adapters.meeting` on Integration Manifest v1) are returned. Google without a meeting adapter is not listed.
+
+| Method | Path | Permission |
+|--------|------|------------|
+| GET | `/meetings/providers` | `meetings.view` |
+| GET | `/meetings/providers/active` | `meetings.view` |
+| GET | `/meetings/providers/{slug}` | `meetings.view` |
+| GET | `/meetings/providers/{slug}/capabilities` | `meetings.view` |
+| GET | `/meetings/providers/{slug}/diagnostics` | `meetings.view` |
+| POST | `/meetings/providers/{slug}/validate` | `meetings.manage` |
+| PUT | `/meetings/providers/active` | `meetings.manage` |
+
+`PUT /meetings/providers/active` body: `{ "provider": "builtin" }`. Persists tenant setting `meetings_provider` after validation.
+
+Diagnostics include health, connection summary (Connections Center), capabilities, configuration, last validation, errors, provider version, and manifest version.
 
 ## Participants / notes / attachments
 

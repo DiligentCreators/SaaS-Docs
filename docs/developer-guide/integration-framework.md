@@ -23,9 +23,14 @@ Phase 0 delivers the platform Integration Framework foundation. Calendar, Meetin
 
 Path: `config/integrations/manifests/{slug}.integration.php`
 
-Phase 0 ships `google.integration.php` (OAuth + health; adapters null until later phases).
+Shipped manifests:
+
+- `google.integration.php` — OAuth + health; adapters null until later phases
+- `builtin.integration.php` — Built-in Meetings adapter (`adapters.meeting` → `BuiltInMeetingProvider`; `connection_type=none`)
 
 Invalid manifests fail boot outside production; production logs and disables that slug.
+
+Meeting provider discovery (Phase 4) reads manifests with a non-null `adapters.meeting` class. See [Meetings developer guide](/developer-guide/meetings).
 
 ## Connections
 
