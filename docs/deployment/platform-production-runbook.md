@@ -94,9 +94,9 @@ After a Multi-Provider Email release, also run `php artisan email:migrate-tenant
 
 Go-live smoke for mail:
 
-1. Central **Settings → Mail** — choose SMTP / Postmark / Mailgun (not Log/Array in production) → **Send test**
-2. Tenant **Settings → Mail** — system provider test (inherits Central) and/or custom provider test
-3. Open **Email logs** (Central + Tenant) and confirm the test rows appear
+1. Central **Settings → Mail** — choose SMTP / Postmark / Mailgun (not Log/Array in production) → configure webhook URL/events when using API providers → **Send test**
+2. Tenant **Settings → Mail** — system provider test (inherits Central) and/or custom provider test (+ tenant webhook URL when custom)
+3. Open **Email logs** (Central + Tenant) — confirm test rows, body preview, and optional **Resend**
 
 ### Migration-driven releases (no production seeders)
 
@@ -120,10 +120,14 @@ Notes:
 |----------|---------|
 | `POST /stripe/webhook` | Cashier subscription mirror (+ BillingEngine when applicable) |
 | `POST /webhooks/gateways/{code}` | Billing engine (all gateways) |
+| `POST /webhooks/email/{provider}` | Email delivery status (Central Postmark/Mailgun) |
+| `POST /webhooks/email/{provider}/{tenant}` | Email delivery status (Tenant custom mail) |
 
-Both are CSRF-exempt and rate-limited (`throttle:webhooks`). Invalid Stripe/Creem signatures are rejected **before** full payload persistence. Both paths claim `webhook_logs` by `(payment_gateway_id, provider_event_id)` so the same provider event cannot double-settle.
+Payment webhooks are CSRF-exempt and rate-limited (`throttle:webhooks`). Invalid Stripe/Creem signatures are rejected **before** full payload persistence. Both payment paths claim `webhook_logs` by `(payment_gateway_id, provider_event_id)` so the same provider event cannot double-settle.
 
-**Failed processing:** if handling throws after the log row is created, status is `failed` and a **provider retry reprocesses** that event (reclaims the failed row). Successful/`ignored` events still return “already handled”.
+Email webhooks use `SupportsWebhooks` drivers + `mail_webhook_secret` / `mail_webhook_events` from settings (`EMAIL_WEBHOOKS_ENABLED`).
+
+**Failed processing (payments):** if handling throws after the log row is created, status is `failed` and a **provider retry reprocesses** that event (reclaims the failed row). Successful/`ignored` events still return “already handled”.
 
 Prefer configuring Stripe to deliver business events to `/webhooks/gateways/stripe` and keep Cashier URL for subscription sync as documented in your Stripe dashboard. Creem: `POST /webhooks/gateways/creem` with `creem-signature`.
 

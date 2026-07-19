@@ -158,14 +158,16 @@ Also accepts `billing.manage` as an alternate permission.
 
 Returns session metadata only — tenant-app login token exchange is out of scope for Central v1.
 
-## Stripe / gateway webhooks
+## Stripe / gateway / email webhooks
 
 | Method | Path | Notes |
 |--------|------|-------|
 | POST | `/stripe/webhook` | Cashier-compatible path (`config('cashier.path')` + `/webhook`) |
 | POST | `/webhooks/gateways/{code}` | Gateway-agnostic ingress for all drivers |
+| POST | `/webhooks/email/{provider}` | Email delivery webhooks (Central) |
+| POST | `/webhooks/email/{provider}/{tenant}` | Email delivery webhooks (Tenant custom mail) |
 
-**Not** under `/api/central/v1`. Both normalize via `PaymentGatewayInterface::parseWebhook()` into `BillingEngine`. Stripe Cashier route additionally syncs Cashier mirror tables.
+**Not** under `/api/central/v1`. Payment paths normalize via `PaymentGatewayInterface::parseWebhook()` into `BillingEngine`. Email paths use `SupportsWebhooks` drivers. CSRF-exempt; rate-limited. Stripe Cashier route additionally syncs Cashier mirror tables.
 
 ## System
 
@@ -173,10 +175,13 @@ Returns session metadata only — tenant-app login token exchange is out of scop
 |--------|------|-------|
 | GET | `/public/settings` | Unauthenticated bootstrap (branding, formats, registration/maintenance flags). No secrets. |
 | POST | `/public/register-workspace` | Self-service workspace create when `registration_enabled`; otherwise `403` with dedicated message |
-| GET | `/system-settings` | All admin settings (`mail_password` masked) |
-| PUT | `/system-settings` | `{ "settings": { "key": value } }` — per-key validation |
+| GET | `/system-settings` | All admin settings (secrets masked). Response `meta.mail_webhook` includes webhook URL + event catalog when the active provider supports webhooks. |
+| PUT | `/system-settings` | `{ "settings": { "key": value } }` — per-key validation; may include `mail_webhook_events` / `mail_webhook_secret` |
 | POST | `/system-settings/test-mail` | `{ "email": "…" }` — sends test mail using runtime SMTP config |
 | POST | `/system-settings/branding/{logo\|favicon}` | Multipart `file` upload → stores via `FileUploadService` on the configured uploads disk |
+| GET | `/email-logs` | Paginated delivery logs (`has_body`; bodies omitted) |
+| GET | `/email-logs/{uuid}` | Log detail including `body_html` / `body_text` |
+| POST | `/email-logs/{uuid}/resend` | Resend from stored body (`email-logs.resend`, throttle 6/min) |
 
 Settings groups: `general`, `localization`, `mail`, `branding`, `security`, `maintenance`, `billing`.
 
@@ -186,7 +191,7 @@ Settings groups: `general`, `localization`, `mail`, `branding`, `security`, `mai
 |-------|------|-------------|
 | general | `app_name`, `company_name`, `timezone`, `locale`, `currency`, `registration_enabled` | App title/config, tenant defaults, self-service registration |
 | localization | `date_format`, `time_format` | Central SPA formatters |
-| mail | `mail_driver`, `mail_host`, `mail_port`, `mail_username`, `mail_password` (encrypted), `mail_encryption`, `mail_from_name`, `mail_from_address` | Laravel mail config + From identity |
+| mail | `mail_provider`, SMTP / Postmark / Mailgun credentials, `mail_webhook_secret`, `mail_webhook_events`, From identity | Laravel mail + delivery webhooks |
 | branding | `button_color`, `support_email`, `logo_path`, `favicon_path` | SPA CSS/`document.title`/sidebar; support footer on tenant-facing emails |
 | security | `session_lifetime_minutes`, `password_min_length`, `password_require_special` | Session lifetime; centralized `PasswordRule` / `Password::defaults()` |
 | maintenance | `maintenance_mode`, `maintenance_message`, `maintenance_eta` | **Tenant Application only** (`tenant.available` middleware). Central stays up. |

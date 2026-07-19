@@ -272,7 +272,7 @@ Filtering:
 | Queued email delivery (`emails` queue + runtime re-apply) | Shipped |
 | Retry policies + exponential backoff (`email.queue.*`) | Shipped (basic) |
 | Dead-letter handling | Future |
-| Manual resend from logs | Future |
+| Manual resend from logs | Shipped |
 | Priority queues | Future |
 
 ### Provider capabilities (Future)
@@ -281,12 +281,12 @@ Optional **driver capabilities** — not required of every provider. Drivers adv
 
 | Capability | Status |
 |------------|--------|
-| Delivery events | Future |
-| Bounce detection | Future |
-| Spam complaints | Future |
-| Open tracking | Future |
-| Click tracking | Future |
-| Webhook processing | Future |
+| Delivery events | Shipped (webhook-driven) |
+| Bounce detection | Shipped (webhook-driven) |
+| Spam complaints | Shipped (webhook-driven) |
+| Open tracking | Shipped (selectable webhook event) |
+| Click tracking | Shipped (selectable webhook event) |
+| Webhook processing | Shipped |
 | Suppression lists | Future |
 
 ### Email analytics (Future)

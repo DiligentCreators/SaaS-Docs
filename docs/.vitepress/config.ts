@@ -195,6 +195,7 @@ export default defineConfig({
             { text: 'Central Settings', link: '/developer-guide/central-settings' },
             { text: 'Tenant Settings', link: '/developer-guide/tenant-settings' },
             { text: 'Multi-Provider Email', link: '/developer-guide/multi-provider-email' },
+            { text: 'Email Webhooks', link: '/developer-guide/email-webhooks' },
           ],
         },
         {

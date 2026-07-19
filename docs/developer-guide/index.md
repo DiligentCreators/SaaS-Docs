@@ -27,7 +27,8 @@ Engineering documentation for extending SaleOS. New business capability ships as
 | [Authentication](./authentication) | Auth architecture, guards, reset flow |
 | [Tenant RBAC](./tenant-rbac) | Implementing workspace RBAC |
 | [Central Settings](./central-settings) | Settings resolution & APIs |
-| [Multi-Provider Email](./multi-provider-email) | EmailManager, drivers, logs, queues |
+| [Multi-Provider Email](./multi-provider-email) | EmailManager, drivers, logs, queues, body capture, resend |
+| [Email Webhooks](./email-webhooks) | Postmark/Mailgun delivery webhooks |
 | [Tenant Settings](./tenant-settings) | Tenant configuration hierarchy |
 
 ## UI

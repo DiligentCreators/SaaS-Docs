@@ -1,5 +1,13 @@
 # Changelog
 
+## Email webhooks, body logging, and resend (2026-07-19)
+
+- Provider delivery webhooks for Postmark / Mailgun: `POST /webhooks/email/{provider}` (Central) and `…/{provider}/{tenant}` (Tenant custom mail)
+- Configurable event multiselect (`mail_webhook_events`) + signing secret in Central/Tenant Mail settings; `meta.mail_webhook` on settings GET
+- Full message body capture (`body_html` / `body_text`) on email logs by default (`EMAIL_LOGS_STORE_BODY=true`) for audit/proof
+- One-click resend from email log detail (`email-logs.resend`, `POST …/email-logs/{uuid}/resend`)
+- Docs: [Email webhooks](/developer-guide/email-webhooks), updated [Multi-Provider Email](/developer-guide/multi-provider-email)
+
 ## v1.1.0 — Platform Stabilization (prepared 2026-07-19)
 
 First official coordinated platform tag. Official record: [v1.1.0](/changelog/v1.1.0).
