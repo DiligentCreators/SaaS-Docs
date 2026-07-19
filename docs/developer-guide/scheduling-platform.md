@@ -10,7 +10,7 @@
 |-------|------|
 | Scheduling Platform | Source of truth for timed work (`schedule_items`) |
 | Calendar module (Phase 2) | UI / views over ScheduleItems ([Calendar developer guide](/developer-guide/calendar)) |
-| Meetings module (later) | Domain meetings that upsert ScheduleItems |
+| Meetings module (Phase 3) | Domain meetings that upsert ScheduleItems ([Meetings developer guide](/developer-guide/meetings)) |
 
 Calendar is **not** required for Scheduling Platform APIs.
 

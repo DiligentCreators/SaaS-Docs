@@ -1,5 +1,18 @@
 # Changelog
 
+## Meetings Module Phase 3 (2026-07-20)
+
+Marketplace Meetings module — domain aggregate that publishes timed work via `SchedulingContract` (ADR-001 / ADR-003 / ADR-006).
+
+- Backend: meetings, participants, notes, attachments, activities; `BuiltInMeetingProvider`; enveloped domain events; `Idempotency-Key` on create
+- Tenant APIs: `/meetings` (+ participants, notes, attachments, status, timeline)
+- Permissions: `meetings.view|create|update|delete|manage|manage_participants|manage_notes|manage_attachments`
+- Frontend: list, detail sheet, create/edit, participants, notes, attachments, timeline, filters
+- Docs: [Meetings user guide](/user-guide/meetings), [developer guide](/developer-guide/meetings), [API](/api/tenant-v1-meetings), [deployment](/deployment/meetings)
+- Out of scope: Zoom/Meet/Teams, calendar sync, booking, AI, automation
+
+---
+
 ## Calendar Module Phase 2 (2026-07-20)
 
 Marketplace Calendar module — presentation over the Scheduling Platform (ADR-001 / ADR-003).
