@@ -1,5 +1,209 @@
 # Changelog
 
+## Tenant-Owned Integration Credentials Foundation (2026-07-20)
+
+Foundation correction for v1.0. Tenant-owned Provider Credentials replace platform env OAuth app secrets. **Phase F (API-key migration) deferred** until the first API-key integration.
+
+- Architecture: ADR-007, ADR-004 amendment, ADR-002 Manifest v1.1
+- Backend: `integration_provider_credentials`, `IntegrationCredentialManager`, OAuth fail-closed gates, Admin API
+- Frontend: Provider Credentials wizard, `/settings/connections`, Connect gating on Meeting/Calendar providers
+- Release Hardening: unbound deprecated `INTEGRATIONS_*_CLIENT_*` config; Pest architecture guards
+- Guides: [Tenant-Owned Integration Credentials](/developer-guide/tenant-owned-integration-credentials), [Implementation Roadmap](/developer-guide/tenant-owned-credentials-implementation-roadmap)
+
+---
+
+## Tenant-Owned Integration Credentials — Release Hardening (2026-07-20)
+
+Cleanup and production hardening for v1.0. **Phase F (API-key migration) is deferred.**
+
+- Unbound deprecated `INTEGRATIONS_*_CLIENT_ID/SECRET` from `config/integrations.php` and `.env.example` (enable flags retained)
+- Pest architecture guards prevent platform credential resolution regressions
+- Docs: Phase F marked **Deferred** (no production API-key providers); provider/deployment guides updated to Provider Credentials path only
+- No schema changes to `integration_connections`; no migration of `connection.credentials`
+
+---
+
+## Tenant-Owned Integration Credentials — Phase E Admin API & UI (2026-07-20)
+
+Tenant Provider Credentials administration is usable end-to-end. **No Phase F migration. No platform credential fallback.**
+
+- Fail-closed fix: OAuth refresh requires **validated** credentials; secret rotation auto-revalidates
+- Tenant API: `/api/tenant/v1/provider-credentials` (list/show/upsert/validate/rotate/delete) with masked secrets + derived composite status
+- Permissions: `provider_credentials.view|manage|validate|rotate` (Owner/Admin defaults)
+- Frontend: Administration → Provider Credentials (schema-driven wizard), `/settings/connections`, Meeting/Calendar Connect gated until validated
+- Tests: Pest API/authz/rotation/composite; Playwright `npm run test:e2e:provider-credentials`
+- Guides: [Tenant-Owned Integration Credentials](/developer-guide/tenant-owned-integration-credentials), [Implementation Roadmap](/developer-guide/tenant-owned-credentials-implementation-roadmap)
+
+---
+
+## Tenant-Owned Integration Credentials — Architecture Freeze / Phase B docs (2026-07-20)
+
+Architecture governance only (historical Phase B note). **No production code in that docs-only PR.** ADR-007 accepted; ADR-002 and ADR-004 amended. Implementation Phases C–E later shipped; Phase F deferred.
+
+- ADRs: [ADR-007](/architecture/adr/adr-007-tenant-owned-integration-credentials), [ADR-004 amendment](/architecture/adr/adr-004-oauth-architecture-amendment), [ADR-002 Manifest v1.1](/architecture/adr/adr-002-integration-manifest-v1-1-amendment)
+- Guides: [Tenant-Owned Integration Credentials](/developer-guide/tenant-owned-integration-credentials), [Implementation Roadmap](/developer-guide/tenant-owned-credentials-implementation-roadmap)
+- Terminology updates across Integration Framework, Meetings/Calendar provider docs, deployment meetings, and Integrations API
+- Review: [Documentation Review Report](/architecture/adr/documentation-review-tenant-owned-credentials)
+- Out of scope: backend/frontend/migrations, OAuthManager code changes, commits outside SaaS-Docs
+
+---
+
+## Scheduling Platform Phase 12 — Manual QA / UAT package (2026-07-20)
+
+Feature freeze. Architecture v1.0 and ADR-001–006 unchanged at that time. No product features.
+
+- Docs: executable Manual QA checklist, browser/provider matrices, defect log, UAT sign-off, production readiness assessment — [Phase 12 Manual QA](/qa/scheduling-phase-12-manual-qa)
+- Status: **package ready; human UAT with live provider sandboxes required before Release Phase**
+- Out of scope: push/PR/merge, Release Phase, new features, enhancement work (tracked as post-v1.0 backlog in the Phase 12 page)
+
+---
+
+## Scheduling Platform Phase 11 — E2E Testing (2026-07-20)
+
+Feature freeze validation for Phases 0–10. Architecture v1.0 and ADR-001–006 unchanged. No new product features.
+
+- Playwright: Calendar, Meetings, Scheduling Ops/providers/permissions/isolation suites (`npm run test:e2e:scheduling`)
+- Pest assertions updated for five default-included modules (Calendar + Meetings)
+- Bug fixes: MySQL `schedule_items` index length; meetings row actions `aria-label`; calendar month cell nested buttons
+- Docs: [Scheduling Phase 11 E2E](/developer-guide/scheduling-phase-11-e2e)
+- Out of scope: Phase 12 Manual QA/UAT execution (see [Phase 12 package](/qa/scheduling-phase-12-manual-qa)), live OAuth in CI, GitHub push/PR/merge
+
+---
+
+## Administrative Visibility & Operations Phase 10 (2026-07-20)
+
+Tenant-wide operational monitoring for Meetings and Calendar. Architecture v1.0 and ADR-001–006 unchanged. No booking, CRM, automation, AI, or new providers.
+
+- Backend: Meetings/Calendar ops dashboards, inspect, bulk cancel, reminders/notifications monitoring, provider status, sync monitoring + manual retry, lightweight reports, scheduling audit query; permissions `meetings.admin|monitor|reports`, `calendar.monitor|reports`, `provider.monitor`
+- Reuses PlatformAuditService, ReminderEngine, Notification Framework, Synchronization Framework, Meeting/Calendar Provider frameworks
+- Frontend: Administration pages — Meetings dashboard, Calendar dashboard, Provider status, Reminders, Scheduling reports
+- Docs: [Scheduling Administration](/user-guide/scheduling-administration)
+- Out of scope: booking, public scheduling, CRM/Lead/Contact integrations, recurring meetings, CalDAV/ICS, Teams, automation, AI, Phase 11 E2E
+
+---
+
+## Meeting Notifications & Reminders Phase 9 (2026-07-20)
+
+Integrate Meetings with the Notification Framework and a single pre-meeting reminder via ReminderEngine. Architecture v1.0 and ADR-001–006 unchanged.
+
+- Backend: `meetings.reminder_minutes` / `reminder_sent_at`; `meeting_user_settings.default_reminder_minutes`; `MeetingEventSubscriber` + meeting notifications; `ScheduleReminderDueListener`; settings API `GET|PUT /meetings/settings`
+- Exactly one reminder per meeting (`starts_at − reminder_minutes` → notify → `reminder_sent_at`); preference changes never mutate existing meetings
+- Frontend: Profile → Meetings → Default Reminder; meeting form Reminder field; SPA notification registry for `meeting.*` types
+- Docs: User Guide, Developer Guide, API updated
+- Out of scope: multiple/recurring/custom reminders, snooze, booking, SMS/WhatsApp, automation, AI
+
+---
+
+## Outlook Calendar Sync Phase 8 (2026-07-20)
+
+Microsoft Outlook Calendar as the second Calendar Provider on a shared Microsoft 365 connection (ADR-005). Reuses the Phase 7 Calendar Provider Framework; Scheduling Platform remains the source of truth.
+
+- Backend: `MicrosoftOAuthProvider`, `microsoft.integration.php`, satellite `outlook-calendar.integration.php`, `OutlookCalendarProvider` + Graph API client, webhook `POST /webhooks/calendar/outlook`, Http::fake tests + Google regression
+- No second Microsoft connection — Connections Center discovery excludes satellite manifests
+- Frontend: Calendar Provider Settings lists Outlook when Microsoft is connected (`connection_integration=microsoft`)
+- Docs: [Outlook Calendar Sync](/developer-guide/outlook-calendar-sync)
+- Out of scope: CalDAV, ICS, booking, public scheduling, automation, AI, recurring-event UI
+
+---
+
+## Google Calendar Sync Phase 7 (2026-07-20)
+
+Calendar Provider Framework and Google Calendar synchronization on the shared Google Workspace connection (ADR-005). Scheduling Platform remains the source of truth; external calendars are projections.
+
+- Backend: `CalendarManager`, `CalendarProviderInterface` / Registry / Resolver, `GoogleCalendarProvider`, sync engine (`SynchronizationService`, `CalendarProjectionService`, `SyncStateService`, `ConflictResolver`), webhook `POST /webhooks/calendar/google`, queue jobs, Http::fake tests
+- Satellite manifest `google-calendar.integration.php` with `connection_integration=google` (no second OAuth row)
+- Tenant API: `/calendar/providers`, `/calendar/sync`, conflicts resolve (`keep_local` / `keep_remote`)
+- Frontend: Calendar Provider Settings — selection, health/diagnostics, sync status, manual sync, conflict indicators
+- Docs: [Google Calendar Sync](/developer-guide/google-calendar-sync)
+- Out of scope: Outlook, CalDAV, ICS, booking, public scheduling, automation, AI, recurring-event UI
+
+---
+
+## Google Meet Provider Phase 6 (2026-07-20)
+
+Google Meet adapter on the shared Google Workspace connection (ADR-005).
+
+- Backend: `GoogleMeetMeetingProvider`, Calendar API Meet conference create/update/delete, `google-meet.integration.php` with `connection_integration=google`; OAuth via existing `GoogleOAuthProvider` (expanded `calendar.events` scope)
+- No second Google connection — Connections Center discovery excludes satellite manifests
+- Frontend: Provider Settings Connect uses `connection_integration` (google-meet → google)
+- Docs: [Google Meet Provider](/developer-guide/google-meet-provider)
+- Out of scope: Google Calendar sync, Teams, Jitsi, booking, AI
+
+---
+
+## Zoom Meeting Provider Phase 5 (2026-07-20)
+
+First external meeting adapter on the Phase 4 provider framework.
+
+- Backend: `ZoomMeetingProvider`, `ZoomApiClient`, `ZoomOAuthProvider`, `ZoomHealthCheck`, `zoom.integration.php`; OAuth via existing OAuthManager + Connections Center; Http::fake tests
+- Tenant: Zoom listed under `/meetings/providers` when enabled; selectable after Connected OAuth; create/update/cancel via existing Meetings APIs
+- Frontend: Provider Settings Connect flow for OAuth providers; connection/health/capabilities/validation display
+- Docs: [Zoom Meeting Provider](/developer-guide/zoom-meeting-provider)
+- Out of scope: Google Meet, Teams, Jitsi, calendar sync, booking, AI, recording downloads
+
+---
+
+## Meeting Provider Framework Phase 4 (2026-07-20)
+
+Provider orchestration for Meetings without external integrations.
+
+- Backend: `MeetingManager`, `MeetingProviderRegistry`, `MeetingProviderResolver`, capabilities, diagnostics, validation, tenant `meetings_provider` setting; `builtin.integration.php` manifest; `BuiltInMeetingProvider` refactored through the manager
+- Tenant APIs: `/meetings/providers` (list, active, capabilities, diagnostics, validate, select)
+- Frontend: Meeting providers settings page (`/meetings/providers`) — current provider, capabilities, diagnostics, validation, selection (installed adapters only)
+- Docs: Meetings user/developer/API/deployment updated; Integration Framework notes builtin manifest
+- Out of scope: Zoom/Meet/Teams/Jitsi, OAuth changes, sync, booking, AI, automation
+
+---
+
+## Meetings Module Phase 3 (2026-07-20)
+
+Marketplace Meetings module — domain aggregate that publishes timed work via `SchedulingContract` (ADR-001 / ADR-003 / ADR-006).
+
+- Backend: meetings, participants, notes, attachments, activities; `BuiltInMeetingProvider`; enveloped domain events; `Idempotency-Key` on create
+- Tenant APIs: `/meetings` (+ participants, notes, attachments, status, timeline)
+- Permissions: `meetings.view|create|update|delete|manage|manage_participants|manage_notes|manage_attachments`
+- Frontend: list, detail sheet, create/edit, participants, notes, attachments, timeline, filters
+- Docs: [Meetings user guide](/user-guide/meetings), [developer guide](/developer-guide/meetings), [API](/api/tenant-v1-meetings), [deployment](/deployment/meetings)
+- Out of scope: Zoom/Meet/Teams, calendar sync, booking, AI, automation
+
+---
+
+## Calendar Module Phase 2 (2026-07-20)
+
+Marketplace Calendar module — presentation over the Scheduling Platform (ADR-001 / ADR-003).
+
+- Backend: calendars (personal/team), members, categories, event overlays, user settings; `CalendarService` writes timed work only via `SchedulingContract`
+- Tenant APIs: `/calendars`, `/calendar-categories`, `/calendar/settings`, `/calendar/projections`, `/calendar/events`
+- Permissions: `calendar.view|create|update|delete|manage` + `module:calendar`
+- Frontend: month / week / day / agenda views, navigation, filters, categories, colors
+- Docs: [Calendar user guide](/user-guide/calendar), [developer guide](/developer-guide/calendar), [API](/api/tenant-v1-calendar), [deployment](/deployment/calendar)
+- Out of scope: Meetings, providers, sync, booking, public scheduling, automation, AI
+
+---
+
+## Scheduling Platform Phase 1 (2026-07-20)
+
+Always-on platform scheduling service (ADR-001 / ADR-003). Not the Calendar or Meetings modules.
+
+- Backend: `schedule_items`, working hours, holidays, reminders; `ScheduleItemService`, `AvailabilityService`, `WorkingHoursService`, `ReminderEngine`, `SchedulingContract`
+- Tenant APIs: `/schedule-items`, `/availability`, `/working-hours`
+- Permissions: `scheduling.view`, `scheduling.manage`
+- Docs: [Scheduling Platform](/developer-guide/scheduling-platform), [Tenant Scheduling API](/api/tenant-v1-scheduling)
+- Out of scope: Calendar UI, Meetings, providers, sync, booking, frontend
+
+---
+
+## Integration Framework Phase 0 (2026-07-20)
+
+Platform foundation for third-party connections (Architecture v1.0 ADRs).
+
+- Backend: Integration Manifest v1, registry, Connections Center API, OAuthManager + Google OAuth, connection health, ConnectionLock, domain event envelope, `X-Correlation-ID`
+- Permissions: `connections.view`, `connections.manage`, `connections.manage_user`
+- Docs: [Integration Framework](/developer-guide/integration-framework), [Tenant Integrations API](/api/tenant-v1-integrations)
+- Out of scope for Phase 0: Calendar, Meetings, Zoom, calendar sync, booking
+
+---
+
 ## WhatsApp Cloud Integration roadmap (2026-07-20)
 
 Documentation-only: official architectural blueprint for a future WhatsApp Cloud API communication platform.

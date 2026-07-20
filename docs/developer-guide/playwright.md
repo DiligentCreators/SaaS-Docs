@@ -11,7 +11,7 @@ The Playwright suite for the **Central Application** lives in the Frontend repos
 
 Covers Platform/Core only: auth, dashboard, tenants (workspaces), users, roles, permissions matrix, modules, marketplace, billing (Billing nav + payment gateways + settings billing tab + tenant invoice/payment tabs), impersonation, settings, profile, smoke, and regression.
 
-Does **not** cover Stripe Checkout or future ERP modules beyond what is listed below. Tenant Settings branding/mail coverage lives in `e2e/tests/settings/tenant-settings.spec.ts`. Tenant Users/Roles RBAC coverage lives in `e2e/tests/users/tenant-users.spec.ts` (`npm run test:e2e:tenant-rbac`). **Leads** product UI: `e2e/tests/leads/` (`npm run test:e2e:leads`). **Tasks** product UI: `e2e/tests/tasks/` (`npm run test:e2e:tasks`). **Communication Templates**: `e2e/tests/communication-templates/` (`npm run test:e2e:communication-templates`). Tenant suites use Playwright project `tenant`.
+Does **not** cover Stripe Checkout or future ERP modules beyond what is listed below. Tenant Settings branding/mail coverage lives in `e2e/tests/settings/tenant-settings.spec.ts`. Tenant Users/Roles RBAC coverage lives in `e2e/tests/users/tenant-users.spec.ts` (`npm run test:e2e:tenant-rbac`). **Leads** product UI: `e2e/tests/leads/` (`npm run test:e2e:leads`). **Tasks** product UI: `e2e/tests/tasks/` (`npm run test:e2e:tasks`). **Communication Templates**: `e2e/tests/communication-templates/` (`npm run test:e2e:communication-templates`). **Calendar / Meetings / Scheduling Ops** (Phase 11): `npm run test:e2e:scheduling` — see [Scheduling Phase 11 E2E](/developer-guide/scheduling-phase-11-e2e). Tenant suites use Playwright project `tenant`.
 
 ## Spec directories (independently runnable)
 
@@ -31,6 +31,9 @@ Does **not** cover Stripe Checkout or future ERP modules beyond what is listed b
 | Leads | `e2e/tests/leads/` | `npm run test:e2e:leads` |
 | Tasks | `e2e/tests/tasks/` | `npm run test:e2e:tasks` |
 | Communication Templates | `e2e/tests/communication-templates/` | `npm run test:e2e:communication-templates` |
+| Calendar | `e2e/tests/calendar/` | `npm run test:e2e:calendar` |
+| Meetings | `e2e/tests/meetings/` | `npm run test:e2e:meetings` |
+| Scheduling (Calendar+Meetings+Ops) | `e2e/tests/{calendar,meetings,scheduling}/` | `npm run test:e2e:scheduling` |
 | Profile | `e2e/tests/profile/` | `npm run test:e2e:profile` |
 | Smoke | `e2e/tests/smoke/` | `npm run test:e2e:smoke` |
 | Regression | `e2e/tests/regression/` | `npm run test:e2e:regression` |
