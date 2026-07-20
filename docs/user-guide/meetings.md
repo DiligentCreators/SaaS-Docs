@@ -42,7 +42,7 @@ Organizer and participants (internal users; external guests by email when an add
 - Reminder before meeting
 - Meeting started / completed (when status changes)
 
-Administrators are **not** notified unless they are participants — they use dashboards and activity instead.
+Administrators are **not** notified unless they are participants — they use dashboards and activity instead. See [Scheduling Administration](/user-guide/scheduling-administration).
 
 ## Meeting providers
 

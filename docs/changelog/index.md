@@ -1,5 +1,17 @@
 # Changelog
 
+## Administrative Visibility & Operations Phase 10 (2026-07-20)
+
+Tenant-wide operational monitoring for Meetings and Calendar. Architecture v1.0 and ADR-001–006 unchanged. No booking, CRM, automation, AI, or new providers.
+
+- Backend: Meetings/Calendar ops dashboards, inspect, bulk cancel, reminders/notifications monitoring, provider status, sync monitoring + manual retry, lightweight reports, scheduling audit query; permissions `meetings.admin|monitor|reports`, `calendar.monitor|reports`, `provider.monitor`
+- Reuses PlatformAuditService, ReminderEngine, Notification Framework, Synchronization Framework, Meeting/Calendar Provider frameworks
+- Frontend: Administration pages — Meetings dashboard, Calendar dashboard, Provider status, Reminders, Scheduling reports
+- Docs: [Scheduling Administration](/user-guide/scheduling-administration)
+- Out of scope: booking, public scheduling, CRM/Lead/Contact integrations, recurring meetings, CalDAV/ICS, Teams, automation, AI, Phase 11 E2E
+
+---
+
 ## Meeting Notifications & Reminders Phase 9 (2026-07-20)
 
 Integrate Meetings with the Notification Framework and a single pre-meeting reminder via ReminderEngine. Architecture v1.0 and ADR-001–006 unchanged.

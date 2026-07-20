@@ -112,3 +112,7 @@ Routes: `module:meetings` + `can:meetings.*`.
 ## Explicitly out of Phase 9
 
 Multiple / recurring / custom reminders, snooze, reminder templates/history, per-participant reminders, booking, public scheduling, SMS/WhatsApp, automation, AI, workflow engine.
+
+## Administrative ops (Phase 10)
+
+See [Scheduling Ops](/developer-guide/scheduling-ops) for tenant admin dashboards, bulk cancel, provider/sync/reminder monitoring, and reports.
