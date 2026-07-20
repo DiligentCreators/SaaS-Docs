@@ -57,20 +57,6 @@ Engineering documentation for extending SaleOS. New business capability ships as
 | [Tasks](./tasks) | Tasks module engineering guide |
 | [Communication Templates](./communication-templates) | Templates, placeholders, WhatsApp render |
 
-## Platform Integrations
-
-| Document | Description |
-|----------|-------------|
-| [Integration Framework](./integration-framework) | Manifests, Connections Center, OAuthManager, health, event envelope |
-| [Tenant-Owned Integration Credentials](./tenant-owned-integration-credentials) | ADR-007 two-store architecture (shipped; Phase F deferred) |
-| [Credentials Implementation Roadmap](./tenant-owned-credentials-implementation-roadmap) | Phases C–G exit criteria and quality gates |
-| [Scheduling Platform](./scheduling-platform) | Phase 1 — Always-on ScheduleItems, availability, working hours, reminder engine foundation |
-| [Zoom Meeting Provider](./zoom-meeting-provider) | Zoom adapter on primary Zoom credentials + connection |
-| [Google Meet Provider](./google-meet-provider) | Meet satellite on shared Google connection (ADR-005) |
-| [Google Calendar Sync](./google-calendar-sync) | Calendar Provider Framework + Google Calendar projection sync (ADR-005) |
-| [Outlook Calendar Sync](./outlook-calendar-sync) | Outlook Calendar on shared Microsoft connection (ADR-005) |
-| [Architecture Decision Records](/architecture/adr/) | ADR-002 / ADR-004 amendments + ADR-007 |
-
 ## Future Integrations
 
 | Document | Description |

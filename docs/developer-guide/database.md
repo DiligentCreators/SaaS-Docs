@@ -266,18 +266,6 @@ Groups: `general`, `branding`, `mail`. Sensitive `mail_password` encrypted. Bran
 
 Docs: [settings/tenant-settings.md](/user-guide/tenant-settings-overview).
 
-## Integrations (Connections Center + Provider Credentials)
-
-### `integration_connections` (shipped)
-
-Tenant runtime authorization for integrations (OAuth tokens, connection status/health, optional legacy `credentials` JSON for api_key flows). Secrets encrypted at rest. See [Integration Framework](/developer-guide/integration-framework).
-
-### `integration_provider_credentials` (planned — ADR-007 Phase C)
-
-Tenant-owned **application** credentials (`client_id`/`client_secret`, API keys, etc.) as encrypted JSON `payload`. One row per `(tenant_id, integration_slug)` among non-deleted rows for **primary** integrations only. Does not store access/refresh tokens.
-
-See [Tenant-Owned Integration Credentials](/developer-guide/tenant-owned-integration-credentials) and [ADR-007](/architecture/adr/adr-007-tenant-owned-integration-credentials).
-
 ## Removed tables
 
 `plans`, `plan_module`, `plan_feature`, `plan_limits`, `limit_definitions`, `tenant_usage_counters`, `tenant_subscriptions`, `subscription_events` (replaced by module subscription history), `features` (removed — modules are licensing only; Spatie permissions handle authorization).
