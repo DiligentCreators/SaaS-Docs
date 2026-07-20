@@ -192,6 +192,7 @@ export default defineConfig({
             { text: 'Object Storage', link: '/developer-guide/object-storage' },
             { text: 'Frontend Build Artifacts', link: '/developer-guide/frontend-build-artifacts' },
             { text: 'Playwright', link: '/developer-guide/playwright' },
+            { text: 'Scheduling Phase 11 E2E', link: '/developer-guide/scheduling-phase-11-e2e' },
             { text: 'Tenant Provisioning', link: '/developer-guide/tenant-provisioning' },
           ],
         },

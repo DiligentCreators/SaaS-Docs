@@ -1,5 +1,17 @@
 # Changelog
 
+## Scheduling Platform Phase 11 — E2E Testing (2026-07-20)
+
+Feature freeze validation for Phases 0–10. Architecture v1.0 and ADR-001–006 unchanged. No new product features.
+
+- Playwright: Calendar, Meetings, Scheduling Ops/providers/permissions/isolation suites (`npm run test:e2e:scheduling`)
+- Pest assertions updated for five default-included modules (Calendar + Meetings)
+- Bug fixes: MySQL `schedule_items` index length; meetings row actions `aria-label`; calendar month cell nested buttons
+- Docs: [Scheduling Phase 11 E2E](/developer-guide/scheduling-phase-11-e2e)
+- Out of scope: Phase 12 Manual QA/UAT, live OAuth, GitHub push/PR/merge
+
+---
+
 ## Administrative Visibility & Operations Phase 10 (2026-07-20)
 
 Tenant-wide operational monitoring for Meetings and Calendar. Architecture v1.0 and ADR-001–006 unchanged. No booking, CRM, automation, AI, or new providers.
