@@ -6,12 +6,43 @@ Schedule and run workspace meetings. When a meeting is **scheduled**, it appears
 
 - Create, edit, and list meetings
 - Set type (internal, client, sales, …) and mode (online, physical, hybrid)
+- Choose a **reminder** per meeting (None, 15 minutes, 30 minutes, or 1 hour before start)
 - Move through statuses: Draft → Scheduled → In progress → Completed / Cancelled
 - Manage participants (internal users and external guests), RSVP, attendance
 - Add shared/private notes, outcomes, and action items
 - Attach documents or recording links
 - Review the meeting timeline
 - Open **Meeting providers** to see the active provider, capabilities, and diagnostics
+
+## Reminders & notifications
+
+Each meeting stores its own reminder. Exactly **one** reminder is sent before start (no snooze, no recurring, no per-participant reminders).
+
+### Default reminder (Profile)
+
+Open **Profile → Meetings → Default Reminder** and choose:
+
+- None
+- 15 Minutes
+- 30 Minutes
+- 1 Hour
+
+This preference applies only when you create **new** meetings. Changing it never updates existing meetings.
+
+### Per-meeting reminder
+
+On create/edit, the Reminder field prefills from your default. The organizer can override it for that meeting.
+
+### Who gets notified
+
+Organizer and participants (internal users; external guests by email when an address exists) receive:
+
+- Meeting created / updated / cancelled
+- Participant added / removed
+- Reminder before meeting
+- Meeting started / completed (when status changes)
+
+Administrators are **not** notified unless they are participants — they use dashboards and activity instead.
 
 ## Meeting providers
 

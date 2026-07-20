@@ -1,5 +1,17 @@
 # Changelog
 
+## Meeting Notifications & Reminders Phase 9 (2026-07-20)
+
+Integrate Meetings with the Notification Framework and a single pre-meeting reminder via ReminderEngine. Architecture v1.0 and ADR-001–006 unchanged.
+
+- Backend: `meetings.reminder_minutes` / `reminder_sent_at`; `meeting_user_settings.default_reminder_minutes`; `MeetingEventSubscriber` + meeting notifications; `ScheduleReminderDueListener`; settings API `GET|PUT /meetings/settings`
+- Exactly one reminder per meeting (`starts_at − reminder_minutes` → notify → `reminder_sent_at`); preference changes never mutate existing meetings
+- Frontend: Profile → Meetings → Default Reminder; meeting form Reminder field; SPA notification registry for `meeting.*` types
+- Docs: User Guide, Developer Guide, API updated
+- Out of scope: multiple/recurring/custom reminders, snooze, booking, SMS/WhatsApp, automation, AI
+
+---
+
 ## Outlook Calendar Sync Phase 8 (2026-07-20)
 
 Microsoft Outlook Calendar as the second Calendar Provider on a shared Microsoft 365 connection (ADR-005). Reuses the Phase 7 Calendar Provider Framework; Scheduling Platform remains the source of truth.
