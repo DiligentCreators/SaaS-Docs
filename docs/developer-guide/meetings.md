@@ -1,7 +1,7 @@
 # Meetings — Developer Guide
 
 > **Status: Implemented (Phase 3–9)**  
-> Binding ADRs: ADR-001 (Scheduling Platform SoT), ADR-002 (Integration Manifest), ADR-003 (ownership key), ADR-004 (Connections Center credentials), ADR-005 (shared Google connection), ADR-006 (enveloped events).
+> Binding ADRs: ADR-001 (Scheduling Platform SoT), ADR-002 (Integration Manifest v1.1), ADR-003 (ownership key), ADR-004 (OAuth + Connections Center), ADR-005 (shared Google connection), ADR-006 (enveloped events), [ADR-007](/architecture/adr/adr-007-tenant-owned-integration-credentials) (Provider Credentials).
 
 Marketplace module (`meetings`) that **publishes** timed work through `SchedulingContract`. It never owns scheduling logic.
 
@@ -13,7 +13,8 @@ Marketplace module (`meetings`) that **publishes** timed work through `Schedulin
 | Timed work / busy / reminders | Scheduling Platform (`ReminderEngine`) |
 | Calendar views | Calendar module (reads ScheduleItems) |
 | Online session adapters | Meeting provider framework (via Integration Manifest) |
-| Credentials | Connections Center only |
+| Application credentials (OAuth apps) | Provider Credentials (`integration_provider_credentials`) — ADR-007 |
+| Runtime tokens | Connections Center (`integration_connections`) only |
 | In-app / email notification delivery | Notification Framework |
 
 Schedule ownership: `module=meetings`, `owner_type=meeting`, `owner_id={meeting.id}`.

@@ -22,6 +22,7 @@ Do **not** redesign:
 - **Extend** existing implementations (new catalog rows, permissions, routes, services, UI pages).
 - Fix critical defects, security holes, or data-integrity bugs.
 - Add domain events, listeners, and notifications **inside a module** following the [Module Development Standard](/developer-guide/module-development).
+- Pre-v1.0 **approved foundation corrections** with explicit ADR freeze (e.g. [ADR-007 Tenant-Owned Integration Credentials](/architecture/adr/adr-007-tenant-owned-integration-credentials)) — implement only after documentation Phase B approval; do not expand scope beyond the frozen ADR.
 
 ## Forbidden without explicit approval
 

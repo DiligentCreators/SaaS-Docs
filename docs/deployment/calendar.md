@@ -25,4 +25,5 @@ Deploy frontend build that includes `/calendar` route, nav item, and `calendarSe
 ## Notes
 
 - Uninstalling Calendar stops UI/routes; `schedule_items` are retained (ADR-001).
-- Meetings / sync / booking are **not** part of Phase 2.
+- External calendar sync uses tenant **Provider Credentials** on primaries (`google`, `microsoft`) and runtime tokens on Connections Center ([ADR-007](/architecture/adr/adr-007-tenant-owned-integration-credentials)). Until cutover, platform env client id/secret remain the deprecated runtime source.
+- Meetings / booking are **not** part of Phase 2 Calendar module delivery.

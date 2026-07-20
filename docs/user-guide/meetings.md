@@ -53,6 +53,8 @@ Workspace admins with `meetings.manage` can open **Meeting providers** (Administ
 - Connect OAuth providers (e.g. Zoom) when a connection is required
 - Select an active provider only when it is available (connected)
 
+Before Connect works for external providers, a workspace admin must configure the workspace’s own provider application credentials (**Provider Credentials** — architecture frozen; Admin UI in the credentials implementation program). SaleOS does not use a shared platform Google/Zoom app for tenant workspaces after that cutover. Runtime authorization (tokens) remains in Connections Center.
+
 **Built-in** supports online, physical, and hybrid meetings with an internal join URL/token.
 
 **Zoom** (when enabled and connected) supports online meetings with Zoom join URLs.

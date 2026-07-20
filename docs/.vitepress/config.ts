@@ -149,6 +149,16 @@ export default defineConfig({
             { text: 'Module Licensing', link: '/architecture/module-licensing' },
           ],
         },
+        {
+          text: 'Architecture Decision Records',
+          items: [
+            { text: 'ADR Index', link: '/architecture/adr/' },
+            { text: 'ADR-002 Manifest v1.1', link: '/architecture/adr/adr-002-integration-manifest-v1-1-amendment' },
+            { text: 'ADR-004 OAuth Amendment', link: '/architecture/adr/adr-004-oauth-architecture-amendment' },
+            { text: 'ADR-007 Tenant Credentials', link: '/architecture/adr/adr-007-tenant-owned-integration-credentials' },
+            { text: 'Docs Review (Credentials)', link: '/architecture/adr/documentation-review-tenant-owned-credentials' },
+          ],
+        },
       ],
       '/user-guide/': [
         {
@@ -250,6 +260,8 @@ export default defineConfig({
           text: 'Platform Integrations',
           items: [
             { text: 'Integration Framework', link: '/developer-guide/integration-framework' },
+            { text: 'Tenant-Owned Credentials', link: '/developer-guide/tenant-owned-integration-credentials' },
+            { text: 'Credentials Roadmap (C–G)', link: '/developer-guide/tenant-owned-credentials-implementation-roadmap' },
             { text: 'Scheduling Platform', link: '/developer-guide/scheduling-platform' },
             { text: 'Zoom Meeting Provider', link: '/developer-guide/zoom-meeting-provider' },
             { text: 'Google Meet Provider', link: '/developer-guide/google-meet-provider' },

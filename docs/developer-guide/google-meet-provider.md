@@ -1,23 +1,24 @@
 # Google Meet Provider (Phase 6)
 
 > **Status: Implemented**  
-> Binding ADRs: ADR-002 (manifest), ADR-004 (OAuth), ADR-005 (shared Google multi-capability connection).
+> Binding ADRs: ADR-002 (manifest v1.1), ADR-004 (OAuth), ADR-005 (shared Google multi-capability connection), [ADR-007](/architecture/adr/adr-007-tenant-owned-integration-credentials) (Provider Credentials on primary `google` only).
 
-Google Meet is a **satellite meeting adapter** on the shared Google Workspace connection. It does not create a second Google OAuth row.
+Google Meet is a **satellite meeting adapter** on the shared Google Workspace connection. It does not create a second Google OAuth row or a separate Provider Credentials row.
 
 ## Components
 
 | Piece | Path |
 |-------|------|
 | Manifest | `config/integrations/manifests/google-meet.integration.php` |
-| Credential host | `google.integration.php` (`connection_integration=google`) |
+| Credential / connection host | `google.integration.php` (`connection_integration=google`) |
 | OAuth | Existing `GoogleOAuthProvider` (scopes include `calendar.events`) |
 | Adapter | `App\Meetings\Providers\GoogleMeetMeetingProvider` |
 | API client | Creates Calendar events with `conferenceData.createRequest` type `hangoutsMeet` |
 | Health | `GoogleMeetHealthCheck` / `GoogleMeetDiagnostics` |
 
-## ADR-005 shared connection
+## ADR-005 shared connection + ADR-007 credentials
 
+- Provider Credentials and Connections Center rows attach to **`google`** (primary) only.
 - Connections Center lists **Google Workspace** only (primary).
 - Provider Settings lists **Google Meet** as a meeting provider.
 - Connect / reconnect always targets `integration_slug=google`.
@@ -28,18 +29,18 @@ Google Meet is a **satellite meeting adapter** on the shared Google Workspace co
 ```env
 INTEGRATIONS_GOOGLE_ENABLED=true
 INTEGRATIONS_GOOGLE_MEET_ENABLED=true
-INTEGRATIONS_GOOGLE_CLIENT_ID=
-INTEGRATIONS_GOOGLE_CLIENT_SECRET=
 ```
 
-OAuth redirect remains `{API_HOST}/oauth/callback/google`.
+Configure the Google OAuth app under **Administration → Provider Credentials** (`google`). OAuth redirect remains `{API_HOST}/oauth/callback/google` (fixed platform URI; tenants register it on their Google Cloud OAuth client).
 
 Required scope for Meet: `https://www.googleapis.com/auth/calendar.events`  
 (Reconnect Google if an older connection only has `calendar.readonly`.)
 
+See [Tenant-Owned Integration Credentials](/developer-guide/tenant-owned-integration-credentials).
+
 ## Runtime
 
-1. Connect Google Workspace (Connections Center or Provider Settings → Connect).
+1. Configure/validate Google Provider Credentials (target), then connect Google Workspace (Connections Center or Provider Settings → Connect).
 2. Select Google Meet as active meeting provider when the google connection is Connected.
 3. Online meetings create a primary-calendar event with a Meet join URL.
 4. Scheduling Platform still owns ScheduleItems via `SchedulingContract`.

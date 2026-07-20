@@ -1,8 +1,56 @@
 # Changelog
 
+## Tenant-Owned Integration Credentials Foundation (2026-07-20)
+
+Foundation correction for v1.0. Tenant-owned Provider Credentials replace platform env OAuth app secrets. **Phase F (API-key migration) deferred** until the first API-key integration.
+
+- Architecture: ADR-007, ADR-004 amendment, ADR-002 Manifest v1.1
+- Backend: `integration_provider_credentials`, `IntegrationCredentialManager`, OAuth fail-closed gates, Admin API
+- Frontend: Provider Credentials wizard, `/settings/connections`, Connect gating on Meeting/Calendar providers
+- Release Hardening: unbound deprecated `INTEGRATIONS_*_CLIENT_*` config; Pest architecture guards
+- Guides: [Tenant-Owned Integration Credentials](/developer-guide/tenant-owned-integration-credentials), [Implementation Roadmap](/developer-guide/tenant-owned-credentials-implementation-roadmap)
+
+---
+
+## Tenant-Owned Integration Credentials — Release Hardening (2026-07-20)
+
+Cleanup and production hardening for v1.0. **Phase F (API-key migration) is deferred.**
+
+- Unbound deprecated `INTEGRATIONS_*_CLIENT_ID/SECRET` from `config/integrations.php` and `.env.example` (enable flags retained)
+- Pest architecture guards prevent platform credential resolution regressions
+- Docs: Phase F marked **Deferred** (no production API-key providers); provider/deployment guides updated to Provider Credentials path only
+- No schema changes to `integration_connections`; no migration of `connection.credentials`
+
+---
+
+## Tenant-Owned Integration Credentials — Phase E Admin API & UI (2026-07-20)
+
+Tenant Provider Credentials administration is usable end-to-end. **No Phase F migration. No platform credential fallback.**
+
+- Fail-closed fix: OAuth refresh requires **validated** credentials; secret rotation auto-revalidates
+- Tenant API: `/api/tenant/v1/provider-credentials` (list/show/upsert/validate/rotate/delete) with masked secrets + derived composite status
+- Permissions: `provider_credentials.view|manage|validate|rotate` (Owner/Admin defaults)
+- Frontend: Administration → Provider Credentials (schema-driven wizard), `/settings/connections`, Meeting/Calendar Connect gated until validated
+- Tests: Pest API/authz/rotation/composite; Playwright `npm run test:e2e:provider-credentials`
+- Guides: [Tenant-Owned Integration Credentials](/developer-guide/tenant-owned-integration-credentials), [Implementation Roadmap](/developer-guide/tenant-owned-credentials-implementation-roadmap)
+
+---
+
+## Tenant-Owned Integration Credentials — Architecture Freeze / Phase B docs (2026-07-20)
+
+Architecture governance only (historical Phase B note). **No production code in that docs-only PR.** ADR-007 accepted; ADR-002 and ADR-004 amended. Implementation Phases C–E later shipped; Phase F deferred.
+
+- ADRs: [ADR-007](/architecture/adr/adr-007-tenant-owned-integration-credentials), [ADR-004 amendment](/architecture/adr/adr-004-oauth-architecture-amendment), [ADR-002 Manifest v1.1](/architecture/adr/adr-002-integration-manifest-v1-1-amendment)
+- Guides: [Tenant-Owned Integration Credentials](/developer-guide/tenant-owned-integration-credentials), [Implementation Roadmap](/developer-guide/tenant-owned-credentials-implementation-roadmap)
+- Terminology updates across Integration Framework, Meetings/Calendar provider docs, deployment meetings, and Integrations API
+- Review: [Documentation Review Report](/architecture/adr/documentation-review-tenant-owned-credentials)
+- Out of scope: backend/frontend/migrations, OAuthManager code changes, commits outside SaaS-Docs
+
+---
+
 ## Scheduling Platform Phase 12 — Manual QA / UAT package (2026-07-20)
 
-Feature freeze. Architecture v1.0 and ADR-001–006 unchanged. No product features.
+Feature freeze. Architecture v1.0 and ADR-001–006 unchanged at that time. No product features.
 
 - Docs: executable Manual QA checklist, browser/provider matrices, defect log, UAT sign-off, production readiness assessment — [Phase 12 Manual QA](/qa/scheduling-phase-12-manual-qa)
 - Status: **package ready; human UAT with live provider sandboxes required before Release Phase**

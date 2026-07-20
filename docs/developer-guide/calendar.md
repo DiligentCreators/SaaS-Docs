@@ -1,7 +1,7 @@
 # Calendar — Developer Guide
 
 > **Status: Implemented (Phase 2 + Phase 7 sync)**  
-> Binding ADRs: ADR-001 (Calendar is presentation only), ADR-003 (no module FKs on calendar entities; ScheduleItems are SoT), ADR-005 (shared Google connection for calendar sync).
+> Binding ADRs: ADR-001 (Calendar is presentation only), ADR-003 (no module FKs on calendar entities; ScheduleItems are SoT), ADR-005 (shared Google/Microsoft connections for calendar sync), [ADR-007](/architecture/adr/adr-007-tenant-owned-integration-credentials) (Provider Credentials on primaries).
 
 Marketplace module (`calendar`) that **consumes** the [Scheduling Platform](/developer-guide/scheduling-platform). It never becomes the source of truth for timed work.
 

@@ -1,7 +1,7 @@
 # Scheduling Ops — Developer Guide
 
 > **Status: Implemented (Phase 10)**  
-> Binding ADRs unchanged. Scheduling Platform remains SoT; Calendar remains presentation; Meetings remain provider-agnostic; Connections Center owns credentials.
+> Binding ADRs unchanged for Scheduling Ops scope. Scheduling Platform remains SoT; Calendar remains presentation; Meetings remain provider-agnostic. **Runtime tokens** live in Connections Center; **application credentials** are tenant-owned Provider Credentials ([ADR-007](/architecture/adr/adr-007-tenant-owned-integration-credentials)).
 
 Administrative visibility and operations for tenant administrators. Not a feature expansion.
 

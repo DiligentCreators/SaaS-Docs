@@ -61,10 +61,15 @@ Engineering documentation for extending SaleOS. New business capability ships as
 
 | Document | Description |
 |----------|-------------|
-| [Integration Framework](./integration-framework) | Phase 0 — Manifests, Connections Center, OAuthManager (Google), health, event envelope, correlation IDs |
+| [Integration Framework](./integration-framework) | Manifests, Connections Center, OAuthManager, health, event envelope |
+| [Tenant-Owned Integration Credentials](./tenant-owned-integration-credentials) | ADR-007 two-store architecture (shipped; Phase F deferred) |
+| [Credentials Implementation Roadmap](./tenant-owned-credentials-implementation-roadmap) | Phases C–G exit criteria and quality gates |
 | [Scheduling Platform](./scheduling-platform) | Phase 1 — Always-on ScheduleItems, availability, working hours, reminder engine foundation |
-| [Google Calendar Sync](./google-calendar-sync) | Phase 7 — Calendar Provider Framework + Google Calendar projection sync (ADR-005) |
-| [Outlook Calendar Sync](./outlook-calendar-sync) | Phase 8 — Outlook Calendar on shared Microsoft connection (ADR-005) |
+| [Zoom Meeting Provider](./zoom-meeting-provider) | Zoom adapter on primary Zoom credentials + connection |
+| [Google Meet Provider](./google-meet-provider) | Meet satellite on shared Google connection (ADR-005) |
+| [Google Calendar Sync](./google-calendar-sync) | Calendar Provider Framework + Google Calendar projection sync (ADR-005) |
+| [Outlook Calendar Sync](./outlook-calendar-sync) | Outlook Calendar on shared Microsoft connection (ADR-005) |
+| [Architecture Decision Records](/architecture/adr/) | ADR-002 / ADR-004 amendments + ADR-007 |
 
 ## Future Integrations
 

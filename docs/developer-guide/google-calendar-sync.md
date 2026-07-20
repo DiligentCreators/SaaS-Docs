@@ -1,16 +1,16 @@
 # Google Calendar Sync (Phase 7)
 
 > **Status: Implemented**  
-> Binding ADRs: ADR-001 (Scheduling SoT), ADR-002 (manifest), ADR-004 (OAuth), ADR-005 (shared Google multi-capability connection), ADR-006 (domain events).
+> Binding ADRs: ADR-001 (Scheduling SoT), ADR-002 (manifest v1.1), ADR-004 (OAuth), ADR-005 (shared Google multi-capability connection), ADR-006 (domain events), [ADR-007](/architecture/adr/adr-007-tenant-owned-integration-credentials) (Provider Credentials on primary `google`).
 
-Google Calendar is a **satellite calendar adapter** on the shared Google Workspace connection. It does not create a second Google OAuth row. External calendars receive synchronized **projections**; the Scheduling Platform remains the source of truth.
+Google Calendar is a **satellite calendar adapter** on the shared Google Workspace connection. It does not create a second Google OAuth row or a separate Provider Credentials row. External calendars receive synchronized **projections**; the Scheduling Platform remains the source of truth.
 
 ## Components
 
 | Piece | Path |
 |-------|------|
 | Manifest | `config/integrations/manifests/google-calendar.integration.php` |
-| Credential host | `google.integration.php` (`connection_integration=google`) |
+| Credential / connection host | `google.integration.php` (`connection_integration=google`) |
 | Framework | `CalendarManager`, `CalendarProviderRegistry`, `CalendarProviderResolver` |
 | Adapter | `App\Calendar\Providers\GoogleCalendarProvider` |
 | Sync | `SynchronizationService`, `CalendarProjectionService`, `SyncStateService`, `ConflictResolver` |
@@ -29,10 +29,10 @@ Google Calendar is a **satellite calendar adapter** on the shared Google Workspa
 ```env
 INTEGRATIONS_GOOGLE_ENABLED=true
 INTEGRATIONS_GOOGLE_CALENDAR_ENABLED=true
-INTEGRATIONS_GOOGLE_CLIENT_ID=
-INTEGRATIONS_GOOGLE_CLIENT_SECRET=
 CALENDAR_SYNC_QUEUE=calendar-sync
 ```
+
+Configure the Google OAuth app under **Administration → Provider Credentials** (`google`). Runtime tokens remain on Connections Center. See [Tenant-Owned Integration Credentials](/developer-guide/tenant-owned-integration-credentials).
 
 Required scope (shared with Meet): `https://www.googleapis.com/auth/calendar.events`
 
