@@ -1,5 +1,15 @@
 # Changelog
 
+## Scheduling Platform Phase 12 — Manual QA / UAT package (2026-07-20)
+
+Feature freeze. Architecture v1.0 and ADR-001–006 unchanged. No product features.
+
+- Docs: executable Manual QA checklist, browser/provider matrices, defect log, UAT sign-off, production readiness assessment — [Phase 12 Manual QA](/qa/scheduling-phase-12-manual-qa)
+- Status: **package ready; human UAT with live provider sandboxes required before Release Phase**
+- Out of scope: push/PR/merge, Release Phase, new features, enhancement work (tracked as post-v1.0 backlog in the Phase 12 page)
+
+---
+
 ## Scheduling Platform Phase 11 — E2E Testing (2026-07-20)
 
 Feature freeze validation for Phases 0–10. Architecture v1.0 and ADR-001–006 unchanged. No new product features.
@@ -8,7 +18,7 @@ Feature freeze validation for Phases 0–10. Architecture v1.0 and ADR-001–006
 - Pest assertions updated for five default-included modules (Calendar + Meetings)
 - Bug fixes: MySQL `schedule_items` index length; meetings row actions `aria-label`; calendar month cell nested buttons
 - Docs: [Scheduling Phase 11 E2E](/developer-guide/scheduling-phase-11-e2e)
-- Out of scope: Phase 12 Manual QA/UAT, live OAuth, GitHub push/PR/merge
+- Out of scope: Phase 12 Manual QA/UAT execution (see [Phase 12 package](/qa/scheduling-phase-12-manual-qa)), live OAuth in CI, GitHub push/PR/merge
 
 ---
 

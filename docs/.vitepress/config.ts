@@ -112,10 +112,21 @@ export default defineConfig({
       { text: 'Developer Guide', link: '/developer-guide/' },
       { text: 'API', link: '/api/' },
       { text: 'Deployment', link: '/deployment/' },
+      { text: 'QA', link: '/qa/scheduling-phase-12-manual-qa' },
       { text: 'Changelog', link: '/changelog/' },
     ],
 
     sidebar: {
+      '/qa/': [
+        {
+          text: 'QA & UAT',
+          items: [
+            { text: 'Scheduling Phase 12 Manual QA', link: '/qa/scheduling-phase-12-manual-qa' },
+            { text: 'Phase 11 E2E', link: '/developer-guide/scheduling-phase-11-e2e' },
+            { text: 'Playwright', link: '/developer-guide/playwright' },
+          ],
+        },
+      ],
       '/getting-started/': [
         {
           text: 'Getting Started',

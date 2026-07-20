@@ -75,7 +75,7 @@ php artisan test --compact tests/Feature/Tenant/Ops/SchedulingOpsTest.php \
 
 ## Out of Phase 11
 
-- Phase 12 Manual QA / UAT
+- Phase 12 Manual QA / UAT — [package](/qa/scheduling-phase-12-manual-qa) (human execution + live providers)
 - GitHub push / PRs / merges
 - Live OAuth against production IdPs
 - New features or UI enhancements beyond bug/a11y fixes required for green tests
