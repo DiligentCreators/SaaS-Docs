@@ -44,14 +44,15 @@ Returns workspace chrome plus a **widget registry**. Widgets are filtered by ins
 | `deals_closing_soon` | `leads` | `leads.view` | |
 | `upcoming_tasks` | `tasks` | `tasks.view` | |
 | `overdue_tasks` | `tasks` | `tasks.view` | |
+| `calendar` | `calendar` | `calendar.view` | Upcoming events; scoped by `calendar.view_all` |
 | `activity_feed` | — | `dashboard.view` | Recent lead/task activity |
 | `notifications` | — | `dashboard.view` | Unread count + recent (scoped to current user) |
 | `quick_actions` | — | `dashboard.view` | Shortcuts gated by module + permission |
 
-Leads/tasks widgets apply assignee scoping: without the module’s `*.assign` permission, data is limited to the current user’s assignments.
+Leads/tasks widgets apply assignee scoping: without the module’s `*.assign` permission, data is limited to the current user’s assignments. Calendar uses `calendar.view_all` for org vs mine (no calendar assignment).
 
 ## Explicitly not included
 
-- **Calendar widget** — deferred until the Calendar module ships
+- Dedicated Week/Day **dashboard** widgets (Week/Day live on the Calendar page), Meetings host assignment, external calendar sync
 
 Implementation: `App\Services\Tenant\DashboardWidgetService`.

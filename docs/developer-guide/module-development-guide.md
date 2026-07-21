@@ -54,7 +54,7 @@ When a module contributes dashboard cards:
 2. Gate each widget on `EntitlementService::hasModule` + the user’s Spatie permission.
 3. Apply assignee scoping with `ScopesToAssignee` when the module uses `{slug}.assign`.
 4. Return `{ id, module, permission, scope, data }` objects only — the SPA renders by `id`.
-5. Do not invent a parallel dashboard API or a Calendar widget before the Calendar module.
+5. Do not invent a parallel dashboard API; extend `DashboardWidgetService` (Leads/Tasks/Calendar pattern).
 
 See [tenant-v1-dashboard.md](/api/tenant-v1-dashboard).
 

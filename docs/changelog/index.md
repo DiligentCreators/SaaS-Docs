@@ -1,5 +1,19 @@
 # Changelog
 
+## Calendar module v1 (2026-07-21)
+
+Personal Calendar marketplace module (CRM, default-included).
+
+- Backend: `calendar_events`, permissions (`view`/`create`/`update`/`delete`/`view_all`), tenant API, migrate-only catalog registration
+- Frontend: **Week** (default) + **Day** time grids with drag-and-drop reschedule, Month + Agenda, create/edit/cancel/delete, upcoming dashboard widget
+- Workspace timezone-aware display/edit; overlapping events laid out side-by-side on Week/Day
+- Visibility: staff sees own events; Owner/Admin/Manager with `view_all` see all — **no calendar assignment**
+- Platform audit via `CalendarEventSubscriber` (create/update/cancel/delete), mirroring Leads/Tasks
+- Docs: user/developer/deployment/API; Pest incl. deploy-migration + audit coverage; Playwright `test:e2e:calendar`
+- Meetings / Zoom / Google Meet remain planned and will project onto Calendar later
+
+---
+
 ## WhatsApp Cloud Integration roadmap (2026-07-20)
 
 Documentation-only: official architectural blueprint for a future WhatsApp Cloud API communication platform.

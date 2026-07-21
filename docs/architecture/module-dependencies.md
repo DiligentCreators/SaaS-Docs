@@ -37,6 +37,8 @@ Meetings
 
 Meeting scheduling assumes calendar concepts (availability, time ranges, calendar views). Meetings should declare Calendar as a **required** dependency.
 
+**Status:** [Calendar](/user-guide/calendar-overview) is shipped (v1). Meetings remains planned and should project onto `CalendarEvent` via `CalendarEventService::upsertFromSource`.
+
 ### Payroll → HR (required)
 
 ```text

@@ -133,7 +133,6 @@ Frontend: build SPA and publish static assets behind HTTPS.
 | Bearer tokens in web storage | Medium | SPA/Sanctum Bearer design; XSS surface locked down; remember defaults off |
 | Spatie `teams` false | Low | Roles scoped by `tenant_id` column; avoid `Role::findByName` without tenant |
 | Dual Stripe ingress | Info | Shared idempotency; prefer documenting one ops webhook URL |
-| Calendar widget | Info | Deferred until Calendar module |
 
 ---
 

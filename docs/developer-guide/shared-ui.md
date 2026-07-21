@@ -58,8 +58,8 @@ flowchart TB
 
 | Phase | Central | Tenant |
 |-------|---------|--------|
-| Now | Platform metrics dashboard | Widget registry dashboard (Leads/Tasks scoped) |
-| Later | Platform-focused metrics stay | More module-driven widgets (Invoices, Calendar, …) |
+| Now | Platform metrics dashboard | Widget registry dashboard (Leads/Tasks/Calendar scoped) |
+| Later | Platform-focused metrics stay | More module-driven widgets (Invoices, …) |
 | Shell | Remains shared | Remains shared |
 
 Installed module subscriptions and Spatie permissions drive Tenant sidebar visibility.

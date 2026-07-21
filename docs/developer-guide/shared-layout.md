@@ -102,5 +102,4 @@ Nav visibility is filtered by installed module subscriptions and Spatie permissi
 ## Explicit non-goals (shell)
 
 - Divergent Central vs Tenant shell redesigns
-- Calendar dashboard widget before Calendar module
 - Per-module notification stacks outside Laravel notifications + `/notifications*` APIs
