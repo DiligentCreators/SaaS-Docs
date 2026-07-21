@@ -34,14 +34,14 @@ Ensure at least one worker listens to `imports`. Uploads use the configured `fil
 ## Monitoring
 
 - Platform audit events: `lead_created`, `lead_updated`, `lead_deleted`, `lead_assigned`, `lead_stage_changed`, `lead_note_added`, `lead_follow_up_*`, `lead_import_completed`, `lead_import_failed`, convert-related activity
-- Mail + database notifications: assignment, follow-up created, follow-up due/overdue (hourly `crm:send-due-notifications`)
+- Mail + database notifications: assignment, follow-up created, follow-up due/overdue (`crm:send-due-notifications` every 5 minutes)
 - Tenant mail settings with Central SMTP fallback
 
 ## Scheduled jobs
 
 | Command | Cadence | Purpose |
 |---------|---------|---------|
-| `crm:send-due-notifications` | Hourly | Idempotent due/overdue follow-up (and task) notifications |
+| `crm:send-due-notifications` | Every 5 minutes (`onOneServer`) | Idempotent due/overdue follow-up (and task) notifications |
 
 Ensure the Laravel scheduler is running in production.
 

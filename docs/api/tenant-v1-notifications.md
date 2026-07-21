@@ -46,7 +46,9 @@ Marks all unread notifications for the current user as read.
 | `lead.assigned.digest` | `database`, `broadcast`, `webpush` (bulk/import via NotificationBatch) |
 | Follow-up created / due / overdue | `mail`, `database` |
 | Task assigned | `mail`, `database`, `webpush` |
-| Task status / due | `mail`, `database` |
+| Task completed / reopened | `mail`, `database` |
+| Task due today / overdue | `database` only (per task) |
+| Task daily digest (due + overdue) | `mail` only (one per assignee per day) |
 
 ### Aggregation
 
@@ -54,8 +56,11 @@ Bulk assign and import equal-distribution wrap `NotificationBatch`: per-lead ass
 
 ### Scheduled due digests
 
-`crm:send-due-notifications` (hourly) walks tenants and sends idempotent due/overdue notifications (daily `dedupe_key`).
+`crm:send-due-notifications` (every 5 minutes, `onOneServer`) walks tenants:
 
+- **Tasks:** per-task in-app (`task.due_today` / `task.overdue`) with daily `dedupe_key`; after workspace `task_reminder_time` (default `09:00` local), one mail-only consolidated digest per assignee.
+- Digest idempotency is durable via `task_digest_deliveries` (`queued` → `sent`, or `failed` with `retry_after`). Mail success/failure listeners update the row; queue retries can reclaim after failure.
+- **Lead follow-ups:** unchanged due/overdue mail + database notifications.
 ### Retention
 
 `notifications:prune --days=90` (weekly schedule) deletes **read** notifications older than N days. Unread are never pruned.
@@ -95,5 +100,4 @@ Body: `{ "endpoint": "..." }`. 404 if the endpoint is not owned by the current u
 ## Future (hooks only)
 
 - Per-user preferences (in-app / browser / email)
-- `delivery: scheduled` digests
 - SMS / webhooks / FCM / APNs as additional Laravel channels using `PlatformNotificationPayloadMapper`

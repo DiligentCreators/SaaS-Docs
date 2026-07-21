@@ -4,7 +4,7 @@
 
 | Piece | Role |
 |-------|------|
-| `App\Support\TenantSettingDefinitions` | Catalog of overridable keys + sensitive keys |
+| `App\Support\TenantSettingDefinitions` | Catalog of overridable keys + sensitive keys (includes `task_reminder_time`) |
 | `App\Services\Tenant\TenantSettingService` | Hierarchy resolver, cache, branding uploads, runtime mail/config, public bootstrap |
 | `App\Services\Storage\FileUploadService` | Disk-agnostic store/replace/delete/url (shared with Central) |
 | `TenantSettingController` | Authenticated list/update, test-mail, branding upload |
@@ -21,6 +21,8 @@
 - `system` — hard-coded / config fallback
 
 Business code must call the service (`applicationName()`, `logoUrl()`, `supportEmail()`, `buttonColor()`, `usesCustomMailProvider()`, …) instead of branching on raw settings.
+
+`task_reminder_time` is a string `H:i` value (default `09:00`) under the `general` group. `crm:send-due-notifications` reads it after `applyRuntimeConfig()` so the comparison uses the workspace timezone.
 
 ## Mail provider
 

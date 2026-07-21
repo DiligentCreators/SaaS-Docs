@@ -71,7 +71,7 @@ Scheduled commands (all use `withoutOverlapping`):
 - `sanctum:prune-expired`
 - `subscriptions:expire`
 - `billing:run-consolidated`
-- `crm:send-due-notifications`
+- `crm:send-due-notifications` (every 5 minutes, `onOneServer` — task digests + lead follow-up due alerts; requires shared cache)
 - `notifications:prune --days=90` (weekly)
 - `email-logs:prune` (weekly — retention from `EMAIL_LOGS_RETAIN_DAYS` / config `email.logs_retain_days`)
 

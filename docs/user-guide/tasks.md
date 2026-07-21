@@ -36,6 +36,8 @@ Edit from the row menu or the detail drawer. Dragging a card on the board propos
 
 You can set a due date when creating a task. Changing the due date later requires the **change due date** permission (`tasks.change_due_date`).
 
+When a task is due today or overdue, you get an **in-app** notification for that task. Once per day (at the workspace **Daily task reminder time** in Settings → General, default 09:00 local), each assignee with due or overdue tasks also receives **one consolidated email** with links to those tasks.
+
 ## Assignment
 
 Users with **assign** can set or clear the assignee. The assignee receives an in-app and email notification when someone else assigns them.
