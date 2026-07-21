@@ -63,7 +63,7 @@ Requires tenancy (`X-Tenant-Domain` / domain) + `auth:tenant-api`.
 |-------|------|
 | `TenantSettingsPage` | `/settings` — General / Branding / Mail |
 | `tenantSettingService` | Tenant API client |
-| `useSettingsStore` | Tenant public bootstrap when a workspace domain is known; otherwise Central |
+| `useSettingsStore` | Bootstraps from `GET …/public/settings` on app mount and again after auth settles (session restore, soft login, logout). Tenant path sends Bearer token and, when known, `X-Tenant-Domain` from the auth workspace so `InitializeTenancy` can resolve without a host-bound domain. Guest loads may fall back to Central once. In-app brand text stays empty until `loaded`; tab title falls back to `SaleOS`. Central fallback never overwrites branding that is already loaded (avoids stomping after save/login). Covered by `src/store/settings-store.test.ts`. |
 
 ## Schema
 

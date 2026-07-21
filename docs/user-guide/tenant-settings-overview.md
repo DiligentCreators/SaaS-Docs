@@ -41,6 +41,8 @@ Tenants **cannot** change platform registration, maintenance mode, password poli
 | Support email | Tenant → Central |
 | SMTP | Tenant host configured? → Tenant SMTP : Central SMTP |
 
+The SPA applies workspace branding after public settings load (and again after you sign in so the session can resolve your workspace). Until then the browser tab may show **SaleOS**; sidebar and login brand text stay blank rather than showing a placeholder product name.
+
 ## Asset storage
 
 Uploads use Laravel Storage (`FileUploadService`). Locally they live under `storage/app/public/`; in production they live on the S3-compatible bucket. Relative keys are identical in both environments:
