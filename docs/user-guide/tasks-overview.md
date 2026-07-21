@@ -33,6 +33,6 @@ Second product module on the frozen platform. Mirrors the [Leads](/user-guide/le
 ## Explicitly deferred
 
 - Subtasks, recurring tasks, dependencies
-- Calendar views (Calendar module)
+- Calendar views (see [Calendar](/user-guide/calendar-overview))
 - Import / export
 - Real-time board sync (Reverb / Echo)

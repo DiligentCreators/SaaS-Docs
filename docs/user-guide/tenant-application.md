@@ -34,9 +34,10 @@ Only modules available to every workspace are listed today. Additional purchased
 - **Pipeline / sources / revenue** — when Leads is installed and you can view leads
 - **Today’s / overdue follow-ups** and deals closing soon — Leads-scoped
 - **Upcoming / overdue tasks** — when Tasks is installed and you can view tasks
+- **Upcoming events** — when Calendar is installed and you can view calendar
 - **Activity feed**, **notifications** preview, and **quick actions**
 
-Widget data respects module licensing, your permissions, and assignee scope (without assign permission you only see your own leads/tasks). There is **no calendar widget** until the Calendar module ships.
+Widget data respects module licensing, your permissions, and assignee scope (without assign permission you only see your own leads/tasks; Calendar uses `calendar.view_all` for org vs mine).
 
 ## Switching apps
 

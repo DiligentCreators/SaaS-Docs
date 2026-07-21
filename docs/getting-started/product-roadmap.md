@@ -21,8 +21,9 @@ The CRM is the foundation of the platform and is the first functional area deliv
 | [Leads](/user-guide/leads-overview) | ✅ Completed (Sprint 2 UX: Kanban, KPIs, export, convert stub, independent status/priority) |
 | [Tasks](/user-guide/tasks-overview) | ✅ Completed (Sprint 2 UX: board, KPIs, waiting status, due-date permission, comments/history) |
 | In-app notifications + Reverb | ✅ Completed (payload v1, NotificationBatch digests, Reverb/Echo, modular registry, browser toasts; poll fallback only) |
-| Tenant dashboard widgets | ✅ Completed (module/permission/assignee scoped; no calendar until Calendar module) |
+| Tenant dashboard widgets | ✅ Completed (module/permission/assignee scoped; includes Calendar upcoming when entitled) |
 | [Communication Templates](/user-guide/communication-templates) | ✅ Completed (plain-text templates, placeholder registry, WhatsApp `wa.me` from Leads; migrate-only production registration) |
+| [Calendar](/user-guide/calendar-overview) | ✅ Completed (Week/Day time grids + DnD, Month/Agenda, view_all oversight, upcoming widget) |
 
 ### Planned
 
@@ -30,16 +31,18 @@ The CRM is the foundation of the platform and is the first functional area deliv
 |---------------------|--------|
 | Contacts | Planned (unlocks full lead convert) |
 | Companies | Planned |
-| **Calendar** | Planned (calendar views + dashboard widget) |
 | **Meetings** | Planned |
 | Activities | Planned |
 | **Lead Source Driver Architecture** | Planned (docs only — [architectural standard](/developer-guide/lead-source-driver-architecture) for all lead ingestion) |
 | **Meta Lead Ads Integration** | Planned (docs blueprint only — first driver: [Meta Lead Ads](/developer-guide/meta-lead-ads-integration)) |
 | **WhatsApp Cloud Integration** | Planned (docs blueprint only — [Cloud API beyond `wa.me`](/developer-guide/whatsapp-cloud-integration)) |
 
-#### Calendar
+#### Calendar (shipped)
 
-- Calendar
+- Personal events; Week (default) / Day / Month / Agenda
+- Drag-and-drop reschedule on Week/Day; workspace timezone-aware UI
+- Upcoming events dashboard widget
+- Org-wide view via `calendar.view_all` (no calendar assignment)
 
 #### Meetings
 

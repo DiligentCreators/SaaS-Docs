@@ -21,7 +21,7 @@ Every business capability on this platform is a **module**. Modules are licensed
 
 1. **Consistency over abstraction** — flat Laravel layout; register through existing catalog, permissions, middleware, nav, and settings.
 2. **Licensing ≠ authorization** — `module:{slug}` then `can:{slug}.{action}`.
-3. **Mirror Leads** — Tasks, Communication Templates, Invoices, Inventory, Purchases, HR, Payroll, Accounting, Assets, Projects must follow the same licensing + permission + UI structure (Communication Templates is additionally a cross-cutting consumer pattern).
+3. **Mirror Leads** — Tasks, Calendar, Communication Templates, Invoices, Inventory, Purchases, HR, Payroll, Accounting, Assets, Projects must follow the same licensing + permission + UI structure (Communication Templates is additionally a cross-cutting consumer pattern).
 4. **No shortcuts** — every module ships backend, frontend, tests, docs, and CHANGELOG in the **same delivery** ([Documentation Governance](/developer-guide/documentation-governance)).
 5. **Migrate-only production** — new default modules and permissions ship as data migrations; never production `db:seed` for catalog/RBAC.
 6. **Self-contained modules** — each module owns its migrations, models, services, routes, UI, permissions, settings, docs, and tests; communicate through contracts/services only. See [Module Architecture](/architecture/module-architecture).
@@ -30,7 +30,7 @@ Every business capability on this platform is a **module**. Modules are licensed
 
 ## Cross-cutting patterns (Sprint 2+)
 
-- **Dashboard widgets** — register via `DashboardWidgetService` on `GET /dashboard`; gate by module entitlement, permission, and assignee scope. Do not add a Calendar widget until the Calendar module exists.
+- **Dashboard widgets** — register via `DashboardWidgetService` on `GET /dashboard`; gate by module entitlement, permission, and assignee scope (see Calendar `calendar` widget as the latest example).
 - **Notifications** — Follow the frozen [Notification Architecture Contract](/developer-guide/notification-architecture-contract): versioned payload, route descriptors, NotificationBatch aggregation, Reverb/Echo realtime, modular SPA registry. Due/overdue work uses `crm:send-due-notifications`. Retention: `notifications:prune`.
 - **Assignee scoping** — reuse `ScopesToAssignee` so users without `{slug}.assign` only see their own records.
 
