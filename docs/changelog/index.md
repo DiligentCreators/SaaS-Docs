@@ -1,5 +1,18 @@
 # Changelog
 
+## Tenant branding bootstrap consistency (2026-07-21)
+
+SPA branding no longer flickers through placeholder product names or stick on Central after soft login.
+
+- Static shell / tab-title fallback standardized on **SaleOS** (`index.html`, settings-store defaults, `VITE_APP_NAME`)
+- Sidebar and auth layout show empty brand text until public settings are loaded (no `DC SaaS` placeholder)
+- Settings re-bootstrap after auth settles so tenant `public/settings` can resolve via Bearer token and optional `X-Tenant-Domain`
+- Central fallback on tenant routes only applies on first load — does not overwrite branding after login or settings save
+- Unit coverage: `src/store/settings-store.test.ts`
+- Docs: [tenant-settings developer](/developer-guide/tenant-settings), [tenant-settings overview](/user-guide/tenant-settings-overview)
+
+---
+
 ## Daily task digest emails (2026-07-21)
 
 Due/overdue task alerts no longer email once per task.
