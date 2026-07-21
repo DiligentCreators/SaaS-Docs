@@ -60,7 +60,7 @@ Every CRM/ERP database notification `data` JSON includes:
 
 `immediate` | `aggregated` | `scheduled`
 
-- `scheduled` is defined for future daily/weekly digests; not implemented in v1.
+- `scheduled` is reserved for future in-app daily/weekly digests. Task due reminders use per-task `database` rows plus a **mail-only** daily digest (`TaskDueDigestNotification`) gated by `task_reminder_time`.
 
 ### NotificationSource (backed enum)
 
@@ -324,4 +324,4 @@ Web Push subscriptions (authenticated tenant user; self-scoped):
 
 ## Out of scope (v1)
 
-Full preferences UI (beyond Web Push enable/disable), scheduled digests implementation, Firebase/OneSignal/FCM channel implementation, custom notifications table, NotificationRepository, AppLayout redesign.
+Full preferences UI (beyond Web Push enable/disable), in-app `delivery: scheduled` digests (task due mail digests ship separately), Firebase/OneSignal/FCM channel implementation, custom notifications table, NotificationRepository, AppLayout redesign.

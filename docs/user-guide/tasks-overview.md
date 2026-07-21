@@ -24,7 +24,7 @@ Second product module on the frozen platform. Mirrors the [Leads](/user-guide/le
 - **Board (default)** + List view; drag-and-drop opens the drawer; save commits status
 - KPIs via `GET /tasks/stats`; board via `GET /tasks/board`
 - Module licensing (`module:tasks`) + Spatie permissions
-- Audit + activity logging; assignment and due/overdue notifications (mail + database)
+- Audit + activity logging; assignment notifications (mail + database); due/overdue **in-app** alerts plus one daily consolidated **email** digest per assignee
 
 ## Permissions
 

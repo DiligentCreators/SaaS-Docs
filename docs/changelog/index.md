@@ -1,5 +1,17 @@
 # Changelog
 
+## Daily task digest emails (2026-07-21)
+
+Due/overdue task alerts no longer email once per task.
+
+- In-app: one `task.due_today` / `task.overdue` database notification per task (unchanged click-through to `/tasks?task={id}`)
+- Email: one consolidated daily digest per assignee with task links and a View my tasks CTA
+- Workspace setting **Daily task reminder time** (`task_reminder_time`, default `09:00`) in tenant timezone
+- Durable delivery ledger `task_digest_deliveries` (queued/sent/failed + retry) so cache flush cannot duplicate and queue failures can retry
+- Scheduler: `crm:send-due-notifications` every 5 minutes with `onOneServer` (lead follow-up due emails unchanged)
+
+---
+
 ## Calendar module v1 (2026-07-21)
 
 Personal Calendar marketplace module (CRM, default-included).
