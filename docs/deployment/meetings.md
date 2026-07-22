@@ -10,6 +10,16 @@ Creates meetings tables, registers the `meetings` catalog module (default-includ
 
 Do **not** rely on `db:seed` in production for catalog/RBAC.
 
+## Upgrade from legacy Meetings schema
+
+If production still has a **pre-redesign** `meetings` table (for example UUID PK / `organizer_user_id` / `meeting_participants` and **no** `host_id`), the create migration replaces **Meetings-related tables only**:
+
+1. Drops current and legacy Meetings tables (`meetings`, `meeting_attendees`, `meeting_provider_connections`, `meeting_reminders`, plus leftovers such as `meeting_participants`, `meeting_notes`, `meeting_attachments`, `meeting_activities`, `meeting_user_settings`).
+2. Deletes orphan `calendar_events` rows with `source_type = meeting`.
+3. Creates the current Meetings schema.
+
+Leads, users, tenants, billing, and other modules are **not** dropped. After this one-time upgrade, the Meetings list is empty — recreate meetings in the UI. If the current schema (`host_id` present) is already there, the create migration is a no-op.
+
 ## Environment
 
 Meeting provider **client ID / client secret / webhook secret are per workspace** (encrypted on `meeting_provider_connections`). They are entered in Meetings → Integrations — not set in platform `.env`.
