@@ -25,6 +25,7 @@ Production runbooks and operational checklists for hosting SaleOS.
 | [Module Development](./module-development) | Shipping modules to production |
 | [Leads](./leads) | Leads module ops |
 | [Tasks](./tasks) | Tasks module ops |
+| [Daily CRM Summary](./daily-crm-summary) | Daily Reminder Time CRM summary — pilot / GA checklist |
 | [Communication Templates](./communication-templates) | Templates module ops |
 
 ## Related repos

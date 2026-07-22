@@ -60,7 +60,7 @@ Every CRM/ERP database notification `data` JSON includes:
 
 `immediate` | `aggregated` | `scheduled`
 
-- `scheduled` is reserved for future in-app daily/weekly digests. Task due reminders use per-task `database` rows plus a **mail-only** daily digest (`TaskDueDigestNotification`) gated by `task_reminder_time`.
+- `scheduled` is reserved for future in-app daily/weekly digests. Task due reminders use per-task `database` rows plus a **mail-only** daily digest (`TaskDueDigestNotification`) gated by `task_reminder_time` (**Daily Reminder Time**). The same gate sends mail-only daily CRM summaries (`DailyUserSummaryNotification` / `DailyTeamSummaryNotification`) based on `users.receive_all_users_daily_summary`.
 
 ### NotificationSource (backed enum)
 

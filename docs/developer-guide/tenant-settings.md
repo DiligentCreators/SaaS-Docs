@@ -22,7 +22,7 @@
 
 Business code must call the service (`applicationName()`, `logoUrl()`, `supportEmail()`, `buttonColor()`, `usesCustomMailProvider()`, …) instead of branching on raw settings.
 
-`task_reminder_time` is a string `H:i` value (default `09:00`) under the `general` group. `crm:send-due-notifications` reads it after `applyRuntimeConfig()` so the comparison uses the workspace timezone.
+`task_reminder_time` is a string `H:i` value (default `09:00`) under the `general` group (UI label: **Daily Reminder Time**). `crm:send-due-notifications` reads it after `applyRuntimeConfig()` so the comparison uses the workspace timezone. The same gate drives task due digests and daily CRM summaries.
 
 `meetings_default_provider` is `none` \| `google_meet` \| `zoom` (default `none`) under the `general` group. It preselects the Meetings schedule form; OAuth connections remain on Meetings → Integrations.
 
