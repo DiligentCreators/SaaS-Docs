@@ -1,5 +1,19 @@
 # Changelog
 
+## Meetings module (2026-07-22)
+
+Workspace Meetings marketplace module (CRM, default-included) with Calendar projection, **per-tenant** Zoom/Google Meet OAuth credentials + account connect, and one multi-channel reminder.
+
+- Backend: meetings/attendees/reminders/provider connections; permissions (`view`/`create`/`update`/`delete`/`view_all`/`assign_host`/`manage_integrations`); tenant API; migrate-only catalog registration + required Meetings → Calendar dependency
+- Providers: each workspace stores its own Zoom/Google OAuth client ID/secret (encrypted); connects a workspace account; manual join URL when provider is `none`; OAuth token refresh; bounded retry job with explicit tenant init; OAuth one-time nonce
+- Cancel/delete: remote Zoom/Google delete is best-effort so missing scopes cannot block local cancel; Zoom authorize requests write/read/delete scopes
+- Reminders: atomic `pending`→`sending` claim; external guest mail dedupe; `crm:send-due-notifications` delivers in-app + web push + email
+- Frontend: Meetings list/form/detail/integrations; provider options gated until connected; cancel confirm; retry sync; Calendar projections open in Meetings (read-only on Calendar)
+- Docs: user/developer/deployment/API; webhooks documented as stub until native provider verify
+- Pest: `tests/Feature/Tenant/Meeting/*`
+
+---
+
 ## Tenant branding bootstrap consistency (2026-07-21)
 
 SPA branding no longer flickers through placeholder product names or stick on Central after soft login.
@@ -35,7 +49,7 @@ Personal Calendar marketplace module (CRM, default-included).
 - Visibility: staff sees own events; Owner/Admin/Manager with `view_all` see all — **no calendar assignment**
 - Platform audit via `CalendarEventSubscriber` (create/update/cancel/delete), mirroring Leads/Tasks
 - Docs: user/developer/deployment/API; Pest incl. deploy-migration + audit coverage; Playwright `test:e2e:calendar`
-- Meetings / Zoom / Google Meet remain planned and will project onto Calendar later
+- Meetings / Zoom / Google Meet later projected onto Calendar (shipped 2026-07-22)
 
 ---
 

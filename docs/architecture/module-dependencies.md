@@ -2,7 +2,7 @@
 
 Modules may depend on other modules.
 
-This document defines how dependency relationships are described for product design and future implementation. It is **documentation only** — SaleOS does not yet implement automatic dependency resolution from this convention. Do not treat this page as a shipped runtime feature.
+This document defines how dependency relationships are described for product design and implementation. Runtime enforcement is implemented via `module_dependencies`, `ModuleDependencyResolver`, and `ModuleSubscriptionService` (install blocks when required dependencies are missing).
 
 ## Categories
 
@@ -37,7 +37,7 @@ Meetings
 
 Meeting scheduling assumes calendar concepts (availability, time ranges, calendar views). Meetings should declare Calendar as a **required** dependency.
 
-**Status:** [Calendar](/user-guide/calendar-overview) is shipped (v1). Meetings remains planned and should project onto `CalendarEvent` via `CalendarEventService::upsertFromSource`.
+**Status:** [Calendar](/user-guide/calendar-overview) and [Meetings](/user-guide/meetings-overview) are shipped. Meetings projects onto `CalendarEvent` via `CalendarEventService::upsertFromSource` (`source=meeting`, morph alias `meeting`).
 
 ### Payroll → HR (required)
 
