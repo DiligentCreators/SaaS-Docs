@@ -1,5 +1,16 @@
 # Changelog
 
+## Expired session redirects to login (2026-07-22)
+
+Expired or revoked tenant sessions no longer leave the SPA on protected pages toasting **Workspace context is required.**
+
+- Backend: `InitializeTenancy` returns **401 Unauthenticated** when a Bearer token is present but cannot resolve a workspace (pruned/revoked/unknown tokens); anonymous requests without context still return `400 workspace_required`
+- Frontend: axios treats `401` (and legacy `workspace_required` with a Bearer) as session expiry — clears the token and hard-redirects to login; idle timeout also hard-redirects after logout
+- Tests: Pest `TokenExpirationTest`; Vitest `src/api/axios.test.ts`
+- Docs: [authentication developer](/developer-guide/authentication), [authentication user guide](/user-guide/authentication)
+
+---
+
 ## Meetings module (2026-07-22)
 
 Workspace Meetings marketplace module (CRM, default-included) with Calendar projection, **per-tenant** Zoom/Google Meet OAuth credentials + account connect, and one multi-channel reminder.

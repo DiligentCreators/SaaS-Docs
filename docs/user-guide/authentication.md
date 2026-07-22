@@ -39,6 +39,10 @@ Your browser does not save a workspace selection in local storage. Open the corr
 
 Use **Sign out** on the tenant dashboard. Your session token is revoked.
 
+### Session timeout
+
+If you are idle longer than the platform **Session timeout** setting, or your access token expires or is revoked, the application signs you out and returns you to `/login` (or `/central/login` for Central). You should not remain on workspace pages seeing load errors.
+
 ---
 
 ## Central Application (platform admins)

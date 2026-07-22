@@ -50,6 +50,8 @@ Defined in `config/auth.php`:
 
 Tenant routes also run `tenancy` + `tenant.available`. Workspace resolution prefers the request host (including future custom domains), then the authenticated token's workspace, then the submitted `workspace` value or `X-Tenant-Domain` header. Central routes run `central.domain`.
 
+When a Bearer token is present but cannot resolve a workspace (unknown, revoked, or pruned token row), `InitializeTenancy` returns **401 Unauthenticated** so the SPA can redirect to login. A true missing-workspace case with no Bearer still returns **400** with `code: workspace_required`.
+
 Spatie roles/permissions are isolated by `guard_name` (`central-api` vs `tenant-api`).
 
 ## Registration
