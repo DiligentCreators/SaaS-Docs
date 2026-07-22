@@ -1,5 +1,13 @@
 # Changelog
 
+## Lead assignee exclusion (2026-07-22)
+
+Workspace owners and users flagged **Exclude from lead assignment** no longer receive leads via import auto-distribute, bulk equal distribute, or manual assignee pickers.
+
+- Backend: `users.exclude_from_lead_auto_assign`, `User::eligibleLeadAssignees`, `EligibleLeadAssignee` validation on assign/create/update/bulk/import
+- Frontend: checkbox on tenant user create/edit; assignee pickers filter ineligible users (keeps current assignee so they can be cleared)
+- Docs: User Guide Leads + Tenant RBAC, developer Leads notes, tenant leads API
+
 ## Expired session redirects to login (2026-07-22)
 
 Expired or revoked tenant sessions no longer leave the SPA on protected pages toasting **Workspace context is required.**

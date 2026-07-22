@@ -32,6 +32,14 @@ Edit from the row menu or the detail drawer.
 
 Users with **assign** can set or clear the assignee. Assignment changes are recorded in **Assignment history**. The assignee receives an in-app realtime notification when someone else assigns them. Lead-assignment email is disabled in v1.
 
+**Eligible assignees** exclude:
+
+- Workspace owners (`superadmin`)
+- Suspended users
+- Users flagged **Exclude from lead assignment** in Administration → Users (create/edit)
+
+Those users do not appear in lead assignee pickers and are skipped by import auto-distribute and bulk equal distribute. A lead already assigned to someone who is later flagged can still be kept or cleared from the lead drawer.
+
 ## Notes & follow-ups
 
 - **Notes** — free-form history on the lead

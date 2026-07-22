@@ -9,8 +9,8 @@ Open **Administration → Users**.
 | Action | How |
 |--------|-----|
 | View | Search, filter by status, open a row |
-| Create | **New user** → name, email, password, roles |
-| Edit | Row menu → **Edit** → update details and roles |
+| Create | **New user** → name, email, password, roles; optionally **Exclude from lead assignment** |
+| Edit | Row menu → **Edit** → update details, roles, and lead-assignment exclusion |
 | Activate / Deactivate | Suspend / Unsuspend (when available) |
 | Reset password | Row menu → change password |
 | Resend verification | Row menu → **Resend verification** (unverified users; requires `users.verify`) |
