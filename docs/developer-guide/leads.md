@@ -30,6 +30,7 @@ Reference implementation. Copy this layout for Tasks and later modules.
 - Status is independent of stage flags (`is_won` / `is_lost`). Stage change does not sync status.
 - Convert stub: `converted_at`, `conversion_meta` (includes `stub: true`), status `closed`, activity type converted. Contacts deferred.
 - Assignee scoping via `ScopesToAssignee` with `leads.assign` (superadmin always org-wide).
+- Lead assignee eligibility (`User::eligibleLeadAssignees` / `EligibleLeadAssignee` rule): excludes suspended users, workspace owners (`superadmin`), and users with `exclude_from_lead_auto_assign`. Used by assign / create / update / bulk-assign / import column mapping, and by `LeadBulkAssignmentService::eligibleAssignees` for equal distribute.
 
 ## Permissions
 

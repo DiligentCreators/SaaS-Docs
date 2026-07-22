@@ -114,6 +114,8 @@ Download `error_report.csv` (technical/processing exceptions).
 
 `{ "assigned_to": number|null, "reason"?: string }` — records assignment history.
 
+`assigned_to` must be an **eligible** assignee (not suspended, not workspace owner, not `exclude_from_lead_auto_assign`), or `null` to unassign.
+
 ### POST `/leads/{id}/stage`
 
 `{ "stage_id": number }` — updates stage only (status unchanged).
