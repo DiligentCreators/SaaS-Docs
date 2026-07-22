@@ -52,6 +52,8 @@ Tenant routes also run `tenancy` + `tenant.available`. Workspace resolution pref
 
 When a Bearer token is present but cannot resolve a workspace (unknown, revoked, or pruned token row), `InitializeTenancy` returns **401 Unauthenticated** so the SPA can redirect to login. A true missing-workspace case with no Bearer still returns **400** with `code: workspace_required`.
 
+Tenant token TTL comes from the workspace `session_lifetime_minutes` setting (`0` = non-expiring token), falling back to Central when unset. Remember-me still extends a positive TTL to at least 30 days.
+
 Spatie roles/permissions are isolated by `guard_name` (`central-api` vs `tenant-api`).
 
 ## Registration

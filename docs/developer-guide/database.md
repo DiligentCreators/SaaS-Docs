@@ -262,7 +262,7 @@ Per-workspace overrides of Central defaults (`tenant_id` + `key` unique, `value`
 
 Resolution hierarchy (via `TenantSettingService`): tenant override → tenant profile columns → Central `system_settings` → system default.
 
-Groups: `general`, `branding`, `mail`. Sensitive `mail_password` encrypted. Branding files under `tenants/{uuid}/branding/…` on the configured uploads disk.
+Groups: `general`, `security`, `branding`, `mail`. Sensitive `mail_password` encrypted. Branding files under `tenants/{uuid}/branding/…` on the configured uploads disk. `session_lifetime_minutes` (`0` = never expire) may override Central.
 
 Docs: [settings/tenant-settings.md](/user-guide/tenant-settings-overview).
 

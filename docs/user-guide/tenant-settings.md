@@ -19,6 +19,15 @@ You need permission to view/update settings (workspace owners have this by defau
 | **Daily task reminder time** | Local workspace time for the once-per-day consolidated task email (default `09:00`). Assignees still get in-app alerts per due/overdue task. |
 | **Default meeting provider** | Preselects None / Google Meet / Zoom on the Meetings schedule form (`meetings_default_provider`). Connecting providers is done under Meetings → Integrations. |
 
+## Security
+
+| Field | Behavior |
+|-------|----------|
+| **Session timeout (minutes)** | How long a signed-in user may stay idle before the app signs them out. Inherits the Central platform default when not customized. |
+| **Never timeout** | Sets timeout to `0` so users stay signed in until they use **Sign out** (or an admin revokes their token). Issues a non-expiring API token for that workspace. |
+
+Password length / special-character rules stay under Central Settings.
+
 ## Branding
 
 | Field | Behavior |
