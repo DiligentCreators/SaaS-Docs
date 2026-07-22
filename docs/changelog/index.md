@@ -1,5 +1,18 @@
 # Changelog
 
+## Tenant session timeout setting (2026-07-23)
+
+Each workspace can set its own session idle/token lifetime, including **never timeout**.
+
+- Tenant Settings → **Security**: `session_lifetime_minutes` (`0` = keep users signed in until they sign out)
+- Falls back to Central `session_lifetime_minutes` when unset
+- Sanctum tenant tokens use the workspace value (`expires_at` null when `0`); SPA idle logout is skipped when `0`
+- Password policy remains Central-only
+- Tests: Pest tenant settings + remember-me TTL; Vitest `session-timeout`
+- Docs: tenant settings user/developer guides
+
+---
+
 ## Lead assignee exclusion (2026-07-22)
 
 Workspace owners and users flagged **Exclude from lead assignment** no longer receive leads via import auto-distribute, bulk equal distribute, or manual assignee pickers.

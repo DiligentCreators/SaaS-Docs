@@ -4,7 +4,7 @@
 
 | Piece | Role |
 |-------|------|
-| `App\Support\TenantSettingDefinitions` | Catalog of overridable keys + sensitive keys (includes `task_reminder_time`, `meetings_default_provider`) |
+| `App\Support\TenantSettingDefinitions` | Catalog of overridable keys + sensitive keys (includes `task_reminder_time`, `meetings_default_provider`, `session_lifetime_minutes`) |
 | `App\Services\Tenant\TenantSettingService` | Hierarchy resolver, cache, branding uploads, runtime mail/config, public bootstrap |
 | `App\Services\Storage\FileUploadService` | Disk-agnostic store/replace/delete/url (shared with Central) |
 | `TenantSettingController` | Authenticated list/update, test-mail, branding upload |
@@ -25,6 +25,8 @@ Business code must call the service (`applicationName()`, `logoUrl()`, `supportE
 `task_reminder_time` is a string `H:i` value (default `09:00`) under the `general` group. `crm:send-due-notifications` reads it after `applyRuntimeConfig()` so the comparison uses the workspace timezone.
 
 `meetings_default_provider` is `none` \| `google_meet` \| `zoom` (default `none`) under the `general` group. It preselects the Meetings schedule form; OAuth connections remain on Meetings → Integrations.
+
+`session_lifetime_minutes` is an integer under the `security` group (`0`–`43200`). `0` means never expire: public bootstrap exposes it, SPA idle logout is skipped, and `TenantAuthBootstrapService::issueAccessToken()` creates a Sanctum token with `expires_at = null`. When unset, resolution falls back to Central `session_lifetime_minutes`.
 
 ## Mail provider
 
@@ -63,7 +65,7 @@ Requires tenancy (`X-Tenant-Domain` / domain) + `auth:tenant-api`.
 
 | Piece | Role |
 |-------|------|
-| `TenantSettingsPage` | `/settings` — General / Branding / Mail |
+| `TenantSettingsPage` | `/settings` — General / Security / Branding / Mail |
 | `tenantSettingService` | Tenant API client |
 | `useSettingsStore` | Bootstraps from `GET …/public/settings` on app mount and again after auth settles (session restore, soft login, logout). Tenant path sends Bearer token and, when known, `X-Tenant-Domain` from the auth workspace so `InitializeTenancy` can resolve without a host-bound domain. Guest loads may fall back to Central once. In-app brand text stays empty until `loaded`; tab title falls back to `SaleOS`. Central fallback never overwrites branding that is already loaded (avoids stomping after save/login). Covered by `src/store/settings-store.test.ts`. |
 
