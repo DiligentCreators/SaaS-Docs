@@ -16,7 +16,7 @@ You need permission to view/update settings (workspace owners have this by defau
 | **Application Name** | Optional title override. Leave blank to use Workspace Name. |
 | **Company Name** | Used in emails and documents. |
 | **Timezone / Locale / Currency** | Workspace defaults. Inherit from Central when not customized. |
-| **Daily task reminder time** | Local workspace time for the once-per-day consolidated task email (default `09:00`). Assignees still get in-app alerts per due/overdue task. |
+| **Daily Reminder Time** | Local workspace time (default `09:00`) for the daily CRM summary email and the consolidated task due digest. Assignees still get in-app alerts per due/overdue task. |
 | **Default meeting provider** | Preselects None / Google Meet / Zoom on the Meetings schedule form (`meetings_default_provider`). Connecting providers is done under Meetings → Integrations. |
 
 ## Security

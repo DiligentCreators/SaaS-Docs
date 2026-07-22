@@ -1,5 +1,19 @@
 # Changelog
 
+## Daily CRM summary emails (2026-07-23)
+
+At **Daily Reminder Time** (`task_reminder_time`, default `09:00` local), each workspace sends a mail-only CRM snapshot in addition to the existing task due digest.
+
+- Personal summary: open leads by stage (excludes Won/Lost), open tasks by status (excludes completed/cancelled), scheduled meetings (excludes cancelled; host/attendee distinct)
+- Users flagged **Receive all-users daily summary** (`receive_all_users_daily_summary`) get a user-wise team email (active users only) instead of a personal summary
+- Durable delivery ledger `daily_summary_deliveries` (`personal` / `team`) with stale-queued reclaim (45m) and max 5 attempts
+- Aggregations run once per tenant per tick (SQL meeting distinct counts)
+- Settings label **Daily Reminder Time**; user create/edit checkbox; Playwright flag toggle
+- Tests: Pest `DailyCrmSummaryNotificationTest`, `TenantUserDailySummaryFlagTest`
+- Production report: [Daily CRM summary](/deployment/daily-crm-summary)
+
+---
+
 ## Tenant session timeout setting (2026-07-23)
 
 Each workspace can set its own session idle/token lifetime, including **never timeout**.

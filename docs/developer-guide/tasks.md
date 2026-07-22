@@ -17,7 +17,7 @@ Mirror of the [Leads developer guide](/developer-guide/leads). Prefer copying Le
 | Subscriber | `app/Listeners/TaskEventSubscriber.php` (audit + notifications) |
 | Notifications | `app/Notifications/Tenant/Task/*` — assign/complete/reopen: mail+database; due/overdue: database; daily digest: mail only (`TaskDueDigestNotification`) |
 | Digest delivery | `task_digest_deliveries` + `TaskDigestDeliveryService`; `TrackTaskDueDigestDelivery` on `NotificationSent` / `NotificationFailed` |
-| Scheduled due | `crm:send-due-notifications` every 5 minutes (`onOneServer`); tenant setting `task_reminder_time` |
+| Scheduled due | `crm:send-due-notifications` every 5 minutes (`onOneServer`); tenant setting `task_reminder_time` (**Daily Reminder Time**) |
 | Tests | `tests/Feature/Tenant/Task/TaskTest.php`, `tests/Feature/Tenant/Notification/TaskDueDigestNotificationTest.php` |
 
 ## Domain notes

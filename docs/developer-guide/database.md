@@ -29,7 +29,9 @@ lead_assignment_histories
   (tenant-scoped CRM — Leads module)
 
 tasks / task_notes / task_activities
-  (tenant-scoped work items — Tasks module)
+task_digest_deliveries
+daily_summary_deliveries
+  (tenant-scoped work items — Tasks module + CRM daily digests)
 
 communication_templates
   (tenant-scoped plain-text templates — Communication Templates module)
@@ -69,6 +71,21 @@ Notes (author + body), follow-ups (due/complete/status), and CRM timeline (`type
 ### `task_notes` / `task_activities`
 
 Notes / comments (author + body) and task timeline (`type`, `description`, `properties` JSON).
+
+### `task_digest_deliveries`
+
+Once-per-day mail ledger for task due digests: `tenant_id`, `user_id`, `digest_date`, `status` (`queued`|`sent`|`failed`), `attempts`, `queued_at` / `sent_at` / `failed_at` / `retry_after`, `failure_reason`. Unique `(tenant_id, user_id, digest_date)`.
+
+### `daily_summary_deliveries`
+
+Once-per-day mail ledger for CRM summaries: same columns as task digests plus `kind` (`personal`|`team`). Unique `(tenant_id, user_id, digest_date, kind)`. Stale `queued` may be reclaimed after 45 minutes (max 5 attempts).
+
+### Users CRM flags
+
+Tenant `users` includes:
+
+- `exclude_from_lead_auto_assign` (boolean) — omit from lead assignee pickers / equal distribute
+- `receive_all_users_daily_summary` (boolean, default `false`) — receive team CRM summary email instead of personal
 
 ## Communication Templates module tables
 

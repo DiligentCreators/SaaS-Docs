@@ -9,13 +9,15 @@ Open **Administration → Users**.
 | Action | How |
 |--------|-----|
 | View | Search, filter by status, open a row |
-| Create | **New user** → name, email, password, roles; optionally **Exclude from lead assignment** |
-| Edit | Row menu → **Edit** → update details, roles, and lead-assignment exclusion |
+| Create | **New user** → name, email, password, roles; optionally **Exclude from lead assignment** and **Receive all-users daily summary** |
+| Edit | Row menu → **Edit** → update details, roles, lead-assignment exclusion, and all-users daily summary |
 | Activate / Deactivate | Suspend / Unsuspend (when available) |
 | Reset password | Row menu → change password |
 | Resend verification | Row menu → **Resend verification** (unverified users; requires `users.verify`) |
 | Mark email verified | Row menu → **Mark as verified** when the member never received the email (requires `users.verify`) |
 | Delete | Row menu → **Delete** (if your role allows it) |
+
+**Receive all-users daily summary** grants a workspace-wide view of open leads, tasks, and meetings in the daily team email. Prefer Owner / Admin accounts. That user receives the team rollup **instead of** a personal summary.
 
 Each person belongs only to **this** workspace. They cannot see users from other workspaces.
 

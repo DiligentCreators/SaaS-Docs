@@ -58,8 +58,10 @@ Bulk assign and import equal-distribution wrap `NotificationBatch`: per-lead ass
 
 `crm:send-due-notifications` (every 5 minutes, `onOneServer`) walks tenants:
 
-- **Tasks:** per-task in-app (`task.due_today` / `task.overdue`) with daily `dedupe_key`; after workspace `task_reminder_time` (default `09:00` local), one mail-only consolidated digest per assignee.
-- Digest idempotency is durable via `task_digest_deliveries` (`queued` → `sent`, or `failed` with `retry_after`). Mail success/failure listeners update the row; queue retries can reclaim after failure.
+- **Tasks:** per-task in-app (`task.due_today` / `task.overdue`) with daily `dedupe_key`; after workspace `task_reminder_time` / **Daily Reminder Time** (default `09:00` local), one mail-only consolidated digest per assignee.
+- **Daily CRM summary:** after the same reminder time, mail-only personal (`DailyUserSummaryNotification`) or all-users (`DailyTeamSummaryNotification`) digests. Flagged users (`receive_all_users_daily_summary`) receive only the team email; everyone else with open CRM work receives only their personal email. Counts exclude won/lost leads, completed/cancelled tasks, and cancelled meetings. Team rollups include only users with at least one counted item. Meeting counts are distinct host/attendee meetings (creator-only roles are not counted).
+- Task digest idempotency is durable via `task_digest_deliveries` (`queued` → `sent`, or `failed` with `retry_after`). Mail success/failure listeners update the row; queue retries can reclaim after failure.
+- CRM summary idempotency is durable via `daily_summary_deliveries` (unique `tenant_id, user_id, digest_date, kind` where `kind` is `personal`|`team`). Stale `queued` older than 45 minutes may be reclaimed (max 5 attempts). Missed sends after local midnight are not catch-up’d — keep scheduler + `emails` workers healthy through the reminder window.
 - **Lead follow-ups:** unchanged due/overdue mail + database notifications.
 - **Meetings:** due `MeetingReminder` rows send `meeting.reminder` (database + broadcast + web push + mail) to creator, host, and invitees; external guests get mail only. Idempotent via reminder `dedupe_key`.
 
