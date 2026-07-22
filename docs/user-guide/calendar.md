@@ -14,7 +14,7 @@ Use Calendar to manage **your** personal events. Default view is **Week** (Googl
 | Staff (no `view_all`) | Only events you created |
 | Owner / Admin / Manager (`calendar.view_all`) | All workspace events |
 
-There is **no calendar assignment**. You cannot assign a calendar to someone else. Booking meetings and assigning a host belongs to the future **Meetings** module.
+There is **no calendar assignment**. You cannot assign a calendar to someone else. Booking meetings, hosts, Zoom/Google Meet, and invitees belong to the **[Meetings](/user-guide/meetings)** module (projected onto your Calendar when you are the host).
 
 ## Create an event
 

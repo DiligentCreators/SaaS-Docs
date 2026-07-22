@@ -1,20 +1,20 @@
 # Calendar — Developer Guide
 
 > **Status: Implemented (v1)**  
-> Meetings depends on Calendar (required). No calendar assignment in v1.
+> Meetings depends on Calendar (required) and projects via `upsertFromSource`. No calendar assignment in v1.
 
 ## Ownership
 
 | Concept | Owner |
 |---------|--------|
 | `calendar_events` table / CRUD / Week·Day·Month·Agenda UI | Calendar module |
-| Future meeting booking, host assignment, Zoom/Meet | Meetings module (calls `CalendarEventService`) |
+| Meeting booking, host assignment, Zoom/Meet, reminders | [Meetings](/developer-guide/meetings) module (calls `CalendarEventService`) |
 
 ## Model
 
 `App\Models\CalendarEvent` — `BelongsToTenant`, `LogsActivity`, `SoftDeletes`.
 
-Key fields: `organizer_id`, `starts_at`, `ends_at`, `all_day`, `timezone`, `status` (`scheduled`|`cancelled`), `source` (`manual`|`meeting`), nullable `source_type`/`source_id` for future Meetings morph.
+Key fields: `organizer_id`, `starts_at`, `ends_at`, `all_day`, `timezone`, `status` (`scheduled`|`cancelled`), `source` (`manual`|`meeting`), nullable `source_type`/`source_id` (Meetings uses morph alias `meeting`).
 
 **Excluded:** `assignee_id`, calendar ACL, participants.
 
@@ -30,7 +30,7 @@ Key fields: `organizer_id`, `starts_at`, `ends_at`, `all_day`, `timezone`, `stat
 
 - `createForOrganizer`, `update`, `cancel`, `delete`
 - `listInRange`, `upcoming`
-- `upsertFromSource` — for Meetings later; unused by Calendar UI in v1
+- `upsertFromSource` — used by Meetings; unused by Calendar UI in v1
 
 ## Frontend
 
@@ -81,4 +81,4 @@ Also listed in `CatalogSeeder` for fresh/local/CI.
 
 ## Explicit non-goals (v1)
 
-Assignment, team calendars, provider sync, Meetings/Zoom/Meet, attendees, Task/Lead overlays.
+Assignment, team calendars, invitee Calendar ACL, Google/Outlook sync, Task/Lead overlays. Meetings/Zoom/Meet live in the Meetings module.

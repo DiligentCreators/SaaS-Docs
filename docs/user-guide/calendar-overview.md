@@ -1,6 +1,6 @@
 # Calendar Module
 
-Personal calendar events for tenant workspaces. Week/Day time grids, Month, and Agenda views with org-wide visibility for owners/admins. Meetings (book + assign host + Zoom/Meet) come later and will project onto Calendar.
+Personal calendar events for tenant workspaces. Week/Day time grids, Month, and Agenda views with org-wide visibility for owners/admins. [Meetings](/user-guide/meetings-overview) (book + assign host + Zoom/Meet) project onto Calendar for the host.
 
 ## Guides
 
@@ -34,7 +34,8 @@ Personal calendar events for tenant workspaces. Week/Day time grids, Month, and 
 
 - Calendar assignment / assignee / create-on-behalf
 - Team calendars / shared ACL
-- Meetings, Zoom, Google Meet
+- Invitee visibility of projected meeting events on Calendar grids
 - Google / Outlook calendar sync
-- Attendees / invitees UI
 - Overlaying Tasks or Leads
+
+Meetings, Zoom, and Google Meet are documented under [Meetings](/user-guide/meetings-overview).

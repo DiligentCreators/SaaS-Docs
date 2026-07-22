@@ -4,7 +4,7 @@
 
 | Piece | Role |
 |-------|------|
-| `App\Support\TenantSettingDefinitions` | Catalog of overridable keys + sensitive keys (includes `task_reminder_time`) |
+| `App\Support\TenantSettingDefinitions` | Catalog of overridable keys + sensitive keys (includes `task_reminder_time`, `meetings_default_provider`) |
 | `App\Services\Tenant\TenantSettingService` | Hierarchy resolver, cache, branding uploads, runtime mail/config, public bootstrap |
 | `App\Services\Storage\FileUploadService` | Disk-agnostic store/replace/delete/url (shared with Central) |
 | `TenantSettingController` | Authenticated list/update, test-mail, branding upload |
@@ -23,6 +23,8 @@
 Business code must call the service (`applicationName()`, `logoUrl()`, `supportEmail()`, `buttonColor()`, `usesCustomMailProvider()`, …) instead of branching on raw settings.
 
 `task_reminder_time` is a string `H:i` value (default `09:00`) under the `general` group. `crm:send-due-notifications` reads it after `applyRuntimeConfig()` so the comparison uses the workspace timezone.
+
+`meetings_default_provider` is `none` \| `google_meet` \| `zoom` (default `none`) under the `general` group. It preselects the Meetings schedule form; OAuth connections remain on Meetings → Integrations.
 
 ## Mail provider
 

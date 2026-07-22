@@ -31,7 +31,7 @@ The CRM is the foundation of the platform and is the first functional area deliv
 |---------------------|--------|
 | Contacts | Planned (unlocks full lead convert) |
 | Companies | Planned |
-| **Meetings** | Planned |
+| **Meetings** | Implemented |
 | Activities | Planned |
 | **Lead Source Driver Architecture** | Planned (docs only — [architectural standard](/developer-guide/lead-source-driver-architecture) for all lead ingestion) |
 | **Meta Lead Ads Integration** | Planned (docs blueprint only — first driver: [Meta Lead Ads](/developer-guide/meta-lead-ads-integration)) |
@@ -44,17 +44,14 @@ The CRM is the foundation of the platform and is the first functional area deliv
 - Upcoming events dashboard widget
 - Org-wide view via `calendar.view_all` (no calendar assignment)
 
-#### Meetings
+#### Meetings (shipped)
 
-- Meetings
-- Meeting Scheduling
-- Zoom Integration
-- Google Meet Integration
-- Email reminders before meeting start for:
-  - Meeting owner
-  - All invitees
+- Meetings scheduling with host + invitees (internal and external email guests)
+- Workspace Zoom and Google Meet OAuth connections
+- One reminder before start (in-app, web push, email) for creator, host, and invitees
+- Projects onto Calendar via `CalendarEventService::upsertFromSource`
 
-> **Dependency note (convention):** Meetings is expected to depend on Calendar. See [Module Dependencies](/architecture/module-dependencies).
+> **Dependency:** Meetings → Calendar (required). See [Module Dependencies](/architecture/module-dependencies) and [Meetings](/user-guide/meetings-overview).
 
 **Goal:** Provide a complete customer relationship management experience with lead tracking, task management, customer records, scheduling, meetings, and activity history.
 

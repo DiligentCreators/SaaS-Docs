@@ -61,6 +61,10 @@ Bulk assign and import equal-distribution wrap `NotificationBatch`: per-lead ass
 - **Tasks:** per-task in-app (`task.due_today` / `task.overdue`) with daily `dedupe_key`; after workspace `task_reminder_time` (default `09:00` local), one mail-only consolidated digest per assignee.
 - Digest idempotency is durable via `task_digest_deliveries` (`queued` → `sent`, or `failed` with `retry_after`). Mail success/failure listeners update the row; queue retries can reclaim after failure.
 - **Lead follow-ups:** unchanged due/overdue mail + database notifications.
+- **Meetings:** due `MeetingReminder` rows send `meeting.reminder` (database + broadcast + web push + mail) to creator, host, and invitees; external guests get mail only. Idempotent via reminder `dedupe_key`.
+
+Meeting lifecycle types: `meeting.invite`, `meeting.updated`, `meeting.cancelled`, `meeting.reminder`.
+
 ### Retention
 
 `notifications:prune --days=90` (weekly schedule) deletes **read** notifications older than N days. Unread are never pruned.
