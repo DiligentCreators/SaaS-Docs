@@ -40,7 +40,8 @@ Workspace owners and users flagged **Exclude from lead assignment** no longer re
 Expired or revoked tenant sessions no longer leave the SPA on protected pages toasting **Workspace context is required.**
 
 - Backend: `InitializeTenancy` returns **401 Unauthenticated** when a Bearer token is present but cannot resolve a workspace (pruned/revoked/unknown tokens); anonymous requests without context still return `400 workspace_required`
-- Frontend: axios treats `401` (and legacy `workspace_required` with a Bearer) as session expiry — clears the token and hard-redirects to login; idle timeout also hard-redirects after logout
+- Frontend: axios treats `401` and any non-`skipAuth` `400 workspace_required` (with or without a Bearer — covers the idle token-clear race) as session expiry — clears the token and hard-redirects to login without toasting; concurrent errors while redirecting are also suppressed
+- Idle timeout hard-redirects immediately, then best-effort logout
 - Tests: Pest `TokenExpirationTest`; Vitest `src/api/axios.test.ts`
 - Docs: [authentication developer](/developer-guide/authentication), [authentication user guide](/user-guide/authentication)
 

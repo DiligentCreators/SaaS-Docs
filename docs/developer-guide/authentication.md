@@ -50,7 +50,7 @@ Defined in `config/auth.php`:
 
 Tenant routes also run `tenancy` + `tenant.available`. Workspace resolution prefers the request host (including future custom domains), then the authenticated token's workspace, then the submitted `workspace` value or `X-Tenant-Domain` header. Central routes run `central.domain`.
 
-When a Bearer token is present but cannot resolve a workspace (unknown, revoked, or pruned token row), `InitializeTenancy` returns **401 Unauthenticated** so the SPA can redirect to login. A true missing-workspace case with no Bearer still returns **400** with `code: workspace_required`.
+When a Bearer token is present but cannot resolve a workspace (unknown, revoked, or pruned token row), `InitializeTenancy` returns **401 Unauthenticated** so the SPA can redirect to login. A true missing-workspace case with no Bearer still returns **400** with `code: workspace_required`; the SPA treats that as session expiry on authenticated API calls (not `skipAuth`) so idle token-clear races hard-redirect to login instead of toasting.
 
 Tenant token TTL comes from the workspace `session_lifetime_minutes` setting (`0` = non-expiring token), falling back to Central when unset. Remember-me still extends a positive TTL to at least 30 days.
 
