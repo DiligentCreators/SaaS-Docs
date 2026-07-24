@@ -38,6 +38,12 @@ Password length / special-character rules stay under Central Settings.
 
 Hints under fields show when a value is still inheriting the Central default.
 
+With the **Branded** marketplace module, logo and application name are also used in email chrome and web push. See [Branded](/user-guide/branded).
+
+## Domain (Branded module)
+
+When **Branded** is installed, **Settings → Domain** lets you map a custom hostname (including multi-part ccTLDs). See [Branded](/user-guide/branded).
+
 ## Mail
 
 Choose **Use system provider** to inherit Central Application mail, or **Use custom provider** for workspace-specific SMTP / Postmark / Mailgun.

@@ -1,5 +1,19 @@
 # Changelog
 
+## Branded module — custom domains + notification chrome (2026-07-24)
+
+Billable marketplace module `branded` (not default-included) for custom domain mapping and white-label email / web push.
+
+- Tenant self-service **Settings → Domain**: propose hostname (ccTLDs like `myai.com.pk` / `app.domain.co.uk` supported), DNS/IP instructions, verify ownership
+- Host resolution ignores unverified or non-entitled custom domains (IP pointing alone cannot hijack a workspace)
+- Central tenant domain fields accept **platform subdomains only**
+- When branded is active: tenant logo / app name in mail chrome and web push icon/title prefix
+- Cancel/deactivate branded clears custom-domain verification
+- Production hardening: force-delete on remove/expire (unique reclaim), verify fails closed without `BRANDED_SERVER_IPV4`/`CNAME`, CORS allowlist for verified custom Origins, hourly stale-claim purge
+- Pest + Playwright `test:e2e:branded`; docs: user / developer / deployment / API
+
+---
+
 ## Daily CRM summary emails (2026-07-23)
 
 At **Daily Reminder Time** (`task_reminder_time`, default `09:00` local), each workspace sends a mail-only CRM snapshot in addition to the existing task due digest.
