@@ -1,10 +1,8 @@
 # Meta Lead Ads Integration
 
-> **Status: Planned — not implemented**
+> **Status: Shipped**
 >
-> This document is the **official implementation blueprint** for a future Meta (Facebook) Lead Ads integration. No backend or frontend code for this feature exists today. Do not treat any class name, route, table, or UI path below as shipped runtime behavior until an implementation PR lands and this status is updated.
->
-> When implementation begins, follow the [Lead Source Driver Architecture](/developer-guide/lead-source-driver-architecture), [Module Architecture](/architecture/module-architecture), [Module Development Standard](/developer-guide/module-development), [Documentation Governance](/developer-guide/documentation-governance) same-PR rule, and the existing [Leads](/developer-guide/leads) service boundaries.
+> Tenant Meta OAuth, Page subscriptions, shared `POST/GET /webhooks/leads/meta`, `MetaLeadAdsDriver`, and queue `lead-ingest` are implemented. Central App credentials live in system settings / env (`META_LEAD_ADS_*`). Tenants customize `default_source` without reconnecting.
 
 ---
 

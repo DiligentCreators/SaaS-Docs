@@ -241,6 +241,7 @@ export default defineConfig({
           text: 'Future Integrations',
           items: [
             { text: 'Lead Source Driver Architecture', link: '/developer-guide/lead-source-driver-architecture' },
+            { text: 'Custom Lead Webhook', link: '/developer-guide/custom-lead-webhook' },
             { text: 'Meta Lead Ads', link: '/developer-guide/meta-lead-ads-integration' },
             { text: 'WhatsApp Cloud Integration', link: '/developer-guide/whatsapp-cloud-integration' },
           ],

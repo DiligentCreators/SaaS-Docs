@@ -21,15 +21,49 @@ New Leads permissions for **existing** workspaces must ship as an additive **dat
 
 Status migration maps legacy `open` → `active` and `won`/`lost` → `closed`. Column rename: `estimated_value` → `lead_value`.
 
+Include `leads.manage_integrations` in the grant list for lead ingest integrations.
+
 ## Queue workers
 
-Lead imports always run on the dedicated `imports` queue:
+Lead imports run on the dedicated `imports` queue. Meta Lead Ads ingest uses `lead-ingest`:
 
 ```bash
-php artisan queue:work --queue=imports,emails,default --sleep=1 --tries=3 --max-time=3600
+php artisan queue:work --queue=lead-ingest,imports,emails,default --sleep=1 --tries=3 --max-time=3600
 ```
 
-Ensure at least one worker listens to `imports`. Uploads use the configured `filesystems.uploads` disk (`public` locally / `s3` in production) under `imports/{tenant_uuid}/`.
+Ensure at least one worker listens to `imports` and `lead-ingest`. Uploads use the configured `filesystems.uploads` disk (`public` locally / `s3` in production) under `imports/{tenant_uuid}/`.
+
+## Lead ingest webhooks
+
+| Endpoint | Notes |
+|----------|-------|
+| `POST /webhooks/leads/custom/{uuid}` | Per-tenant Custom Webhook (HMAC or Bearer) |
+| `GET/POST /webhooks/leads/meta` | Shared Meta Lead Ads ingress (signature + verify challenge) |
+
+CSRF-exempt under `webhooks/leads/*`. Configure Meta App ID/secret/verify token via Central `PUT /api/central/v1/integrations/meta-lead-ads` or `META_LEAD_ADS_*` env.
+
+### Meta production gates (required for customer Pages)
+
+Before enabling Meta Lead Ads for customer workspaces:
+
+1. Meta **Business Verification** completed for the platform app
+2. Meta **App Review** approved for `leads_retrieval` + `pages_manage_metadata` (and related Page scopes)
+3. App switched to **Live Mode**
+4. Webhook subscription field `leadgen` pointed at `https://{api}/webhooks/leads/meta` with the configured verify token
+5. OAuth redirect URI registered: `https://{api}/api/oauth/leads/meta/callback`
+6. At least one worker consuming `lead-ingest`
+7. Smoke: Connect Meta → select Pages → submit a Lead Ad form → lead appears in workspace
+
+Without steps 1–3, only Meta test Apps / test users work.
+
+### Deploy checklist (ingest)
+
+- [ ] Migrate ingest tables + `leads.manage_integrations` permission grant
+- [ ] Queue worker includes `lead-ingest`
+- [ ] `META_LEAD_ADS_*` (or Central settings) set for production
+- [ ] Custom webhook HMAC/Bearer smoke
+- [ ] Meta verify challenge + signed webhook smoke (sandbox)
+- [ ] Confirm deactivated `module:leads` rejects ingress
 
 ## Monitoring
 

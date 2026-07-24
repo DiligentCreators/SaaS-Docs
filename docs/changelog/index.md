@@ -1,5 +1,18 @@
 # Changelog
 
+## Lead ingest — Custom Webhook + Meta Lead Ads (2026-07-24)
+
+Inbound lead capture through the Lead Source Driver pipeline:
+
+- Shared `NormalizedLeadData` → `LeadDuplicateService` → `LeadService` (no driver DB writes)
+- **Custom webhooks** per tenant: URL + API key / HMAC (`X-SaleOS-Timestamp` + signature), editable `default_source`
+- **Meta Lead Ads**: OAuth connect, **Page picker UI**, Page subscribe, shared `/webhooks/leads/meta`, queue `lead-ingest`
+- Leads UI → **Integrations** panel; permission `leads.manage_integrations`
+- Production hardening: module entitlement on ingress, body size limits, per-endpoint throttle, Graph timeouts, auth-only `needs_reauth`, force-delete page reclaim
+- Docs: Lead Source Driver Architecture (implemented), Custom Lead Webhook, Meta Lead Ads (shipped)
+
+---
+
 ## Branded Domain settings UX (2026-07-24)
 
 Settings → **Domain** uses a guided three-step flow (enter address → copy-friendly DNS cards → check connection) instead of raw DNS admin rows, aimed at non-technical workspace admins.

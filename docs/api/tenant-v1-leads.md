@@ -151,3 +151,24 @@ CRM activity timeline entries.
 ### GET `/leads/{id}/assignment-history`
 
 Ordered assignment change rows (`old_user`, `new_user`, `changed_by`, `reason`, timestamps).
+
+## Integrations (`leads.manage_integrations`)
+
+### Webhooks
+
+- `GET/POST /leads/integrations/webhooks`
+- `PUT /leads/integrations/webhooks/{id}`
+- `POST /leads/integrations/webhooks/{id}/rotate`
+- `DELETE /leads/integrations/webhooks/{id}`
+
+Create/rotate responses include plaintext `api_key` and `signing_secret` once. Public ingress: `POST /webhooks/leads/custom/{uuid}` (Bearer or `X-SaleOS-Signature`). See [Custom Lead Webhook](/developer-guide/custom-lead-webhook).
+
+### Meta Lead Ads
+
+- `GET/PATCH /leads/integrations/meta` — includes `available_pages` when connected
+- `GET /leads/integrations/meta/pages` — refresh candidate Pages (id/name only)
+- `GET /leads/integrations/meta/oauth/redirect`
+- `POST /leads/integrations/meta/pages` — body `{ page_ids: string[] }` (empty clears subscriptions)
+- `POST /leads/integrations/meta/disconnect` — force-deletes page rows so IDs can be reclaimed
+
+OAuth callback: `GET /api/oauth/leads/meta/callback`. Shared webhook: `GET/POST /webhooks/leads/meta`. See [Meta Lead Ads](/developer-guide/meta-lead-ads-integration).
