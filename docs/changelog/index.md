@@ -10,6 +10,7 @@ Inbound lead capture through the Lead Source Driver pipeline:
 - Leads UI → **Integrations** panel; permission `leads.manage_integrations`
 - Production hardening: module entitlement on ingress, body size limits, per-endpoint throttle, Graph timeouts, auth-only `needs_reauth`, force-delete page reclaim
 - Docs: Lead Source Driver Architecture (implemented), Custom Lead Webhook, Meta Lead Ads (shipped)
+- Pre-merge hardening: `guzzlehttp/guzzle` → 7.15.1; SPA `postcss` + `react-router` → 8.3.0 (high audit clear); Pest expectations updated for `meetings` / `branded` and platform subdomain domains
 
 ---
 
