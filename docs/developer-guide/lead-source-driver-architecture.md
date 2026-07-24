@@ -1,10 +1,8 @@
 # Lead Source Driver Architecture
 
-> **Status: Architectural decision — not implemented**
+> **Status: Implemented**
 >
-> This document defines the **official Lead Source Driver Architecture** for SaleOS. It is an architectural decision only. No driver registry, interface, or DTO exists in application code today. Do not treat class names below as shipped runtime APIs until an implementation PR lands and this status is updated.
->
-> This architecture becomes the **standard for every future lead ingestion mechanism**. Source-specific integrations (including [Meta Lead Ads](/developer-guide/meta-lead-ads-integration)) must conform to it rather than embedding parsing logic inside the Leads module.
+> Shared lead ingestion pipeline with `LeadSourceDriverInterface`, `NormalizedLeadData`, `LeadDuplicateService`, and `LeadIngestionService`. Shipped drivers: **Custom Webhook** and **Meta Lead Ads**. Additional catalog drivers remain planned.
 
 ---
 
@@ -113,7 +111,7 @@ Planned drivers. Additional drivers may be introduced over time **without changi
 | CSV Import Driver | Planned | Evolve today’s file import onto the shared pipeline |
 | Public API Driver | Planned | External create API → normalize → pipeline |
 | Website Form Driver | Planned | Generic hosted / embedded web forms |
-| Meta Lead Ads Driver | Planned | First production implementation — see [Meta Lead Ads](/developer-guide/meta-lead-ads-integration) |
+| Meta Lead Ads Driver | **Shipped** | See [Meta Lead Ads](/developer-guide/meta-lead-ads-integration) |
 | WhatsApp Driver | Planned | Inbound lead capture from WhatsApp — see also [WhatsApp Cloud Integration](/developer-guide/whatsapp-cloud-integration) (messaging) |
 | Google Ads Driver | Planned | Lead form extensions / offline import |
 | Google Forms Driver | Planned | Form responses → leads |
@@ -128,9 +126,9 @@ Planned drivers. Additional drivers may be introduced over time **without changi
 | Salesforce Import Driver | Planned | CRM import / sync adapter |
 | Zoho Import Driver | Planned | CRM import / sync adapter |
 | Pipedrive Import Driver | Planned | CRM import / sync adapter |
-| Custom Webhook Driver | Planned | Tenant-configured generic webhook → mapping UI |
+| Custom Webhook Driver | **Shipped** | See [Custom Lead Webhook](/developer-guide/custom-lead-webhook) |
 
-Catalog entries are roadmap placeholders, not delivery commitments or shipped code.
+Shipped drivers are live in application code. Remaining catalog entries are roadmap placeholders, not delivery commitments.
 
 ---
 
