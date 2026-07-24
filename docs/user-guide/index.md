@@ -32,3 +32,4 @@ Guides for workspace operators and Central admins using SaleOS day to day.
 | [Tasks Overview](./tasks-overview) | Tasks module guides index |
 | [Tasks](./tasks) | Board, list, and task workflows |
 | [Communication Templates](./communication-templates) | Template management and WhatsApp from Leads |
+| [Branded](./branded) | Custom domain mapping and white-label notifications |
