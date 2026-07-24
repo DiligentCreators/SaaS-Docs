@@ -12,13 +12,13 @@ Without the module, the Settings **Domain** tab is hidden and custom hostnames n
 ## Map a custom domain
 
 1. Open **Settings → Domain**.
-2. Enter a hostname such as `myai.com.pk` or `app.domain.co.uk` (multi-part ccTLDs are supported).
-3. Save, then create the DNS records shown on the page:
-   - **TXT** ownership record on `_saleos-verification.<your-host>`
-   - **A** / **AAAA** to the platform server IP(s), **or** **CNAME** to the platform target
-4. Click **Verify DNS**.
+2. **Step 1 — Enter your website address** (for example `myai.com.pk` or `app.domain.co.uk`; multi-part ccTLDs are supported) and choose **Continue**.
+3. **Step 2 — Connect it at your domain provider** (GoDaddy, Namecheap, Cloudflare, etc.):
+   - Copy the **TXT** ownership values (Name / Host and Value) and paste them as a TXT record.
+   - Copy the recommended **A** record (Name / Host and Points to IP). Advanced options cover AAAA / CNAME when your operator provides them.
+4. **Step 3 — Check the connection**: choose **I’ve added the records — Check now**.
 
-The hostname becomes active only after verification succeeds **and** Branded remains licensed.
+DNS can take a few minutes (sometimes up to 24 hours). The address becomes active only after the check succeeds **and** Branded remains licensed. Pointing an IP alone does not activate the workspace.
 
 Platform subdomains (for example `acme.localhost`) stay managed by Central — they are not configured on this tab.
 

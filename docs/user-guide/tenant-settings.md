@@ -42,7 +42,7 @@ With the **Branded** marketplace module, logo and application name are also used
 
 ## Domain (Branded module)
 
-When **Branded** is installed, **Settings → Domain** lets you map a custom hostname (including multi-part ccTLDs). See [Branded](/user-guide/branded).
+When **Branded** is installed, **Settings → Domain** walks you through a three-step flow: enter your website address, copy DNS records into your domain provider, then check the connection. See [Branded](/user-guide/branded).
 
 ## Mail
 
