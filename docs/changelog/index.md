@@ -1,5 +1,11 @@
 # Changelog
 
+## Branded Domain settings UX (2026-07-24)
+
+Settings → **Domain** uses a guided three-step flow (enter address → copy-friendly DNS cards → check connection) instead of raw DNS admin rows, aimed at non-technical workspace admins.
+
+---
+
 ## Branded module — custom domains + notification chrome (2026-07-24)
 
 Billable marketplace module `branded` (not default-included) for custom domain mapping and white-label email / web push.
