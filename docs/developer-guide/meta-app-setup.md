@@ -62,16 +62,20 @@ EloSync requests these OAuth scopes (`config/meta.php`):
 ```text
 leads_retrieval
 pages_manage_metadata
+pages_manage_ads
 pages_show_list
 pages_read_engagement
+ads_read
 business_management
 ```
 
 1. Open **Use cases** → **Create & manage ads with Marketing API** → **Customize**.
 2. Under **Permissions and features**, add each permission above until status is **Ready for testing**.
-3. Also enable if Meta lists them for Lead Ads: `pages_manage_ads`, `ads_management`, `ads_read`.
+3. Also enable if Meta lists them for Lead Ads: `ads_management`.
 
 If a scope is missing from the app, Facebook shows **Invalid Scopes** (developers only). Enabling permissions on the use case is the fix — not changing EloSync code.
+
+After adding scopes to an already-connected workspace, tenants must **Disconnect Meta** then **Connect Meta** again so Facebook re-grants the new permissions.
 
 ### 4. Facebook Login for Business
 
